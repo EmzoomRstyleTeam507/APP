@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Emzoom Rstyle Team 507</title>
+    
+    <!-- Configuración PWA / Metatags -->
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Emzoom 507">
+    <link rel="apple-touch-icon" href="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png">
+    
+    <!-- Manifiesto de Aplicación (Incrustado como Data URI) -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Emzoom Rstyle Team 507","short_name":"Rstyle 507","description":"Club oficial de GAC Emzoom en Panamá","start_url":".","display":"standalone","background_color":"#0a0a0a","theme_color":"#dc2626","icons":[{"src":"https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png","sizes":"192x192","type":"image/png"},{"src":"https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png","sizes":"512x512","type":"image/png"}]}'>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Librería para Exportar a Excel -->
@@ -964,6 +975,21 @@
         const CACHE_KEY = 'emzoom_data_cache';
         const CACHE_TIME_KEY = 'emzoom_data_time';
         const CACHE_TTL = 5 * 60 * 1000; // 5 Minutos
+
+        // Registrar Service Worker para PWA (Desde Blob para archivo único)
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'emzoom-v1';
+                self.addEventListener('install', e => {
+                    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['/'])));
+                });
+                self.addEventListener('fetch', e => {
+                    e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+        }
 
         async function loadData(forceRefresh = false) {
             try {
@@ -2078,7 +2104,7 @@
             const btnSave = document.getElementById('btn-save-event');
             btnSave.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4 pointer-events-none"></i> Actualizar Evento';
             btnSave.classList.replace('bg-red-600', 'bg-blue-600');
-            btnSave.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+            btnSave.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
             
             document.getElementById('btn-cancel-ev-create').classList.add('hidden');
             document.getElementById('btn-cancel-ev-edit').classList.remove('hidden');
@@ -2383,7 +2409,7 @@
             const data = {
                 nombre_completo: document.getElementById('user-nombre').value,
                 email: document.getElementById('user-email').value,
-                password: document.getElementById('user-pass').value,
+                password: document.getElementById('sys-user-pass').value,
                 rol: document.getElementById('user-rol').value
             };
             
@@ -2418,7 +2444,7 @@
         function deleteUser(id) {
             customConfirm('Eliminar Usuario', '¿Eliminar definitivamente este usuario del sistema?', async () => {
                 const { error } = await supabaseClient.from('usuarios_web').delete().eq('id', id);
-                if (error) { showToast('Error', 'No se pudo eliminar el usuario', 'error'); }
+                if (error) { showToast('Error', 'No se pudo eliminar the user', 'error'); }
                 else { showToast('Aviso', 'Usuario eliminado'); await loadData(true); }
             });
         }
