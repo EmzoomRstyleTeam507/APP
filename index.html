@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Emzoom Rstyle Team 507</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Librería para Exportar a Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Flatpickr (Calendario Avanzado) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+    <style>
+        /* Custom Styles & Glassmorphism */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;800&display=swap');
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            -webkit-tap-highlight-color: transparent;
+            background-image: repeating-linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.03) 0px,
+                rgba(255, 255, 255, 0.03) 1px,
+                transparent 1px,
+                transparent 12px
+            );
+            overflow-x: hidden;
+        }
+
+        .bg-watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140vw;
+            height: 140vh;
+            background-image: url('https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.15; 
+            z-index: -1;
+            pointer-events: none; 
+        }
+
+        button, a, input, select, textarea {
+            touch-action: manipulation; 
+        }
+
+        .glass {
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            will-change: transform;
+        }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(35,35,35,0.98) 0%, rgba(15,15,15,1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 60, 60, 0.2);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .input-dark {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .input-dark::placeholder {
+            color: #9ca3af;
+            opacity: 1;
+        }
+
+        .input-dark:focus {
+            border-color: #dc2626; 
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.2);
+            outline: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            height: 0px; 
+            background: transparent;
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease-in-out forwards; }
+        .slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .splash-pulse {
+            animation: pulse 2s infinite ease-in-out;
+            will-change: transform, opacity;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; filter: brightness(1); }
+            50% { transform: scale(1.08); opacity: 0.8; filter: brightness(1.2); }
+            100% { transform: scale(1); opacity: 1; filter: brightness(1); }
+        }
+
+        .img-preview {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            display: none;
+        }
+
+        .flatpickr-calendar {
+            z-index: 9999 !important;
+            font-family: 'Montserrat', sans-serif !important;
+            background: #111827 !important;
+            border: 1px solid rgba(220, 38, 38, 0.4) !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8) !important;
+        }
+        .flatpickr-day.selected {
+            background: #dc2626 !important;
+            border-color: #dc2626 !important;
+        }
+
+        #toast {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(100px);
+            opacity: 0;
+            z-index: 100;
+        }
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative">
+
+    <div class="bg-watermark"></div>
+
+    <!-- Splash Screen -->
+    <div id="splash" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black transition-opacity duration-700">
+        <div class="relative flex flex-col items-center">
+            <div class="w-64 mb-8 splash-pulse flex justify-center items-center">
+                <img src="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png" alt="Emzoom Rstyle Logo" class="max-w-full h-auto drop-shadow-[0_0_25px_rgba(212,175,55,0.4)]">
+            </div>
+            <p class="text-gray-500 mt-4 text-sm tracking-widest font-semibold uppercase">Iniciando Motor...</p>
+        </div>
+    </div>
+
+    <!-- Contenedor Principal App -->
+    <div id="app" class="hidden flex-col flex-1 pb-24 w-full relative">
+        
+        <header class="glass sticky top-0 z-30 px-6 py-3 flex justify-between items-center rounded-b-3xl">
+            <h2 id="header-title" class="text-lg font-bold tracking-wide uppercase">Inicio</h2>
+            <div id="header-actions" class="flex items-center gap-3">
+                <img src="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png" alt="Logo Mini" class="h-8 object-contain drop-shadow-md">
+            </div>
+        </header>
+
+        <main class="px-4 py-6">
+            
+            <!-- VISTA: LOGIN / REGISTRO -->
+            <section id="view-login" class="view-section hidden fade-in flex-col justify-center min-h-[70vh]">
+                <div class="glass-card p-6 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-red-900"></div>
+                    
+                    <button type="button" id="btn-auth-back" onclick="toggleAuthMode()" class="hidden absolute top-4 left-4 text-gray-400 hover:text-white flex items-center gap-1 text-xs font-bold uppercase transition active:scale-90">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i> Volver
+                    </button>
+
+                    <div class="text-center mb-6 mt-4">
+                        <div class="w-16 h-16 mx-auto bg-[#121212] rounded-full flex items-center justify-center mb-4 border border-white/10 shadow-lg">
+                            <i data-lucide="lock" class="w-8 h-8 text-red-500"></i>
+                        </div>
+                        <h2 id="auth-title" class="text-xl font-black uppercase tracking-wider text-white">Iniciar Sesión</h2>
+                        <p id="auth-subtitle" class="text-xs text-gray-400 mt-1">Bienvenido de vuelta al Club</p>
+                    </div>
+
+                    <form id="auth-form" class="space-y-4">
+                        <div id="auth-error" class="hidden bg-red-500/10 border border-red-500/50 text-red-500 text-[10px] text-center p-3 rounded-xl mb-4 font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                            Credenciales incorrectas
+                        </div>
+                        <div id="auth-name-field" class="hidden space-y-1.5">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Nombre Completo</label>
+                            <input type="text" id="auth-nombre" class="input-dark w-full px-4 py-3 rounded-xl text-sm" placeholder="Tu nombre">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Correo Electrónico</label>
+                            <div class="relative">
+                                <i data-lucide="mail" class="absolute left-4 top-3.5 w-4 h-4 text-gray-500 pointer-events-none"></i>
+                                <input type="email" id="auth-email" required class="input-dark w-full px-4 py-3 pl-10 rounded-xl text-sm" placeholder="correo@ejemplo.com">
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Contraseña</label>
+                            <div class="relative">
+                                <i data-lucide="key" class="absolute left-4 top-3.5 w-4 h-4 text-gray-500 pointer-events-none"></i>
+                                <input type="password" id="auth-pass" required class="input-dark w-full px-4 py-3 pl-10 pr-10 rounded-xl text-sm" placeholder="••••••••">
+                                <button type="button" onclick="togglePass('auth-pass')" class="absolute right-4 top-3.5 text-gray-400 hover:text-white transition active:scale-90">
+                                    <i data-lucide="eye" class="w-4 h-4" id="auth-pass-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-auth" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl flex justify-center items-center gap-2 mt-2 transition shadow-[0_4px_15px_rgba(220,38,38,0.4)] active:scale-95 text-sm uppercase tracking-widest">
+                            <i data-lucide="log-in" class="w-5 h-5 pointer-events-none"></i> Iniciar Sesión
+                        </button>
+                    </form>
+
+                    <div class="mt-6 text-center">
+                        <p class="text-xs text-gray-400" id="auth-toggle-text">
+                            ¿No tienes cuenta? <button type="button" onclick="toggleAuthMode()" class="text-red-400 font-bold hover:underline transition">Regístrate aquí</button>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VISTA: INICIO -->
+            <section id="view-home" class="view-section hidden fade-in">
+                <!-- Panel de Estado (Banner) -->
+                <div id="status-banner-container" onclick="openCurrentStatus()" class="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-2xl border border-gray-800 cursor-pointer transition-transform active:scale-[0.98]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50 z-10"></div>
+                    <img id="status-banner-img" src="" class="absolute inset-0 w-full h-full object-cover hidden z-0 transition-opacity duration-500">
+                    <div id="status-banner-placeholder" class="absolute inset-0 bg-gray-800 flex flex-col items-center justify-center z-0">
+                        <i data-lucide="image" class="w-12 h-12 text-gray-600 mb-2"></i>
+                        <span class="text-xs text-gray-500 font-bold uppercase tracking-widest">Sin Estado Reciente</span>
+                    </div>
+                    
+                    <!-- Contenedor del texto del estado -->
+                    <div id="status-text-container" class="absolute top-4 left-4 right-4 z-20 hidden pointer-events-none flex justify-center transition-opacity duration-500">
+                        <div class="bg-black/70 px-4 py-2 rounded-xl backdrop-blur-md shadow-lg text-center border border-white/10 flex flex-col items-center max-w-[90%]">
+                            <p id="status-author" class="text-[10px] font-black text-red-500 uppercase tracking-widest hidden"></p>
+                            <p id="status-car-info" class="text-[8px] text-gray-300 font-bold uppercase tracking-wider mb-1 hidden"></p>
+                            <p id="status-text" class="text-white text-xs font-medium hidden"></p>
+                        </div>
+                    </div>
+
+                    <div id="status-default-title" class="absolute bottom-4 left-4 z-20 pointer-events-none">
+                        <h3 class="text-2xl font-black uppercase tracking-wider text-white drop-shadow-md">Únete a la<br><span class="text-red-500">Familia</span></h3>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 text-center mb-6 slide-up border border-red-500/30 shadow-[0_0_25px_rgba(220,38,38,0.15)] relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-red-600/10 to-transparent pointer-events-none"></div>
+                    <div class="w-14 h-14 mx-auto bg-[#121212] rounded-full flex items-center justify-center mb-4 border border-red-500/50 relative z-10 shadow-[0_0_15px_rgba(220,38,38,0.4)]">
+                        <i data-lucide="award" class="w-6 h-6 text-red-500"></i>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-black mb-2 uppercase tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-red-200 to-white drop-shadow-lg relative z-10">CLUB OFICIAL EMZOOM RSTYLE 507 TEAM</h4>
+                    <p class="text-gray-300 text-sm mb-6 relative z-10 font-medium">Demuestra tu estilo, comparte tu pasión y forma parte del equipo más exclusivo de Panamá.</p>
+                    <button onclick="handleHomeRegisterClick()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-[0_4px_20px_rgba(220,38,38,0.5)] flex justify-center items-center gap-2 active:scale-95 text-[15px] relative z-10 ring-2 ring-red-500/50 ring-offset-2 ring-offset-[#121212]">
+                        <i data-lucide="plus-circle" class="w-5 h-5 pointer-events-none" id="icon-home-register"></i>
+                        <span id="text-home-register" class="tracking-wide">Registrar Mi Auto</span>
+                    </button>
+                </div>
+
+                <!-- Leyenda del Club y Redes Sociales -->
+                <div class="glass-card rounded-2xl p-6 text-center slide-up" style="animation-delay: 0.1s;">
+                    <h3 class="text-sm font-bold text-gray-200 uppercase tracking-wider mb-2">
+                        La Familia R-Style 507
+                    </h3>
+                    <p class="text-xs text-gray-400 leading-relaxed mb-6">
+                        Somos una comunidad apasionada por la innovación y el estilo del GAC Emzoom. Organizamos rutas, meets y compartimos experiencias únicas en Panamá.
+                    </p>
+                    
+                    <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Síguenos en Redes</h4>
+                    <div class="flex justify-center gap-5">
+                        <a href="https://www.tiktok.com/@emzoomrstyleteam507?_r=1&_t=ZS-96JMwGRfdR2" target="_blank" class="w-12 h-12 rounded-full bg-black border border-gray-700 flex items-center justify-center transition-transform active:scale-90 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
+                            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a5.64 5.64 0 0 1-1.04-.1z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/emzoomrstyleteam507?igsh=MWs1Z29qYjJyM2szYw==" target="_blank" class="w-12 h-12 rounded-full bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 flex items-center justify-center transition-transform active:scale-90 shadow-[0_4px_15px_rgba(236,72,153,0.3)]">
+                            <i data-lucide="instagram" class="w-5 h-5 text-white"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Elementos ocultos para mantener la compatibilidad con el JS existente -->
+                <span id="home-member-count" class="hidden"></span>
+                <span id="home-events-count" class="hidden"></span>
+                <span id="home-birthdays-count" class="hidden"></span>
+                <div id="admin-home-card" class="hidden"></div>
+            </section>
+
+            <!-- VISTA: CUMPLEAÑOS -->
+            <section id="view-birthdays" class="view-section hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Próximos Cumpleaños</h3>
+                    <button onclick="navTo('home')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold">
+                        <i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Inicio
+                    </button>
+                </div>
+
+                <div id="birthdays-list" class="space-y-4 pb-4"></div>
+                
+                <div id="empty-birthdays-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in">
+                    <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700">
+                        <i data-lucide="gift" class="w-8 h-8 text-gray-600"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-300">Sin cumpleaños</h4>
+                    <p class="text-sm text-gray-500 mt-2 px-6">No hay fechas registradas. ¡Sé el primero en actualizar tu perfil!</p>
+                </div>
+            </section>
+
+            <!-- VISTA: SUBIR ESTADO -->
+            <section id="view-status" class="view-section hidden fade-in">
+                <!-- Nuevo contenedor de cronómetro -->
+                <div id="status-countdown-container" class="hidden glass-card p-8 rounded-2xl text-center slide-up mb-6 border border-red-900/50">
+                    <div class="w-16 h-16 mx-auto bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700">
+                        <i data-lucide="clock" class="w-8 h-8 text-red-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white uppercase tracking-wider mb-2">Límite de Estado</h3>
+                    <p class="text-xs text-gray-400 mb-6 px-2">Solo puedes publicar un estado cada 24 horas. Podrás subir otro en:</p>
+                    <div id="status-timer" class="text-3xl font-black text-red-500 tracking-widest drop-shadow-md">00:00:00</div>
+                    <button type="button" onclick="navTo('home')" class="mt-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest hover:text-white transition">Volver al Inicio</button>
+                </div>
+
+                <form id="status-form" class="space-y-6 slide-up">
+                    <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                        <h3 class="text-sm font-bold text-gray-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i data-lucide="camera" class="w-4 h-4"></i> Subir Estado (24 Hrs)
+                        </h3>
+                        
+                        <div class="space-y-1.5 mb-4">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Texto del Estado (Opcional)</label>
+                            <input type="text" id="status-texto" class="input-dark w-full px-4 py-3 rounded-xl text-sm" placeholder="Escribe algo sobre la foto...">
+                        </div>
+
+                        <div class="relative">
+                            <input type="file" id="status-foto" accept="image/*" class="hidden" onchange="previewImage(this, 'status-preview')">
+                            <label for="status-foto" class="input-dark border-dashed flex flex-col items-center justify-center h-48 rounded-xl cursor-pointer hover:bg-gray-800 transition-all duration-200 active:scale-95 overflow-hidden">
+                                <div id="status-placeholder" class="flex flex-col items-center text-gray-500 pointer-events-none">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 mb-2"></i>
+                                    <span class="text-xs font-semibold uppercase tracking-widest">Seleccionar Imagen</span>
+                                </div>
+                                <img id="status-preview" class="w-full h-full object-cover hidden" src="" alt="Preview">
+                            </label>
+                            <button type="button" id="status-remove" onclick="removeImage('status-foto', 'status-preview', 'status-placeholder')" class="hidden absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 shadow-lg active:scale-90 transition">
+                                <i data-lucide="x" class="w-4 h-4 pointer-events-none"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-save-status" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-[0_4px_15px_rgba(220,38,38,0.4)] flex justify-center items-center gap-2 active:scale-95 text-[15px]">
+                        <i data-lucide="send" class="w-4 h-4 pointer-events-none"></i>
+                        Publicar Estado
+                    </button>
+                </form>
+            </section>
+
+            <!-- VISTA: REGISTRO MIEMBROS -->
+            <section id="view-register" class="view-section hidden fade-in">
+                <form id="register-form" class="space-y-6 slide-up">
+                    <input type="hidden" id="member-id">
+                    
+                    <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                        <h3 class="text-sm font-bold text-gray-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i data-lucide="user" class="w-4 h-4"></i> Datos Personales
+                        </h3>
+                        
+                        <!-- NUEVO: FOTO DE PERFIL -->
+                        <div class="flex justify-center mb-6">
+                            <div class="relative">
+                                <input type="file" id="foto-perfil" accept="image/*" class="hidden" onchange="previewImage(this, 'preview-perfil')">
+                                <label for="foto-perfil" class="w-24 h-24 rounded-full bg-[#121212] border-2 border-dashed border-gray-600 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-800 transition overflow-hidden relative shadow-lg">
+                                    <div id="placeholder-perfil" class="flex flex-col items-center text-gray-500 pointer-events-none">
+                                        <i data-lucide="camera" class="w-6 h-6 mb-1"></i>
+                                        <span class="text-[8px] font-bold uppercase tracking-widest">Perfil</span>
+                                    </div>
+                                    <img id="preview-perfil" class="w-full h-full object-cover hidden absolute inset-0" src="" alt="Perfil">
+                                </label>
+                                <button type="button" id="remove-perfil" onclick="removeImage('foto-perfil', 'preview-perfil', 'placeholder-perfil')" class="hidden absolute top-0 right-0 bg-red-600 text-white rounded-full p-1 shadow-lg active:scale-90 transition z-10">
+                                    <i data-lucide="x" class="w-3 h-3 pointer-events-none"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Nombre y Apellido *</label>
+                                <input type="text" id="nombre" required class="input-dark w-full px-4 py-3 rounded-xl text-sm" placeholder="Ej. Juan Pérez">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Número de Teléfono *</label>
+                                <input type="tel" id="telefono" required class="input-dark w-full px-4 py-3 rounded-xl text-sm" placeholder="Ej. 6000-0000">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Provincia *</label>
+                                <select id="provincia" required class="input-dark w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                                    <option value="" disabled selected>Selecciona tu provincia</option>
+                                    <option value="Bocas del Toro">Bocas del Toro</option>
+                                    <option value="Coclé">Coclé</option>
+                                    <option value="Colón">Colón</option>
+                                    <option value="Chiriquí">Chiriquí</option>
+                                    <option value="Darién">Darién</option>
+                                    <option value="Herrera">Herrera</option>
+                                    <option value="Los Santos">Los Santos</option>
+                                    <option value="Panamá">Panamá</option>
+                                    <option value="Panamá Oeste">Panamá Oeste</option>
+                                    <option value="Veraguas">Veraguas</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Fecha de Nacimiento</label>
+                                <input type="text" id="fecha_nac" class="input-dark w-full px-4 py-3 rounded-xl text-sm text-gray-200" placeholder="Toca para seleccionar">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+                        <h3 class="text-sm font-bold text-gray-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i data-lucide="smartphone" class="w-4 h-4"></i> Redes Sociales
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Instagram (Enlace del perfil)</label>
+                                <div class="relative">
+                                    <i data-lucide="instagram" class="absolute left-4 top-3.5 w-4 h-4 text-pink-500 pointer-events-none"></i>
+                                    <input type="url" id="instagram" class="input-dark w-full px-4 py-3 pl-10 rounded-xl text-sm" placeholder="https://instagram.com/tu_usuario">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">TikTok (Enlace del perfil)</label>
+                                <div class="relative">
+                                    <svg class="absolute left-4 top-3.5 w-4 h-4 text-gray-300 pointer-events-none" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a5.64 5.64 0 0 1-1.04-.1z"/></svg>
+                                    <input type="url" id="tiktok" class="input-dark w-full px-4 py-3 pl-10 rounded-xl text-sm" placeholder="https://tiktok.com/@tu_usuario">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-gray-400"></div>
+                        <h3 class="text-sm font-bold text-gray-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i data-lucide="car" class="w-4 h-4"></i> Datos del Auto
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Modelo del Auto *</label>
+                                <div class="relative">
+                                    <select id="modelo" required class="input-dark w-full px-4 py-3 rounded-xl text-sm appearance-none" onchange="updateTechInfo()">
+                                        <option value="" disabled selected>Selecciona tu versión</option>
+                                        <option value="GB">GAC Emzoom GB</option>
+                                        <option value="GL">GAC Emzoom GL</option>
+                                        <option value="GT">GAC Emzoom GT</option>
+                                        <option value="R-Style">GAC Emzoom R-Style</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-4 top-3.5 w-5 h-5 text-gray-400 pointer-events-none"></i>
+                                </div>
+                                <div id="tech-info-box" class="hidden mt-3 p-4 bg-gray-800/80 border border-gray-700 rounded-xl text-xs text-gray-300 leading-relaxed shadow-inner"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label class="block text-xs font-medium text-gray-200 mb-2 ml-1">Color *</label>
+                                    <input type="hidden" id="color" required>
+                                    
+                                    <div class="flex gap-3 overflow-x-auto pb-2 scroll-smooth" style="-webkit-overflow-scrolling: touch;">
+                                        <button type="button" class="color-swatch flex-shrink-0 w-8 h-8 rounded-full border border-gray-600 transition-transform duration-200 active:scale-90" style="background-color: #F4F4F5;" data-color="Ivory White" onclick="selectColor(this)"></button>
+                                        <button type="button" class="color-swatch flex-shrink-0 w-8 h-8 rounded-full border border-gray-600 transition-transform duration-200 active:scale-90" style="background-color: #4B5563;" data-color="Graphene Grey" onclick="selectColor(this)"></button>
+                                        <button type="button" class="color-swatch flex-shrink-0 w-8 h-8 rounded-full border border-gray-600 transition-transform duration-200 active:scale-90" style="background-color: #171717;" data-color="Elegant Black" onclick="selectColor(this)"></button>
+                                        <button type="button" class="color-swatch flex-shrink-0 w-8 h-8 rounded-full border border-gray-600 transition-transform duration-200 active:scale-90" style="background-color: #D1D5DB;" data-color="Superstar Silver" onclick="selectColor(this)"></button>
+                                        <button type="button" class="color-swatch flex-shrink-0 w-8 h-8 rounded-full border border-gray-600 transition-transform duration-200 active:scale-90" style="background-color: #2563EB;" data-color="Salt Lake Blue" onclick="selectColor(this)"></button>
+                                        <button type="button" class="color-swatch flex-shrink-0 w-8 h-8 rounded-full border border-gray-600 transition-transform duration-200 active:scale-90" style="background-color: #9CA3AF;" data-color="Moonlight Grey" onclick="selectColor(this)"></button>
+                                        <button type="button" class="color-swatch flex-shrink-0 w-8 h-8 rounded-full border border-gray-600 transition-transform duration-200 active:scale-90" style="background-color: #8B5CF6;" data-color="Galaxy Lilac" onclick="selectColor(this)"></button>
+                                    </div>
+                                    <p id="color-name-display" class="text-[10px] text-red-400 mt-1 h-4 font-semibold"></p>
+                                </div>
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Apodo</label>
+                                    <input type="text" id="apodo" class="input-dark w-full px-4 py-3 rounded-xl text-sm" placeholder="Ej. El Rayo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                        <h3 class="text-sm font-bold text-gray-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i data-lucide="camera" class="w-4 h-4"></i> Fotos de la Nave
+                        </h3>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="relative">
+                                <input type="file" id="foto1" accept="image/*" class="hidden" onchange="previewImage(this, 'preview1')">
+                                <label for="foto1" class="input-dark border-dashed flex flex-col items-center justify-center h-28 rounded-xl cursor-pointer hover:bg-gray-800 transition-all duration-200 active:scale-95 overflow-hidden">
+                                    <div id="placeholder1" class="flex flex-col items-center text-gray-500 pointer-events-none">
+                                        <i data-lucide="upload-cloud" class="w-5 h-5 mb-1"></i>
+                                        <span class="text-xs font-semibold">Foto Frontal</span>
+                                    </div>
+                                    <img id="preview1" class="img-preview" src="" alt="Preview 1">
+                                </label>
+                                <button type="button" id="remove1" onclick="removeImage('foto1', 'preview1', 'placeholder1')" class="hidden absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 shadow-lg active:scale-90 transition">
+                                    <i data-lucide="x" class="w-3 h-3 pointer-events-none"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="relative">
+                                <input type="file" id="foto2" accept="image/*" class="hidden" onchange="previewImage(this, 'preview2')">
+                                <label for="foto2" class="input-dark border-dashed flex flex-col items-center justify-center h-28 rounded-xl cursor-pointer hover:bg-gray-800 transition-all duration-200 active:scale-95 overflow-hidden">
+                                    <div id="placeholder2" class="flex flex-col items-center text-gray-500 pointer-events-none">
+                                        <i data-lucide="upload-cloud" class="w-5 h-5 mb-1"></i>
+                                        <span class="text-xs font-semibold">Foto Trasera</span>
+                                    </div>
+                                    <img id="preview2" class="img-preview" src="" alt="Preview 2">
+                                </label>
+                                <button type="button" id="remove2" onclick="removeImage('foto2', 'preview2', 'placeholder2')" class="hidden absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 shadow-lg active:scale-90 transition">
+                                    <i data-lucide="x" class="w-3 h-3 pointer-events-none"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-save" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-[0_4px_15px_rgba(220,38,38,0.4)] flex justify-center items-center gap-2 active:scale-95 text-[15px]">
+                        <i data-lucide="save" class="w-4 h-4 pointer-events-none"></i>
+                        Guardar Registro
+                    </button>
+                    <button type="button" id="btn-cancel-edit" onclick="cancelEdit()" class="hidden w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-all duration-200 active:scale-95 flex justify-center items-center gap-2 mt-2 text-[15px]">
+                        Cancelar Edición
+                    </button>
+                </form>
+            </section>
+
+            <!-- VISTA: MIEMBROS -->
+            <section id="view-members" class="view-section hidden fade-in">
+                <div class="mb-6 space-y-3 sticky top-[72px] z-20 glass p-3 rounded-2xl">
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                        <input type="text" id="search-input" placeholder="Buscar nombre o apodo..." class="input-dark w-full py-3 pl-10 pr-4 rounded-xl text-sm" oninput="filterMembers()">
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <i data-lucide="map-pin" class="absolute left-3 top-3 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                            <select id="filter-provincia" class="input-dark w-full py-2.5 pl-9 pr-4 rounded-xl text-xs appearance-none" onchange="filterMembers()">
+                                <option value="all">Todas las provincias</option>
+                                <option value="Bocas del Toro">Bocas del Toro</option>
+                                <option value="Coclé">Coclé</option>
+                                <option value="Colón">Colón</option>
+                                <option value="Chiriquí">Chiriquí</option>
+                                <option value="Darién">Darién</option>
+                                <option value="Herrera">Herrera</option>
+                                <option value="Los Santos">Los Santos</option>
+                                <option value="Panamá">Panamá</option>
+                                <option value="Panamá Oeste">Panamá Oeste</option>
+                                <option value="Veraguas">Veraguas</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="members-list" class="space-y-4 pb-4"></div>
+                
+                <div id="empty-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in">
+                    <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                        <i data-lucide="car" class="w-8 h-8 text-gray-600"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-300">Aún no hay miembros</h4>
+                    <p class="text-sm text-gray-500 mt-2">Sé el primero en registrar tu nave en el club.</p>
+                </div>
+            </section>
+
+            <!-- VISTA: EVENTOS (LISTA) -->
+            <section id="view-events" class="view-section hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Próximas Rutas</h3>
+                    <button id="btn-create-event" onclick="navTo('event-form')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 shadow-lg flex items-center gap-1 text-sm font-semibold">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Crear
+                    </button>
+                </div>
+
+                <div id="events-list" class="space-y-6 pb-4"></div>
+                
+                <div id="empty-events-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in">
+                    <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                        <i data-lucide="flag" class="w-8 h-8 text-gray-600"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-300">No hay eventos</h4>
+                    <p class="text-sm text-gray-500 mt-2">Próximamente nuevas rutas.</p>
+                </div>
+            </section>
+
+            <!-- VISTA: DETALLES DE ASISTENCIA DEL EVENTO -->
+            <section id="view-event-details" class="view-section hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200 truncate pr-4" id="detail-event-name">Detalles</h3>
+                    <button onclick="navTo('events')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold flex-shrink-0">
+                        <i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Volver
+                    </button>
+                </div>
+                
+                <div class="glass-card p-5 rounded-2xl mb-6 slide-up">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="font-black text-sm text-white uppercase tracking-wide">Lista de Asistencia</h4>
+                        <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-xl transition-all active:scale-90 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest shadow-[0_4px_15px_rgba(34,197,94,0.3)]">
+                            <i data-lucide="download" class="w-4 h-4 pointer-events-none"></i> XLSX
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h5 class="text-green-400 font-bold text-xs uppercase tracking-widest mb-3 border-b border-white/10 pb-2 flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i> Asistirán (<span id="count-yes">0</span>)
+                            </h5>
+                            <ul id="list-yes" class="space-y-2.5 text-sm text-gray-300"></ul>
+                        </div>
+                        <div>
+                            <h5 class="text-red-400 font-bold text-xs uppercase tracking-widest mb-3 border-b border-white/10 pb-2 flex items-center gap-2 mt-4">
+                                <i data-lucide="x-circle" class="w-4 h-4"></i> No Asistirán (<span id="count-no">0</span>)
+                            </h5>
+                            <ul id="list-no" class="space-y-2.5 text-sm text-gray-300"></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VISTA: FORMULARIO DE EVENTOS -->
+            <section id="view-event-form" class="view-section hidden fade-in">
+                <form id="event-form" class="space-y-6 slide-up">
+                    <input type="hidden" id="ev-id">
+                    
+                    <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                        <h3 class="text-sm font-bold text-gray-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i data-lucide="calendar-plus" class="w-4 h-4"></i> Datos del Evento
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Nombre del Evento *</label>
+                                <input type="text" id="ev-nombre" required class="input-dark w-full px-4 py-3 rounded-xl text-sm" placeholder="Ej. Mega Meet 507">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Fecha y Hora de Inicio *</label>
+                                <input type="text" id="ev-fecha" required class="input-dark w-full px-4 py-3 rounded-xl text-sm text-gray-200" placeholder="Toca para seleccionar">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Punto de Encuentro *</label>
+                                <div class="relative">
+                                    <i data-lucide="map-pin" class="absolute left-4 top-3.5 w-4 h-4 text-red-500 pointer-events-none"></i>
+                                    <input type="text" id="ev-punto" required class="input-dark w-full px-4 py-3 pl-10 rounded-xl text-sm" placeholder="Ej. Mirador de Amador">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Ruta (Link de Waze o Maps) *</label>
+                                <div class="relative">
+                                    <i data-lucide="navigation" class="absolute left-4 top-3.5 w-4 h-4 text-blue-400 pointer-events-none"></i>
+                                    <input type="url" id="ev-ruta" required class="input-dark w-full px-4 py-3 pl-10 rounded-xl text-sm" placeholder="https://waze.com/... o https://maps.app.goo.gl/...">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-200 mb-1 ml-1">Detalles e Instrucciones</label>
+                                <textarea id="ev-detalles" class="input-dark w-full px-4 py-3 rounded-xl text-sm h-24 resize-none" placeholder="Cover, reglas, dress code, premios..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                        <h3 class="text-sm font-bold text-gray-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i data-lucide="image" class="w-4 h-4"></i> Flyer / Imagen
+                        </h3>
+                        <div class="relative">
+                            <input type="file" id="ev-foto" accept="image/*" class="hidden" onchange="previewImage(this, 'ev-preview')">
+                            <label for="ev-foto" class="input-dark border-dashed flex flex-col items-center justify-center h-32 rounded-xl cursor-pointer hover:bg-gray-800 transition-all duration-200 active:scale-95 overflow-hidden">
+                                <div id="ev-placeholder" class="flex flex-col items-center text-gray-500 pointer-events-none">
+                                    <i data-lucide="upload-cloud" class="w-6 h-6 mb-2"></i>
+                                    <span class="text-xs font-semibold">Subir Flyer</span>
+                                </div>
+                                <img id="ev-preview" class="w-full h-full object-cover hidden" src="" alt="Preview">
+                            </label>
+                            <button type="button" id="ev-remove" onclick="removeImage('ev-foto', 'ev-preview', 'ev-placeholder')" class="hidden absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 shadow-lg active:scale-90 transition">
+                                <i data-lucide="x" class="w-3 h-3 pointer-events-none"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="button" id="btn-cancel-ev-create" onclick="navTo('events')" class="w-1/3 bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-all duration-200 active:scale-95 flex justify-center items-center text-[15px]">
+                            Cancelar
+                        </button>
+                        <button type="button" id="btn-cancel-ev-edit" onclick="cancelEditEvent()" class="hidden w-1/3 bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-all duration-200 active:scale-95 flex justify-center items-center text-[15px]">
+                            Cancelar
+                        </button>
+                        <button type="submit" id="btn-save-event" class="w-2/3 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-[0_4px_15px_rgba(220,38,38,0.4)] flex justify-center items-center gap-2 active:scale-95 text-[15px]">
+                            <i data-lucide="calendar-check" class="w-4 h-4 pointer-events-none"></i>
+                            Guardar Evento
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- VISTA: SISTEMA / USUARIOS -->
+            <section id="view-users" class="view-section hidden fade-in">
+                <div class="glass-card p-6 rounded-[2rem] shadow-2xl mb-8 slide-up">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-blue-500/10 p-2 rounded-lg">
+                            <i data-lucide="user-plus" class="w-6 h-6 text-blue-400"></i>
+                        </div>
+                        <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Registrar / Actualizar Usuario</h3>
+                    </div>
+
+                    <form id="user-form" class="space-y-5">
+                        <input type="hidden" id="user-id">
+                        <div class="grid grid-cols-1 gap-5">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Nombre Completo</label>
+                                <input type="text" id="user-nombre" required class="input-dark w-full px-4 py-3 rounded-xl text-sm" placeholder="Ej. Juan Pérez">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Correo Electrónico</label>
+                                <input type="email" id="user-email" required class="input-dark w-full px-4 py-3 rounded-xl text-sm" placeholder="correo@ejemplo.com">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Contraseña</label>
+                                <div class="relative">
+                                    <input type="password" id="sys-user-pass" required class="input-dark w-full px-4 py-3 pl-4 pr-10 rounded-xl text-sm" placeholder="••••••••">
+                                    <button type="button" onclick="togglePass('sys-user-pass')" class="absolute right-4 top-3.5 text-gray-400 hover:text-white transition active:scale-90">
+                                        <i data-lucide="eye" class="w-4 h-4" id="sys-user-pass-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Rol del Sistema</label>
+                                <select id="user-rol" required class="input-dark w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                                    <option value="Usuario">Usuario</option>
+                                    <option value="Supervisor">Supervisor</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" id="btn-save-user" class="w-full bg-[#0f172a] hover:bg-[#1e293b] text-white font-bold py-4 rounded-2xl flex justify-center items-center gap-3 mt-4 transition shadow-lg border border-white/5 active:scale-95">
+                            <i data-lucide="user-check" class="w-5 h-5"></i>
+                            <span class="uppercase tracking-widest text-xs">Registrar / Actualizar</span>
+                        </button>
+                        <button type="button" id="btn-cancel-user" onclick="resetUserForm()" class="hidden w-full text-gray-500 text-xs font-bold uppercase mt-2 transition active:scale-95">Cancelar Edición</button>
+                    </form>
+                </div>
+
+                <div class="glass-card rounded-[1.5rem] overflow-hidden slide-up" style="animation-delay: 0.2s">
+                    <div class="p-5 border-b border-white/5">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-tight">Directorio de Personal</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-white/5 text-[10px] uppercase font-bold text-gray-400">
+                                <tr>
+                                    <th class="px-5 py-4">Usuario</th>
+                                    <th class="px-5 py-4">Rol</th>
+                                    <th class="px-5 py-4 text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-table-body" class="text-xs divide-y divide-white/5">
+                                <!-- Filas via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <nav id="bottom-nav" class="glass fixed bottom-0 w-full z-40 rounded-t-3xl border-t border-gray-800 flex justify-around items-center h-16 hidden px-1">
+            <button onclick="navTo('home')" class="nav-btn flex flex-col items-center p-1 text-red-500 transition-all duration-200 active:scale-90 w-14" id="nav-home">
+                <i data-lucide="home" class="w-5 h-5 mb-1 pointer-events-none"></i>
+                <span class="text-[8px] font-bold pointer-events-none">Inicio</span>
+            </button>
+            <button onclick="navTo('members')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-members">
+                <i data-lucide="users" class="w-5 h-5 mb-1 pointer-events-none"></i>
+                <span class="text-[8px] font-bold pointer-events-none">Miembros</span>
+            </button>
+            
+            <!-- Botón Central Flotante -->
+            <div class="relative -top-5 mx-1">
+                <button onclick="navTo('status')" id="nav-status" class="nav-btn bg-gradient-to-r from-red-600 to-red-800 text-white rounded-full p-3 shadow-[0_4px_20px_rgba(220,38,38,0.5)] border-4 border-[#0a0a0a] transition-transform duration-200 active:scale-90">
+                    <i data-lucide="plus" class="w-6 h-6 pointer-events-none"></i>
+                </button>
+            </div>
+
+            <button onclick="navTo('events')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-events">
+                <i data-lucide="calendar" class="w-5 h-5 mb-1 pointer-events-none"></i>
+                <span class="text-[8px] font-bold pointer-events-none">Eventos</span>
+            </button>
+            <button onclick="navTo('birthdays')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-birthdays">
+                <i data-lucide="gift" class="w-5 h-5 mb-1 pointer-events-none"></i>
+                <span class="text-[8px] font-bold pointer-events-none">Cumpleaños</span>
+            </button>
+            <button onclick="navTo('users')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-users">
+                <i data-lucide="settings" class="w-5 h-5 mb-1 pointer-events-none"></i>
+                <span class="text-[8px] font-bold pointer-events-none">Sistema</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Modal Visor (Galería interactiva) -->
+    <div id="image-modal" class="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm hidden flex-col justify-center items-center opacity-0 transition-opacity duration-300">
+        <button onclick="closeModal()" class="absolute top-6 right-6 p-2 bg-gray-800/50 rounded-full text-white hover:bg-gray-700 transition-all duration-200 active:scale-90 z-50">
+            <i data-lucide="x" class="w-8 h-8 pointer-events-none"></i>
+        </button>
+        
+        <div class="relative flex items-center justify-center w-full max-w-[95%]">
+            <button id="gallery-prev" onclick="galleryMove(-1)" class="hidden absolute left-0 p-2 bg-black/50 hover:bg-black/80 rounded-full text-white transition-all active:scale-90 z-40">
+                <i data-lucide="chevron-left" class="w-8 h-8 pointer-events-none"></i>
+            </button>
+            
+            <img id="modal-img" src="" class="max-h-[80vh] object-contain rounded-xl shadow-2xl transition-transform duration-300 transform scale-95" alt="Vista ampliada">
+            
+            <button id="gallery-next" onclick="galleryMove(1)" class="hidden absolute right-0 p-2 bg-black/50 hover:bg-black/80 rounded-full text-white transition-all active:scale-90 z-40">
+                <i data-lucide="chevron-right" class="w-8 h-8 pointer-events-none"></i>
+            </button>
+        </div>
+        
+        <p id="modal-caption" class="text-white mt-4 font-semibold tracking-wide text-center px-4"></p>
+    </div>
+
+    <!-- Modal de Confirmación para Eliminar -->
+    <div id="confirm-modal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm hidden flex-col justify-center items-center opacity-0 transition-opacity duration-300">
+        <div class="glass-card p-6 rounded-3xl max-w-sm w-full mx-4 text-center transform scale-95 transition-transform duration-300 border border-red-900/50" id="confirm-modal-content">
+            <div class="w-16 h-16 mx-auto bg-red-500/10 rounded-full flex items-center justify-center mb-4 border border-red-500/20">
+                <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+            </div>
+            <h3 class="text-lg font-black text-white mb-2 uppercase tracking-wide" id="confirm-title">¿Estás seguro?</h3>
+            <p class="text-xs text-gray-400 mb-6" id="confirm-msg">Esta acción no se puede deshacer.</p>
+            <div class="flex gap-3">
+                <button id="btn-confirm-cancel" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold py-3.5 rounded-xl transition-all active:scale-95 uppercase tracking-widest">Cancelar</button>
+                <button id="btn-confirm-ok" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-3.5 rounded-xl transition-all active:scale-95 shadow-[0_4px_15px_rgba(220,38,38,0.4)] uppercase tracking-widest">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-24 left-4 right-4 z-[150] glass-card rounded-xl p-4 flex items-center shadow-2xl opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="toast-icon-container" class="bg-green-500/20 p-2 rounded-full mr-3 text-green-500">
+            <i data-lucide="check-circle" class="w-6 h-6"></i>
+        </div>
+        <div>
+            <h4 class="font-bold text-sm text-white uppercase tracking-wider" id="toast-title">¡Éxito!</h4>
+            <p id="toast-msg" class="text-xs text-gray-300"></p>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let members = [], events = [], users = [];
+        let base64Images = { img1: null, img2: null, evImg: null, statusImg: null, fotoPerfil: null };
+        let editMode = false;
+        let editEventMode = false;
+        
+        // Galería del Modal
+        let galleryImages = [];
+        let galleryIndex = 0;
+        let galleryCaption = "";
+        
+        let activeStatuses = [];
+        let statusInterval = null;
+        let currentStatusIndex = 0;
+        let statusCountdownInterval = null;
+        let asistenciasTotales = [];
+        
+        let currentUser = JSON.parse(localStorage.getItem('emzoom_user')) || null;
+        let isLoginMode = true;
+
+        const supabaseUrl = 'https://bcbbyfogofovgiesatuf.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYmJ5Zm9nb2ZvdmdpZXNhdHVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MTI3MzUsImV4cCI6MjA5NDE4ODczNX0.j08eQV4p5TIA4NsK7Lr7vdxgQ8OqBUb-8Xr6ZifHL_Y';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const CACHE_KEY = 'emzoom_data_cache';
+        const CACHE_TIME_KEY = 'emzoom_data_time';
+        const CACHE_TTL = 5 * 60 * 1000; // 5 Minutos
+
+        async function loadData(forceRefresh = false) {
+            try {
+                const now = Date.now();
+                const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+                const cachedData = localStorage.getItem(CACHE_KEY);
+
+                if (!forceRefresh && cachedTime && cachedData && (now - parseInt(cachedTime)) < CACHE_TTL) {
+                    const parsedData = JSON.parse(cachedData);
+                    members = parsedData.members || [];
+                    events = parsedData.events || [];
+                    users = parsedData.users || [];
+                    activeStatuses = parsedData.activeStatuses || [];
+                    asistenciasTotales = parsedData.asistenciasTotales || [];
+
+                    startStatusRotation();
+                    document.getElementById('home-member-count').innerText = `${members.length} registrados`;
+                    document.getElementById('home-events-count').innerText = `${events.length} próximos`;
+                    updateHomeRegisterButton();
+                    updateUIPermissions();
+                    
+                    if (!document.getElementById('view-members').classList.contains('hidden')) renderMembers();
+                    if (!document.getElementById('view-events').classList.contains('hidden')) renderEvents();
+                    if (!document.getElementById('view-users').classList.contains('hidden')) renderUsers();
+                    return;
+                }
+
+                // Si no hay caché válido, busca en Supabase
+                const limiteHoras = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+                const [m, e, u, st, ast] = await Promise.all([
+                    supabaseClient.from('miembros').select('*').order('fecha_registro', { ascending: false }),
+                    supabaseClient.from('eventos').select('*').order('fecha', { ascending: true }),
+                    supabaseClient.from('usuarios_web').select('*'),
+                    supabaseClient.from('estados').select('*').gte('created_at', limiteHoras).order('created_at', { ascending: false }),
+                    supabaseClient.from('asistencias_eventos').select('usuario_nombre').eq('asistencia_verificada', true)
+                ]);
+                
+                members = m.data || [];
+                events = e.data || [];
+                users = u.data || [];
+                activeStatuses = st.data || [];
+                asistenciasTotales = ast.data || [];
+
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ members, events, users, activeStatuses, asistenciasTotales }));
+                localStorage.setItem(CACHE_TIME_KEY, now.toString());
+                
+                startStatusRotation();
+                
+                document.getElementById('home-member-count').innerText = `${members.length} registrados`;
+                document.getElementById('home-events-count').innerText = `${events.length} próximos`;
+                
+                const bdaysCount = members.filter(m => m.fecha_nac).length;
+                const bdEl = document.getElementById('home-birthdays-count');
+                if (bdEl) bdEl.innerText = `${bdaysCount} registrados`;
+                
+                updateHomeRegisterButton();
+                updateUIPermissions();
+                
+                if (!document.getElementById('view-members').classList.contains('hidden')) renderMembers();
+                if (!document.getElementById('view-events').classList.contains('hidden')) renderEvents();
+                if (!document.getElementById('view-birthdays').classList.contains('hidden')) renderBirthdays();
+                if (!document.getElementById('view-users').classList.contains('hidden')) renderUsers();
+            } catch (err) {
+                console.error("Error cargando datos:", err);
+            }
+        }
+
+        function updateUIPermissions() {
+            const isAdmin = currentUser && (currentUser.rol === 'Admin' || currentUser.rol === 'Supervisor');
+            
+            const adminCard = document.getElementById('admin-home-card');
+            if (adminCard) {
+                if (isAdmin) adminCard.classList.remove('hidden');
+                else adminCard.classList.add('hidden');
+            }
+
+            const navUsers = document.getElementById('nav-users');
+            if (navUsers) {
+                if (isAdmin) navUsers.classList.remove('hidden');
+                else navUsers.classList.add('hidden');
+            }
+
+            const btnCreateEvent = document.getElementById('btn-create-event');
+            if (btnCreateEvent) {
+                if (isAdmin) btnCreateEvent.classList.remove('hidden');
+                else btnCreateEvent.classList.add('hidden');
+            }
+        }
+
+        function getMyMemberId() {
+            if (!currentUser) return null;
+            let id = localStorage.getItem('my_member_id_' + currentUser.id);
+            if (id && members.find(m => m.id === id)) return id;
+            
+            let matched = members.find(m => (m.nombre || "").toLowerCase() === currentUser.nombre_completo.toLowerCase());
+            if (matched) {
+                localStorage.setItem('my_member_id_' + currentUser.id, matched.id);
+                return matched.id;
+            }
+            return null;
+        }
+
+        function updateHomeRegisterButton() {
+            const btnText = document.getElementById('text-home-register');
+            const btnIcon = document.getElementById('icon-home-register');
+            if (!btnText || !btnIcon) return;
+            
+            const myId = getMyMemberId();
+            if (myId) {
+                btnText.innerText = 'Mi Perfil / Editar Auto';
+                btnIcon.setAttribute('data-lucide', 'user');
+            } else {
+                btnText.innerText = 'Registrar Mi Auto';
+                btnIcon.setAttribute('data-lucide', 'plus-circle');
+            }
+            lucide.createIcons();
+        }
+
+        function handleHomeRegisterClick() {
+            const myId = getMyMemberId();
+            if (myId) {
+                editMember(myId);
+            } else {
+                cancelEdit(); 
+                navTo('register');
+            }
+        }
+
+        function startStatusRotation() {
+            if (statusInterval) clearInterval(statusInterval);
+            
+            if (activeStatuses.length === 0) {
+                renderStatus(null);
+                return;
+            }
+
+            // Mostrar el primer estado
+            currentStatusIndex = 0;
+            renderStatus(activeStatuses[currentStatusIndex]);
+
+            // Si hay más de uno, rotar automáticamente
+            if (activeStatuses.length > 1) {
+                statusInterval = setInterval(() => {
+                    const bannerImg = document.getElementById('status-banner-img');
+                    const textCont = document.getElementById('status-text-container');
+                    
+                    // Efecto de desvanecimiento para salir
+                    bannerImg.style.opacity = '0';
+                    textCont.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        currentStatusIndex = (currentStatusIndex + 1) % activeStatuses.length;
+                        renderStatus(activeStatuses[currentStatusIndex]);
+                        
+                        // Efecto de aparición al cambiar
+                        bannerImg.style.opacity = '1';
+                        textCont.style.opacity = '1';
+                    }, 500); // Se da medio segundo para aplicar el fade out
+                }, 5000); // Cambia el estado cada 5 segundos
+            }
+        }
+
+        function renderStatus(status) {
+            const bannerImg = document.getElementById('status-banner-img');
+            const bannerPl = document.getElementById('status-banner-placeholder');
+            const defaultTitle = document.getElementById('status-default-title');
+            const textCont = document.getElementById('status-text-container');
+            const textEl = document.getElementById('status-text');
+            const authorEl = document.getElementById('status-author');
+            const carInfoEl = document.getElementById('status-car-info');
+
+            if (status && status.imagen) {
+                bannerImg.src = status.imagen;
+                bannerImg.classList.remove('hidden');
+                bannerPl.classList.add('hidden');
+                defaultTitle.classList.add('hidden');
+                
+                let displayTexto = status.texto;
+                let displayNombre = '';
+                let displayCarInfo = '';
+                
+                if (status.texto) {
+                    try {
+                        const data = JSON.parse(status.texto);
+                        displayTexto = data.texto;
+                        displayNombre = data.nombre;
+                        const modelFullNames = { 'GB': 'GAC Emzoom GB', 'GL': 'GAC Emzoom GL', 'GT': 'GAC Emzoom GT', 'R-Style': 'GAC Emzoom R-Style' };
+                        const fullModelName = modelFullNames[data.modelo] || data.modelo;
+                        displayCarInfo = `${fullModelName} • ${data.provincia}`;
+                    } catch (e) {
+                        displayTexto = status.texto;
+                    }
+                }
+
+                if (displayTexto || displayNombre) {
+                    textCont.classList.remove('hidden');
+                    
+                    if (displayNombre) {
+                        authorEl.innerText = displayNombre;
+                        authorEl.classList.remove('hidden');
+                        carInfoEl.innerText = displayCarInfo;
+                        carInfoEl.classList.remove('hidden');
+                    } else {
+                        authorEl.classList.add('hidden');
+                        carInfoEl.classList.add('hidden');
+                    }
+                    
+                    if (displayTexto) {
+                        textEl.innerText = displayTexto;
+                        textEl.classList.remove('hidden');
+                    } else {
+                        textEl.classList.add('hidden');
+                    }
+                } else {
+                    textCont.classList.add('hidden');
+                }
+            } else {
+                bannerImg.classList.add('hidden');
+                bannerPl.classList.remove('hidden');
+                defaultTitle.classList.remove('hidden');
+                textCont.classList.add('hidden');
+            }
+        }
+
+        function openCurrentStatus() {
+            if (!activeStatuses || activeStatuses.length === 0) return;
+            const status = activeStatuses[currentStatusIndex];
+            if (!status || !status.imagen) return;
+            
+            let displayTexto = '';
+            let displayNombre = '';
+            
+            if (status.texto) {
+                try {
+                    const data = JSON.parse(status.texto);
+                    displayTexto = data.texto || '';
+                    displayNombre = data.nombre || '';
+                } catch (e) {
+                    displayTexto = status.texto;
+                }
+            }
+            
+            let caption = displayNombre ? `${displayNombre} ${displayTexto ? ' - ' + displayTexto : ''}` : displayTexto;
+            openGallery(status.imagen, null, caption, 0);
+        }
+
+        const techInfo = {
+            'GB': '<strong class="text-white text-sm">Versión GB:</strong><br>Versión base. Pantalla 10.25", Apple CarPlay/Android Auto inalámbrico, luces LED, sensores traseros y cámara de reversa.',
+            'GL': '<strong class="text-white text-sm">Versión GL:</strong><br>Añade pantalla 14.6", clúster digital, rines de 18", 6 airbags y acabados en piel sintética.',
+            'GT': '<strong class="text-white text-sm">Versión GT:</strong><br>Incluye techo panorámico, cámara 360°, monitoreo de punto ciego y compuerta eléctrica.',
+            'R-Style': '<strong class="text-white text-sm">Versión R-Style:</strong><br>Paquete aerodinámico deportivo, escape dual, kit de carrocería R-Style y detalles agresivos (Basado en GT).'
+        };
+
+        function updateTechInfo() {
+            const select = document.getElementById('modelo');
+            const infoBox = document.getElementById('tech-info-box');
+            if (techInfo[select.value]) {
+                infoBox.innerHTML = techInfo[select.value];
+                infoBox.classList.remove('hidden');
+                infoBox.classList.add('fade-in');
+            } else {
+                infoBox.classList.add('hidden');
+            }
+        }
+
+        function selectColor(btn) {
+            document.querySelectorAll('.color-swatch').forEach(swatch => {
+                swatch.classList.remove('ring-2', 'ring-red-500', 'ring-offset-2', 'ring-offset-[#1a1a1a]', 'scale-110');
+            });
+            btn.classList.add('ring-2', 'ring-red-500', 'ring-offset-2', 'ring-offset-[#1a1a1a]', 'scale-110');
+            const colorName = btn.getAttribute('data-color');
+            document.getElementById('color').value = colorName;
+            document.getElementById('color-name-display').innerText = colorName;
+        }
+
+        function resetColorSelection() {
+            document.querySelectorAll('.color-swatch').forEach(swatch => {
+                swatch.classList.remove('ring-2', 'ring-red-500', 'ring-offset-2', 'ring-offset-[#1a1a1a]', 'scale-110');
+            });
+            document.getElementById('color-name-display').innerText = '';
+            document.getElementById('color').value = '';
+        }
+
+        function togglePass(id) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById(id + '-icon');
+            if (el.type === 'password') {
+                el.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                el.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        window.addEventListener('load', async () => {
+            flatpickr("#fecha_nac", { locale: "es", dateFormat: "Y-m-d", altInput: true, altFormat: "d \\de F \\de Y", maxDate: "today", disableMobile: "true" });
+            flatpickr("#ev-fecha", { locale: "es", enableTime: true, dateFormat: "Y-m-d H:i", altInput: true, altFormat: "d \\de F \\de Y - h:i K", time_24hr: false, disableMobile: "true" });
+
+            if (currentUser) {
+                await loadData();
+            }
+            
+            setTimeout(() => {
+                const splash = document.getElementById('splash');
+                const app = document.getElementById('app');
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.classList.add('hidden');
+                    app.classList.remove('hidden');
+                    app.classList.add('flex');
+                    
+                    if (currentUser) {
+                        document.getElementById('bottom-nav').classList.remove('hidden');
+                        navTo('home');
+                    } else {
+                        navTo('login');
+                    }
+                    
+                    lucide.createIcons();
+                }, 700);
+            }, 1500);
+        });
+
+        function navTo(view) {
+            if (view === 'users' && (!currentUser || currentUser.rol === 'Usuario')) {
+                showToast('Acceso Denegado', 'No tienes permisos de administrador.');
+                return;
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.id !== 'nav-status') {
+                    btn.classList.remove('text-red-500');
+                    btn.classList.add('text-gray-500');
+                }
+            });
+            
+            const activeBtn = document.getElementById(`nav-${view}`);
+            if (activeBtn && activeBtn.id !== 'nav-status') {
+                activeBtn.classList.remove('text-gray-500');
+                activeBtn.classList.add('text-red-500');
+            }
+
+            document.querySelectorAll('.view-section').forEach(sec => {
+                sec.classList.add('hidden');
+                sec.classList.remove('flex');
+            });
+
+            const targetView = document.getElementById(`view-${view}`);
+            if(targetView) {
+                targetView.classList.remove('hidden');
+                if (view === 'login') targetView.classList.add('flex');
+            }
+            
+            const titles = {
+                'login': 'Autenticación',
+                'home': 'Inicio',
+                'status': 'Subir Estado',
+                'register': editMode ? 'Editar Auto' : 'Registrar Auto',
+                'members': 'Directorio 507',
+                'events': 'Eventos Oficiales',
+                'event-details': 'Reporte de Evento',
+                'birthdays': 'Cumpleaños',
+                'event-form': editEventMode ? 'Editar Evento' : 'Crear Evento',
+                'users': 'Gestión del Sistema'
+            };
+            if(titles[view]) document.getElementById('header-title').innerText = titles[view];
+
+            if (view === 'events') renderEvents();
+            if (view === 'status') checkStatusLimit();
+            if (view === 'members') renderMembers();
+            if (view === 'birthdays') renderBirthdays();
+            if (view === 'users') renderUsers();
+        }
+
+        function checkStatusLimit() {
+            if (!currentUser) return;
+            const lastPost = localStorage.getItem('last_status_post_' + currentUser.id);
+            const statusForm = document.getElementById('status-form');
+            const countdownContainer = document.getElementById('status-countdown-container');
+            const timerDisplay = document.getElementById('status-timer');
+
+            if (statusCountdownInterval) clearInterval(statusCountdownInterval);
+
+            if (lastPost) {
+                const timePassed = Date.now() - parseInt(lastPost);
+                const timeLimit = 24 * 60 * 60 * 1000;
+
+                if (timePassed < timeLimit) {
+                    statusForm.classList.add('hidden');
+                    countdownContainer.classList.remove('hidden');
+
+                    const updateTimer = () => {
+                        const diff = timeLimit - (Date.now() - parseInt(lastPost));
+                        if (diff <= 0) {
+                            clearInterval(statusCountdownInterval);
+                            statusForm.classList.remove('hidden');
+                            countdownContainer.classList.add('hidden');
+                            localStorage.removeItem('last_status_post_' + currentUser.id);
+                        } else {
+                            const h = Math.floor(diff / (1000 * 60 * 60));
+                            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            const s = Math.floor((diff % (1000 * 60)) / 1000);
+                            timerDisplay.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                        }
+                    };
+                    
+                    updateTimer();
+                    statusCountdownInterval = setInterval(updateTimer, 1000);
+                    return;
+                }
+            }
+            
+            statusForm.classList.remove('hidden');
+            countdownContainer.classList.add('hidden');
+        }
+
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    callback(dataUrl);
+                }
+            }
+        }
+
+        function previewImage(input, previewId) {
+            const file = input.files[0];
+            const placeholderId = previewId.replace('preview', 'placeholder');
+            const removeBtnId = previewId.replace('preview', 'remove');
+            
+            let imgKey = 'img1';
+            if (previewId === 'preview2') imgKey = 'img2';
+            if (previewId === 'ev-preview') imgKey = 'evImg';
+            if (previewId === 'status-preview') imgKey = 'statusImg';
+            if (previewId === 'preview-perfil') imgKey = 'fotoPerfil';
+
+            if (file) {
+                document.getElementById(placeholderId).innerHTML = '<i data-lucide="loader" class="w-6 h-6 mb-1 animate-spin text-red-500"></i><span class="text-xs font-semibold">Cargando...</span>';
+                lucide.createIcons();
+
+                compressImage(file, function(compressedStr) {
+                    const imgElement = document.getElementById(previewId);
+                    imgElement.src = compressedStr;
+                    imgElement.style.display = 'block';
+                    document.getElementById(placeholderId).style.display = 'none';
+                    
+                    if (previewId === 'preview-perfil') {
+                        document.getElementById(placeholderId).innerHTML = '<i data-lucide="camera" class="w-6 h-6 mb-1"></i><span class="text-[8px] font-bold uppercase tracking-widest">Perfil</span>';
+                    } else {
+                        document.getElementById(placeholderId).innerHTML = '<i data-lucide="upload-cloud" class="w-6 h-6 mb-1"></i><span class="text-xs font-semibold">Foto</span>';
+                    }
+
+                    document.getElementById(removeBtnId).classList.remove('hidden');
+                    base64Images[imgKey] = compressedStr;
+                    lucide.createIcons();
+                });
+            }
+        }
+
+        function removeImage(inputId, previewId, placeholderId) {
+            document.getElementById(inputId).value = '';
+            document.getElementById(previewId).src = '';
+            document.getElementById(previewId).style.display = 'none';
+            document.getElementById(placeholderId).style.display = 'flex';
+            document.getElementById(previewId.replace('preview', 'remove')).classList.add('hidden');
+            
+            let imgKey = 'img1';
+            if (previewId === 'preview2') imgKey = 'img2';
+            if (previewId === 'ev-preview') imgKey = 'evImg';
+            if (previewId === 'status-preview') imgKey = 'statusImg';
+            if (previewId === 'preview-perfil') imgKey = 'fotoPerfil';
+            base64Images[imgKey] = null;
+        }
+
+        // ==========================================
+        // CRUD MIEMBROS
+        // ==========================================
+
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const colorValue = document.getElementById('color').value;
+            if(!colorValue) {
+                showToast('Aviso', 'Por favor selecciona un color para el auto');
+                return;
+            }
+
+            const btnSave = document.getElementById('btn-save');
+            const originalBtnHtml = btnSave.innerHTML;
+            btnSave.innerHTML = '<i data-lucide="loader" class="w-5 h-5 pointer-events-none animate-spin"></i> Guardando...';
+            btnSave.disabled = true;
+            lucide.createIcons();
+
+            const id = document.getElementById('member-id').value;
+            const memberData = {
+                nombre: document.getElementById('nombre').value.trim(),
+                telefono: document.getElementById('telefono').value.trim(),
+                provincia: document.getElementById('provincia').value,
+                instagram: document.getElementById('instagram').value.trim() || null,
+                tiktok: document.getElementById('tiktok').value.trim() || null,
+                fecha_nac: document.getElementById('fecha_nac').value || null,
+                modelo: document.getElementById('modelo').value.trim(),
+                color: document.getElementById('color').value.trim(),
+                apodo: document.getElementById('apodo').value.trim() || 'Sin apodo',
+                foto1: base64Images.img1 || null,
+                foto2: base64Images.img2 || null,
+                foto_perfil: base64Images.fotoPerfil || null
+            };
+
+            if (editMode && id) {
+                const { error } = await supabaseClient.from('miembros').update(memberData).eq('id', id);
+                if (error) { showToast('Error', 'Error al actualizar registro'); console.error(error); } 
+                else {
+                    showToast('¡Éxito!', 'Registro actualizado exitosamente');
+                    cancelEdit(); await loadData(true); navTo('members');
+                }
+            } else {
+                const { data, error } = await supabaseClient.from('miembros').insert([memberData]).select();
+                if (error) { showToast('Error', 'Error al registrar en la nube'); console.error(error); } 
+                else {
+                    if (data && data.length > 0 && currentUser) {
+                        localStorage.setItem('my_member_id_' + currentUser.id, data[0].id);
+                    }
+                    showToast('¡Éxito!', '¡Auto registrado en el Club!');
+                    this.reset();
+                    document.getElementById('tech-info-box').classList.add('hidden'); 
+                    resetColorSelection(); resetImagePreviews();
+                    await loadData(true); navTo('members');
+                }
+            }
+
+            btnSave.innerHTML = originalBtnHtml;
+            btnSave.disabled = false;
+            lucide.createIcons();
+        });
+
+        function resetImagePreviews() {
+            removeImage('foto1', 'preview1', 'placeholder1');
+            removeImage('foto2', 'preview2', 'placeholder2');
+            removeImage('foto-perfil', 'preview-perfil', 'placeholder-perfil');
+            base64Images.img1 = null; base64Images.img2 = null; base64Images.fotoPerfil = null;
+        }
+
+        function editMember(id) {
+            const member = members.find(m => m.id === id);
+            if (!member) return;
+
+            editMode = true;
+            document.getElementById('member-id').value = member.id;
+            document.getElementById('nombre').value = member.nombre;
+            document.getElementById('telefono').value = member.telefono;
+            document.getElementById('provincia').value = member.provincia;
+            document.getElementById('instagram').value = member.instagram || '';
+            document.getElementById('tiktok').value = member.tiktok || '';
+            if(member.fecha_nac) document.getElementById('fecha_nac')._flatpickr.setDate(member.fecha_nac);
+            document.getElementById('modelo').value = member.modelo;
+            updateTechInfo(); 
+            
+            resetColorSelection();
+            const swatch = document.querySelector(`.color-swatch[data-color="${member.color}"]`);
+            if(swatch) selectColor(swatch);
+            
+            document.getElementById('apodo').value = member.apodo === 'Sin apodo' ? '' : member.apodo;
+
+            if(member.foto1) setPreviewFromBase64('preview1', member.foto1);
+            if(member.foto2) setPreviewFromBase64('preview2', member.foto2);
+            if(member.foto_perfil) setPreviewFromBase64('preview-perfil', member.foto_perfil);
+
+            document.getElementById('btn-save').innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4 pointer-events-none"></i> Actualizar en la Nube';
+            document.getElementById('btn-save').classList.replace('bg-red-600', 'bg-blue-600');
+            document.getElementById('btn-save').classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+            
+            lucide.createIcons();
+            navTo('register');
+        }
+
+        function setPreviewFromBase64(previewId, base64Str) {
+            const placeholderId = previewId.replace('preview', 'placeholder');
+            const removeBtnId = previewId.replace('preview', 'remove');
+            let imgKey = 'img1';
+            if (previewId === 'preview2') imgKey = 'img2';
+            if (previewId === 'preview-perfil') imgKey = 'fotoPerfil';
+            
+            const imgElement = document.getElementById(previewId);
+            imgElement.src = base64Str;
+            imgElement.style.display = 'block';
+            document.getElementById(placeholderId).style.display = 'none';
+            document.getElementById(removeBtnId).classList.remove('hidden');
+            base64Images[imgKey] = base64Str;
+        }
+
+        function cancelEdit() {
+            editMode = false;
+            document.getElementById('register-form').reset();
+            document.getElementById('member-id').value = '';
+            document.getElementById('tech-info-box').classList.add('hidden'); 
+            resetColorSelection(); resetImagePreviews();
+            
+            document.getElementById('btn-save').innerHTML = '<i data-lucide="save" class="w-4 h-4 pointer-events-none"></i> Guardar Registro';
+            document.getElementById('btn-save').classList.replace('bg-blue-600', 'bg-red-600');
+            document.getElementById('btn-save').classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
+            lucide.createIcons();
+            document.getElementById('header-title').innerText = 'Registrar Auto';
+        }
+
+        function customConfirm(title, msg, onConfirm) {
+            const modal = document.getElementById('confirm-modal');
+            const content = document.getElementById('confirm-modal-content');
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-msg').innerText = msg;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+
+            const btnOk = document.getElementById('btn-confirm-ok');
+            const btnCancel = document.getElementById('btn-confirm-cancel');
+
+            // Limpiar event listeners previos
+            const newBtnOk = btnOk.cloneNode(true);
+            const newBtnCancel = btnCancel.cloneNode(true);
+            btnOk.parentNode.replaceChild(newBtnOk, btnOk);
+            btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+
+            const cleanup = () => {
+                modal.classList.add('opacity-0');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            };
+
+            newBtnOk.addEventListener('click', () => { cleanup(); onConfirm(); });
+            newBtnCancel.addEventListener('click', () => { cleanup(); });
+        }
+
+        function confirmDelete(id) {
+            customConfirm('Eliminar Miembro', '¿Estás seguro de eliminar este registro de la nube?', async () => {
+                const { error } = await supabaseClient.from('miembros').delete().eq('id', id);
+                if (error) { showToast('Error', 'Error al eliminar registro', 'error'); console.error(error); } 
+                else { showToast('¡Aviso!', 'Registro eliminado de la Nube'); await loadData(true); }
+            });
+        }
+
+        function renderMembers(dataToRender = members) {
+            const listContainer = document.getElementById('members-list');
+            const emptyState = document.getElementById('empty-state');
+            
+            listContainer.innerHTML = '';
+
+            const myId = getMyMemberId();
+            const isAdmin = currentUser && (currentUser.rol === 'Admin' || currentUser.rol === 'Supervisor');
+
+            // Filtrar para ocultar el propio perfil del usuario en la lista general
+            const membersToDisplay = dataToRender.filter(member => member.id !== myId);
+
+            if (membersToDisplay.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+
+            membersToDisplay.forEach((member, index) => {
+                const modelFullNames = { 'GB': 'GAC Emzoom GB', 'GL': 'GAC Emzoom GL', 'GT': 'GAC Emzoom GT', 'R-Style': 'GAC Emzoom R-Style' };
+                const fullModelName = modelFullNames[member.modelo] || member.modelo;
+
+                const imgContainerClass = member.foto2 ? 'grid grid-cols-2 gap-3' : 'w-full';
+
+                const img1Str = member.foto1 ? `<img src="${member.foto1}" class="w-full h-36 object-cover rounded-xl cursor-pointer active:scale-95 transition-transform duration-200" onclick="openGallery('${member.foto1}', '${member.foto2 || ''}', '${fullModelName}', 0)">` : `<div class="w-full h-36 bg-gray-800 rounded-xl flex items-center justify-center"><i data-lucide="image-off" class="text-gray-600"></i></div>`;
+                const img2Str = member.foto2 ? `<img src="${member.foto2}" class="w-full h-36 object-cover rounded-xl cursor-pointer active:scale-95 transition-transform duration-200" onclick="openGallery('${member.foto1 || ''}', '${member.foto2}', '${fullModelName}', 1)">` : '';
+                
+                let socialsHtml = '';
+                if (member.instagram || member.tiktok) {
+                    socialsHtml = `<div class="flex items-center gap-4 mt-3 pt-3 border-t border-white/10">`;
+                    if (member.instagram) { socialsHtml += `<a href="${member.instagram}" target="_blank" class="flex items-center gap-1.5 text-xs font-semibold text-pink-400 hover:text-pink-300 transition-colors active:scale-95"><i data-lucide="instagram" class="w-4 h-4"></i> Instagram</a>`; }
+                    if (member.tiktok) { socialsHtml += `<a href="${member.tiktok}" target="_blank" class="flex items-center gap-1.5 text-xs font-semibold text-gray-300 hover:text-white transition-colors active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a5.64 5.64 0 0 1-1.04-.1z"/></svg> TikTok</a>`; }
+                    socialsHtml += `</div>`;
+                }
+                
+                const card = document.createElement('div');
+                card.className = `glass-card p-5 rounded-2xl slide-up mb-4 border-l-4 border-l-red-600`;
+                card.style.animationDelay = `${index * 0.05}s`;
+                
+                const canEdit = isAdmin || (myId === member.id);
+                const editButtonsHtml = canEdit ? `
+                    <div class="flex gap-2">
+                        <button onclick="editMember('${member.id}')" class="p-2 bg-gray-800 rounded-full text-blue-400 hover:bg-gray-700 transition-all active:scale-90"><i data-lucide="edit-2" class="w-4 h-4 pointer-events-none"></i></button>
+                        <button onclick="confirmDelete('${member.id}')" class="p-2 bg-gray-800 rounded-full text-red-500 hover:bg-gray-700 transition-all active:scale-90"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>
+                    </div>
+                ` : '';
+
+                let birthdayHtml = '';
+                if (member.fecha_nac) {
+                    const bDate = new Date(member.fecha_nac + 'T00:00:00');
+                    if (!isNaN(bDate.getTime())) {
+                        const bDay = bDate.getDate();
+                        const bMonth = bDate.toLocaleString('es-ES', {month: 'long'});
+                        birthdayHtml = `<div class="flex items-center gap-2"><i data-lucide="gift" class="w-4 h-4 text-pink-500"></i> <span class="capitalize">${bDay} de ${bMonth}</span></div>`;
+                    }
+                }
+                
+                const eventsAttended = asistenciasTotales.filter(a => a.usuario_nombre && a.usuario_nombre.toLowerCase() === member.nombre.toLowerCase()).length;
+                const attendanceHtml = `<div class="flex items-center gap-2"><i data-lucide="flag" class="w-4 h-4 text-gray-500"></i> <span><span class="text-green-400 font-bold text-[15px] animate-pulse drop-shadow-[0_0_8px_rgba(74,222,128,0.8)]">${eventsAttended}</span> MEET EMZOOM RSTYLE 507 TEAM</span></div>`;
+                
+                const carColors = {
+                    'Ivory White': '#F4F4F5',
+                    'Graphene Grey': '#4B5563',
+                    'Elegant Black': '#525252', /* Gris visible en fondo oscuro */
+                    'Superstar Silver': '#D1D5DB',
+                    'Salt Lake Blue': '#3b82f6',
+                    'Moonlight Grey': '#9CA3AF',
+                    'Galaxy Lilac': '#8B5CF6'
+                };
+                const ringColor = carColors[member.color] || '#eab308';
+                
+                const profileImgStr = member.foto_perfil 
+                    ? `<img src="${member.foto_perfil}" class="w-20 h-20 rounded-full object-cover border-4 border-[#151515] ring-2 shadow-2xl" style="--tw-ring-color: ${ringColor};">` 
+                    : `<div class="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center border-4 border-[#151515] ring-2 shadow-2xl" style="--tw-ring-color: ${ringColor};"><i data-lucide="user" class="text-gray-500 w-8 h-8"></i></div>`;
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-black text-lg uppercase tracking-wide flex items-center gap-2">${fullModelName}</h3>
+                            <div class="inline-flex items-center gap-2 text-red-400 text-sm font-semibold mt-1 transition-transform duration-300 hover:scale-110 origin-left cursor-default"><i data-lucide="car" class="w-4 h-4"></i> "${member.apodo}"</div>
+                        </div>
+                        ${editButtonsHtml}
+                    </div>
+                    
+                    <div class="relative mb-8 mt-2">
+                        <div class="${imgContainerClass}">${img1Str}${img2Str}</div>
+                        <div class="absolute -bottom-8 left-4 z-10">
+                            ${profileImgStr}
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-1 text-sm text-gray-300 bg-black/30 p-4 pt-10 rounded-xl border border-white/5 relative">
+                        <div class="mb-3 pl-1">
+                            <span class="font-black text-white text-lg tracking-wider uppercase drop-shadow-md">${member.nombre}</span>
+                        </div>
+                        ${birthdayHtml}
+                        <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-gray-500"></i> ${member.provincia}</div>
+                        <div class="flex items-center gap-2"><i data-lucide="palette" class="w-4 h-4 text-gray-500"></i> ${member.color}</div>
+                        ${attendanceHtml}
+                        ${socialsHtml}
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function filterMembers() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const provFilter = document.getElementById('filter-provincia').value;
+
+            const filtered = members.filter(m => {
+                const matchesSearch = (m.nombre || "").toLowerCase().includes(searchTerm) || 
+                                      (m.modelo || "").toLowerCase().includes(searchTerm) || 
+                                      (m.apodo || "").toLowerCase().includes(searchTerm);
+                const matchesProv = provFilter === 'all' || m.provincia === provFilter;
+                return matchesSearch && matchesProv;
+            });
+            renderMembers(filtered);
+        }
+
+        // ==========================================
+        // CALENDARIO DE CUMPLEAÑOS
+        // ==========================================
+
+        function getNextBirthday(dateString) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const dob = new Date(dateString + 'T00:00:00');
+            if (isNaN(dob.getTime())) return null;
+
+            let nextBday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+            if (nextBday < today) {
+                nextBday.setFullYear(today.getFullYear() + 1);
+            }
+            return nextBday;
+        }
+
+        function renderBirthdays() {
+            const listContainer = document.getElementById('birthdays-list');
+            const emptyState = document.getElementById('empty-birthdays-state');
+            
+            listContainer.innerHTML = '';
+
+            const membersWithBday = members.filter(m => m.fecha_nac).map(m => {
+                const nextBday = getNextBirthday(m.fecha_nac);
+                const diffDays = Math.ceil((nextBday - new Date().setHours(0,0,0,0)) / (1000 * 60 * 60 * 24));
+                return { ...m, nextBday, diffDays };
+            }).filter(m => m.nextBday !== null);
+
+            membersWithBday.sort((a, b) => a.nextBday - b.nextBday);
+
+            if (membersWithBday.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+
+            membersWithBday.forEach((m, index) => {
+                const dateObj = m.nextBday;
+                const month = dateObj.toLocaleString('es-ES', {month: 'short'});
+                const day = dateObj.getDate();
+                
+                let subtitle = '';
+                let borderClass = 'border-l-gray-600';
+                
+                if (m.diffDays === 0) {
+                    subtitle = '<span class="text-pink-500 font-bold">¡Es hoy! 🎉</span>';
+                    borderClass = 'border-l-pink-500 bg-pink-900/10 shadow-[0_4px_20px_rgba(236,72,153,0.15)]';
+                } else if (m.diffDays === 1) {
+                    subtitle = '<span class="text-yellow-400 font-semibold">Mañana</span>';
+                } else {
+                    subtitle = `Faltan ${m.diffDays} días`;
+                }
+
+                const imgStr = m.foto_perfil 
+                    ? `<img src="${m.foto_perfil}" class="w-14 h-14 rounded-full object-cover border-2 border-gray-700 flex-shrink-0 shadow-lg">` 
+                    : (m.foto1 
+                        ? `<img src="${m.foto1}" class="w-14 h-14 rounded-full object-cover border-2 border-gray-700 flex-shrink-0 shadow-lg">` 
+                        : `<div class="w-14 h-14 bg-gray-800 rounded-full flex items-center justify-center border-2 border-gray-700 flex-shrink-0"><i data-lucide="user" class="text-gray-500 w-6 h-6"></i></div>`);
+
+                const card = document.createElement('div');
+                card.className = `glass-card p-4 rounded-2xl flex items-center gap-4 slide-up border-l-4 ${borderClass}`;
+                card.style.animationDelay = `${index * 0.05}s`;
+                
+                card.innerHTML = `
+                    <div class="bg-[#121212] rounded-xl p-2 w-16 h-16 flex flex-col items-center justify-center shadow-inner border border-white/5 flex-shrink-0">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-red-500">${month}</span>
+                        <span class="text-xl font-black leading-none text-white my-0.5">${day}</span>
+                    </div>
+                    ${imgStr}
+                    <div class="flex-1 overflow-hidden pr-2">
+                        <h4 class="font-bold text-sm text-white truncate">${m.nombre}</h4>
+                        <p class="text-[10px] text-gray-400 truncate mb-1 uppercase tracking-wider flex items-center gap-1"><i data-lucide="car" class="w-3 h-3 text-red-400"></i> "${m.apodo}"</p>
+                        <p class="text-[10px] uppercase tracking-wider">${subtitle}</p>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // ==========================================
+        // CRUD EVENTOS Y ASISTENCIA (RSVP)
+        // ==========================================
+
+        document.getElementById('event-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btnSave = document.getElementById('btn-save-event');
+            const originalBtnHtml = btnSave.innerHTML;
+            btnSave.innerHTML = '<i data-lucide="loader" class="animate-spin w-4 h-4 pointer-events-none"></i> Guardando...';
+            btnSave.disabled = true;
+            lucide.createIcons();
+            
+            const evId = document.getElementById('ev-id').value;
+            
+            const nuevoEvento = {
+                nombre: document.getElementById('ev-nombre').value.trim(),
+                fecha: document.getElementById('ev-fecha').value,
+                punto: document.getElementById('ev-punto').value.trim(),
+                ruta: document.getElementById('ev-ruta').value.trim(),
+                detalles: document.getElementById('ev-detalles').value.trim(),
+                imagen: base64Images.evImg || null
+            };
+            
+            if (editEventMode && evId) {
+                const { error } = await supabaseClient.from('eventos').update(nuevoEvento).eq('id', evId);
+                if (error) { showToast('Error', 'Error al actualizar evento'); console.error(error); }
+                else { showToast('¡Éxito!', 'Evento actualizado exitosamente'); cancelEditEvent(); await loadData(true); navTo('events'); }
+            } else {
+                const { error } = await supabaseClient.from('eventos').insert([nuevoEvento]);
+                if (error) { showToast('Error', 'Error al crear evento'); console.error(error); }
+                else { showToast('¡Éxito!', 'Evento creado exitosamente'); cancelEditEvent(); await loadData(true); navTo('events'); }
+            }
+            
+            btnSave.innerHTML = originalBtnHtml;
+            btnSave.disabled = false;
+            lucide.createIcons();
+        });
+
+        function cancelEditEvent() {
+            editEventMode = false;
+            document.getElementById('event-form').reset();
+            document.getElementById('ev-id').value = '';
+            removeImage('ev-foto', 'ev-preview', 'ev-placeholder');
+
+            const btnSave = document.getElementById('btn-save-event');
+            btnSave.innerHTML = '<i data-lucide="calendar-check" class="w-4 h-4 pointer-events-none"></i> Guardar Evento';
+            btnSave.classList.replace('bg-blue-600', 'bg-red-600');
+            btnSave.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
+
+            document.getElementById('btn-cancel-ev-create').classList.remove('hidden');
+            document.getElementById('btn-cancel-ev-edit').classList.add('hidden');
+            
+            lucide.createIcons();
+            document.getElementById('header-title').innerText = 'Crear Evento';
+            navTo('events');
+        }
+
+        function editEvent(id) {
+            const ev = events.find(e => e.id === id);
+            if (!ev) return;
+
+            editEventMode = true;
+            document.getElementById('ev-id').value = ev.id;
+            document.getElementById('ev-nombre').value = ev.nombre;
+            if(ev.fecha) document.getElementById('ev-fecha')._flatpickr.setDate(ev.fecha);
+            document.getElementById('ev-punto').value = ev.punto;
+            document.getElementById('ev-ruta').value = ev.ruta;
+            document.getElementById('ev-detalles').value = ev.detalles || '';
+
+            if (ev.imagen) {
+                const imgElement = document.getElementById('ev-preview');
+                imgElement.src = ev.imagen;
+                imgElement.style.display = 'block';
+                document.getElementById('ev-placeholder').style.display = 'none';
+                document.getElementById('ev-remove').classList.remove('hidden');
+                base64Images.evImg = ev.imagen;
+            } else {
+                removeImage('ev-foto', 'ev-preview', 'ev-placeholder');
+            }
+
+            const btnSave = document.getElementById('btn-save-event');
+            btnSave.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4 pointer-events-none"></i> Actualizar Evento';
+            btnSave.classList.replace('bg-red-600', 'bg-blue-600');
+            btnSave.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+            
+            document.getElementById('btn-cancel-ev-create').classList.add('hidden');
+            document.getElementById('btn-cancel-ev-edit').classList.remove('hidden');
+
+            lucide.createIcons();
+            navTo('event-form');
+        }
+
+        function confirmDeleteEvent(id) {
+            customConfirm('Eliminar Evento', '¿Estás seguro de eliminar este evento?', async () => {
+                const { error } = await supabaseClient.from('eventos').delete().eq('id', id);
+                if (error) { showToast('Error', 'No se pudo eliminar el evento', 'error'); console.error(error); }
+                else { showToast('Aviso', 'Evento eliminado'); await loadData(true); }
+            });
+        }
+
+        function renderEvents() {
+            const listContainer = document.getElementById('events-list');
+            const emptyState = document.getElementById('empty-events-state');
+            
+            listContainer.innerHTML = '';
+
+            if (events.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+
+            const canEditEvent = currentUser && (currentUser.rol === 'Admin' || currentUser.rol === 'Supervisor');
+
+            events.forEach((ev, index) => {
+                const fechaObj = new Date(ev.fecha);
+                const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' };
+                const fechaStr = fechaObj.toLocaleDateString('es-ES', opcionesFecha);
+                
+                const imgStr = ev.imagen 
+                    ? `<img src="${ev.imagen}" class="w-full h-48 object-cover cursor-pointer active:scale-95 transition-transform" onclick="openGallery('${ev.imagen}', null, '${ev.nombre}', 0)">` 
+                    : `<div class="w-full h-40 bg-gray-800 flex flex-col items-center justify-center"><i data-lucide="map" class="text-gray-600 w-12 h-12 mb-2"></i><span class="text-gray-500 text-xs font-bold uppercase tracking-wider">Ruta Oficial</span></div>`;
+                
+                // Lógica de Asistencia (RSVP)
+                let rsvpStatus = null;
+                if (currentUser) {
+                    rsvpStatus = localStorage.getItem('rsvp_' + currentUser.id + '_' + ev.id);
+                }
+                
+                let borderClass = 'border-gray-800 border';
+                if (rsvpStatus === 'yes') borderClass = 'border-green-500 border-2 shadow-[0_0_15px_rgba(34,197,94,0.2)]';
+                if (rsvpStatus === 'no') borderClass = 'border-red-500 border-2 shadow-[0_0_15px_rgba(239,68,68,0.2)]';
+
+                const card = document.createElement('div');
+                card.className = `glass-card rounded-2xl slide-up overflow-hidden mb-6 ${borderClass} transition-colors duration-300`;
+                card.style.animationDelay = `${index * 0.05}s`;
+                
+                const editButtonsHtml = canEditEvent ? `
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="editEvent('${ev.id}')" class="p-2 bg-gray-800 rounded-xl text-blue-400 hover:bg-gray-700 transition-all active:scale-90"><i data-lucide="edit-2" class="w-4 h-4 pointer-events-none"></i></button>
+                        <button onclick="confirmDeleteEvent('${ev.id}')" class="p-2 bg-gray-800 rounded-xl text-red-500 hover:bg-gray-700 transition-all active:scale-90"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>
+                    </div>
+                ` : '';
+
+                // RSVP para TODOS los usuarios que hayan iniciado sesión, desaparece si ya respondió (!rsvpStatus)
+                let rsvpHtml = '';
+                if (currentUser && !rsvpStatus) {
+                    rsvpHtml = `
+                        <div class="flex gap-3 mb-4 pt-3 border-t border-white/10">
+                            <button onclick="setRSVP('${ev.id}', 'yes')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 bg-gray-800 text-gray-400 hover:text-green-400">
+                                <i data-lucide="check-circle" class="w-4 h-4 pointer-events-none"></i> Acepto
+                            </button>
+                            <button onclick="setRSVP('${ev.id}', 'no')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 bg-gray-800 text-gray-400 hover:text-red-400">
+                                <i data-lucide="x-circle" class="w-4 h-4 pointer-events-none"></i> No podré ir
+                            </button>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    ${imgStr}
+                    <div class="p-5 relative">
+                        <div class="absolute -top-8 right-4 bg-red-600 text-white rounded-xl p-2 w-16 shadow-lg flex flex-col items-center justify-center border-4 border-[#121212]">
+                            <span class="text-[10px] font-bold uppercase tracking-widest">${fechaObj.toLocaleString('es-ES', {month: 'short'})}</span>
+                            <span class="text-xl font-black leading-none my-0.5">${fechaObj.getDate()}</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-start mb-2 pr-16">
+                            <div class="flex flex-wrap items-center gap-3">
+                                <h3 class="font-black text-xl uppercase tracking-wide text-white leading-tight">${ev.nombre}</h3>
+                                ${canEditEvent ? `
+                                <button onclick="viewEventDetails('${ev.id}', '${ev.nombre.replace(/'/g, "\\'")}')" class="bg-gray-800 border border-gray-600 hover:bg-gray-700 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5">
+                                    <i data-lucide="users" class="w-3 h-3 text-blue-400 pointer-events-none"></i> Ver Asistencia
+                                </button>
+                                <button onclick="showToast('Aviso', 'Evento Finalizado')" class="bg-purple-900/30 border border-purple-500/20 hover:bg-purple-900/50 text-purple-400 hover:text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5">
+                                    <i data-lucide="clipboard-check" class="w-3 h-3 pointer-events-none"></i> Finalizar Evento
+                                </button>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        ${editButtonsHtml}
+                        
+                        <div class="space-y-3 mb-5 text-sm text-gray-300">
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="clock" class="w-4 h-4 text-gray-500 mt-0.5 shrink-0"></i> 
+                                <span class="capitalize font-medium">${fechaStr}</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-red-500 mt-0.5 shrink-0"></i> 
+                                <span class="font-semibold text-white">${ev.punto}</span>
+                            </div>
+                            ${ev.detalles ? `
+                            <div class="flex items-start gap-2 bg-black/30 p-3 rounded-lg border border-white/5 mt-2">
+                                <i data-lucide="info" class="w-4 h-4 text-blue-400 mt-0.5 shrink-0"></i> 
+                                <p class="text-xs leading-relaxed text-gray-400">${ev.detalles}</p>
+                            </div>` : ''}
+                        </div>
+                        
+                        ${rsvpHtml}
+                        
+                        <a href="${ev.ruta}" target="_blank" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all duration-200 active:scale-95 flex justify-center items-center gap-2 border border-gray-600 shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
+                            <i data-lucide="navigation" class="w-4 h-4 text-blue-400"></i>
+                            Ver Ruta (Waze / Maps)
+                        </a>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        async function setRSVP(eventId, status) {
+            if (!currentUser) return;
+            // Guardar localmente para actualizar la UI al instante
+            localStorage.setItem('rsvp_' + currentUser.id + '_' + eventId, status);
+            renderEvents();
+            showToast('Procesando...', 'Sincronizando con la nube');
+
+            try {
+                // Borrar si existía uno anterior y guardar el nuevo
+                await supabaseClient.from('asistencias_eventos').delete().match({ evento_id: eventId, usuario_id: currentUser.id });
+                await supabaseClient.from('asistencias_eventos').insert([{
+                    evento_id: eventId,
+                    usuario_id: currentUser.id,
+                    usuario_nombre: currentUser.nombre_completo,
+                    estado: status
+                }]);
+                showToast('Asistencia', status === 'yes' ? 'Confirmaste tu asistencia' : 'Has declinado la invitación');
+                loadData(true);
+            } catch (err) {
+                console.error("Error al sincronizar RSVP", err);
+            }
+        }
+
+        // ==========================================
+        // VISTA: DETALLES DE EVENTO (LISTA Y EXCEL)
+        // ==========================================
+
+        let currentEventDetails = [];
+        let currentEventName = '';
+
+        async function viewEventDetails(eventId, eventName) {
+            currentEventName = eventName;
+            document.getElementById('detail-event-name').innerText = eventName;
+            navTo('event-details');
+            
+            const listYes = document.getElementById('list-yes');
+            const listNo = document.getElementById('list-no');
+            
+            listYes.innerHTML = '<li class="text-xs text-gray-500 flex items-center gap-2"><i data-lucide="loader" class="animate-spin w-3 h-3"></i> Cargando lista...</li>';
+            listNo.innerHTML = '<li class="text-xs text-gray-500 flex items-center gap-2"><i data-lucide="loader" class="animate-spin w-3 h-3"></i> Cargando lista...</li>';
+            lucide.createIcons();
+
+            const { data, error } = await supabaseClient.from('asistencias_eventos').select('*').eq('evento_id', eventId);
+            
+            // Enriquecer datos con modelo y provincia cruzando con el arreglo members
+            currentEventDetails = (data || []).map(u => {
+                const member = members.find(m => (m.nombre || "").toLowerCase() === u.usuario_nombre.toLowerCase());
+                const modelFullNames = { 'GB': 'GAC Emzoom GB', 'GL': 'GAC Emzoom GL', 'GT': 'GAC Emzoom GT', 'R-Style': 'GAC Emzoom R-Style' };
+                return {
+                    ...u,
+                    modelo: member ? (modelFullNames[member.modelo] || member.modelo) : 'No registrado',
+                    provincia: member ? member.provincia : 'No registrada'
+                };
+            });
+            
+            if (error || currentEventDetails.length === 0) {
+                listYes.innerHTML = '<li class="text-xs text-gray-500 italic">Nadie ha confirmado asistencia aún.</li>';
+                listNo.innerHTML = '<li class="text-xs text-gray-500 italic">Nadie ha declinado aún.</li>';
+                document.getElementById('count-yes').innerText = '0';
+                document.getElementById('count-no').innerText = '0';
+                return;
+            }
+
+            const yesUsers = currentEventDetails.filter(r => r.estado === 'yes');
+            const noUsers = currentEventDetails.filter(r => r.estado === 'no');
+
+            document.getElementById('count-yes').innerText = yesUsers.length;
+            document.getElementById('count-no').innerText = noUsers.length;
+
+            const renderUserLi = (u, color, isYesList) => `
+                <li class="bg-gray-800/50 p-3 rounded-lg border border-gray-700/50 flex justify-between items-center gap-2">
+                    <div class="flex flex-col gap-1.5 overflow-hidden">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-${color}-500 flex-shrink-0"></div>
+                            <span class="truncate font-bold text-white text-sm">${u.usuario_nombre}</span>
+                        </div>
+                        <div class="text-[10px] text-gray-400 pl-4 flex gap-4 truncate">
+                            <span class="flex items-center gap-1.5"><i data-lucide="car" class="w-3 h-3 text-red-400"></i> ${u.modelo}</span>
+                            <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3 h-3 text-gray-500"></i> ${u.provincia}</span>
+                        </div>
+                    </div>
+                    ${isYesList ? `
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <button onclick="verifyAttendance('${u.id}', true, '${u.evento_id}')" class="p-2 rounded-md transition-all active:scale-90 ${u.asistencia_verificada === true ? 'bg-green-600 text-white shadow-[0_0_10px_rgba(22,163,74,0.4)]' : 'bg-gray-700 text-gray-400 hover:text-green-400'}">
+                            <i data-lucide="check" class="w-4 h-4 pointer-events-none"></i>
+                        </button>
+                        <button onclick="verifyAttendance('${u.id}', false, '${u.evento_id}')" class="p-2 rounded-md transition-all active:scale-90 ${u.asistencia_verificada === false ? 'bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.4)]' : 'bg-gray-700 text-gray-400 hover:text-red-400'}">
+                            <i data-lucide="x" class="w-4 h-4 pointer-events-none"></i>
+                        </button>
+                    </div>
+                    ` : ''}
+                </li>
+            `;
+
+            listYes.innerHTML = yesUsers.length ? yesUsers.map(u => renderUserLi(u, 'green', true)).join('') : '<li class="text-xs text-gray-500 italic">Nadie ha confirmado asistencia aún.</li>';
+            
+            listNo.innerHTML = noUsers.length ? noUsers.map(u => renderUserLi(u, 'red', false)).join('') : '<li class="text-xs text-gray-500 italic">Nadie ha declinado aún.</li>';
+            
+            lucide.createIcons();
+        }
+
+        async function verifyAttendance(recordId, isVerified, eventId) {
+            try {
+                const { error } = await supabaseClient.from('asistencias_eventos')
+                    .update({ asistencia_verificada: isVerified })
+                    .eq('id', recordId);
+                
+                if (error) throw error;
+                
+                showToast('Verificación', isVerified ? 'Asistencia validada ✅' : 'Asistencia denegada ❌');
+                
+                // Recargar detalles y la data global para actualizar la bandera en perfiles
+                viewEventDetails(eventId, currentEventName);
+                loadData(true);
+            } catch (error) {
+                showToast('Error', 'No se pudo verificar la asistencia');
+                console.error(error);
+            }
+        }
+
+        function exportToExcel() {
+            if (!currentEventDetails || currentEventDetails.length === 0) {
+                showToast('Aviso', 'No hay datos de asistencia para exportar.');
+                return;
+            }
+
+            const dataToExport = currentEventDetails.map(r => ({
+                'Nombre del Usuario': r.usuario_nombre,
+                'Modelo del Auto': r.modelo,
+                'Provincia': r.provincia,
+                'Confirmó Asistencia': r.estado === 'yes' ? 'SÍ' : 'NO',
+                'Asistencia Verificada por Admin': r.asistencia_verificada ? 'SÍ ASISTIÓ' : 'NO ASISTIÓ / PENDIENTE',
+                'Fecha de Confirmación': new Date(r.created_at).toLocaleString('es-ES')
+            }));
+
+            // Ordenar para que los SÍ salgan primero
+            dataToExport.sort((a, b) => b['Confirmó Asistencia'].localeCompare(a['Confirmó Asistencia']));
+
+            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Asistencia");
+            
+            // Nombre de archivo limpio
+            const cleanName = currentEventName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'evento';
+            XLSX.writeFile(workbook, `Reporte_Asistencia_${cleanName}.xlsx`);
+        }
+
+        // ==========================================
+        // CRUD USUARIOS DEL SISTEMA
+        // ==========================================
+
+        function renderUsers() {
+            const body = document.getElementById('user-table-body');
+            body.innerHTML = users.length ? '' : '<tr><td colspan="3" class="p-6 text-center text-gray-500 uppercase text-xs font-bold tracking-widest">Sin personal registrado</td></tr>';
+            users.forEach(u => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-5 py-4 font-bold text-white uppercase text-xs">${u.nombre_completo}</td>
+                    <td class="px-5 py-4">
+                        <span class="px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider ${u.rol === 'Admin' ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}">${u.rol}</span>
+                    </td>
+                    <td class="px-5 py-4 text-right">
+                        <button onclick="editUser('${u.id}')" class="text-blue-400 hover:text-white transition active:scale-90 mr-3"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                        <button onclick="deleteUser('${u.id}')" class="text-red-500 hover:text-white transition active:scale-90"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
+            lucide.createIcons();
+        }
+
+        document.getElementById('user-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = document.getElementById('user-id').value;
+            const data = {
+                nombre_completo: document.getElementById('user-nombre').value,
+                email: document.getElementById('user-email').value,
+                password: document.getElementById('user-pass').value,
+                rol: document.getElementById('user-rol').value
+            };
+            
+            const btnSave = document.getElementById('btn-save-user');
+            const originalBtnHtml = btnSave.innerHTML;
+            btnSave.innerHTML = '<i data-lucide="loader" class="animate-spin w-5 h-5"></i> Procesando...';
+            btnSave.disabled = true;
+            lucide.createIcons();
+
+            const { error } = id ? await supabaseClient.from('usuarios_web').update(data).eq('id', id) : await supabaseClient.from('usuarios_web').insert([data]);
+            
+            if (error) { showToast('Error', 'Error al procesar el usuario'); console.error(error); }
+            else { showToast('¡Éxito!', 'Usuario guardado exitosamente'); resetUserForm(); await loadData(true); }
+            
+            btnSave.innerHTML = originalBtnHtml;
+            btnSave.disabled = false;
+            lucide.createIcons();
+        });
+
+        function editUser(id) {
+            const u = users.find(x => x.id === id);
+            if(!u) return;
+            document.getElementById('user-id').value = u.id;
+            document.getElementById('user-nombre').value = u.nombre_completo;
+            document.getElementById('user-email').value = u.email;
+            document.getElementById('user-pass').value = u.password;
+            document.getElementById('user-rol').value = u.rol;
+            document.getElementById('btn-cancel-user').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteUser(id) {
+            customConfirm('Eliminar Usuario', '¿Eliminar definitivamente este usuario del sistema?', async () => {
+                const { error } = await supabaseClient.from('usuarios_web').delete().eq('id', id);
+                if (error) { showToast('Error', 'No se pudo eliminar el usuario', 'error'); }
+                else { showToast('Aviso', 'Usuario eliminado'); await loadData(true); }
+            });
+        }
+
+        function resetUserForm() {
+            document.getElementById('user-form').reset();
+            document.getElementById('user-id').value = '';
+            document.getElementById('btn-cancel-user').classList.add('hidden');
+        }
+
+        // ==========================================
+        // COMPONENTES GLOBALES (Modal & Toasts)
+        // ==========================================
+
+        function showToast(title, msg, type = 'success') {
+            const t = document.getElementById('toast');
+            const iconContainer = document.getElementById('toast-icon-container');
+            
+            if (type === 'error') {
+                iconContainer.className = 'bg-red-500/20 p-2 rounded-full mr-3 text-red-500';
+                iconContainer.innerHTML = '<i data-lucide="alert-circle" class="w-6 h-6"></i>';
+            } else {
+                iconContainer.className = 'bg-green-500/20 p-2 rounded-full mr-3 text-green-500';
+                iconContainer.innerHTML = '<i data-lucide="check-circle" class="w-6 h-6"></i>';
+            }
+            
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-msg').innerText = msg;
+            
+            lucide.createIcons();
+
+            t.classList.remove('opacity-0', 'pointer-events-none');
+            t.classList.add('opacity-100');
+            setTimeout(() => {
+                t.classList.add('opacity-0', 'pointer-events-none');
+                t.classList.remove('opacity-100');
+            }, 3000);
+        }
+
+        function openGallery(img1, img2, caption, index) {
+            galleryImages = [];
+            if (img1 && img1 !== 'null') galleryImages.push(img1);
+            if (img2 && img2 !== 'null') galleryImages.push(img2);
+            
+            galleryIndex = index;
+            if (galleryIndex >= galleryImages.length) galleryIndex = galleryImages.length - 1; 
+            
+            galleryCaption = caption;
+            updateGalleryUI();
+            
+            const m = document.getElementById('image-modal');
+            m.classList.remove('hidden'); 
+            m.classList.add('flex');
+            setTimeout(() => { 
+                m.classList.remove('opacity-0'); 
+                document.getElementById('modal-img').classList.remove('scale-95'); 
+                document.getElementById('modal-img').classList.add('scale-100'); 
+            }, 10);
+        }
+
+        function updateGalleryUI() {
+            document.getElementById('modal-img').src = galleryImages[galleryIndex];
+            document.getElementById('modal-caption').innerText = galleryCaption + (galleryImages.length > 1 ? ` (${galleryIndex + 1}/${galleryImages.length})` : '');
+            
+            if (galleryImages.length > 1) {
+                document.getElementById('gallery-prev').classList.remove('hidden');
+                document.getElementById('gallery-next').classList.remove('hidden');
+            } else {
+                document.getElementById('gallery-prev').classList.add('hidden');
+                document.getElementById('gallery-next').classList.add('hidden');
+            }
+        }
+
+        function galleryMove(dir) {
+            galleryIndex += dir;
+            if (galleryIndex < 0) galleryIndex = galleryImages.length - 1;
+            if (galleryIndex >= galleryImages.length) galleryIndex = 0;
+            updateGalleryUI();
+        }
+
+        function closeModal() {
+            const m = document.getElementById('image-modal');
+            const img = document.getElementById('modal-img');
+            m.classList.add('opacity-0');
+            img.classList.remove('scale-100');
+            img.classList.add('scale-95');
+            setTimeout(() => { 
+                m.classList.add('hidden'); 
+                m.classList.remove('flex'); 
+            }, 300);
+        }
+
+        // ==========================================
+        // SISTEMA DE AUTENTICACIÓN
+        // ==========================================
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? 'Iniciar Sesión' : 'Crear Cuenta';
+            document.getElementById('auth-subtitle').innerText = isLoginMode ? 'Bienvenido de vuelta al Club' : 'Únete al equipo más grande de Panamá';
+            document.getElementById('btn-auth').innerHTML = isLoginMode ? '<i data-lucide="log-in" class="w-5 h-5 pointer-events-none"></i> Iniciar Sesión' : '<i data-lucide="user-plus" class="w-5 h-5 pointer-events-none"></i> Registrarse';
+            
+            const nameField = document.getElementById('auth-name-field');
+            const toggleText = document.getElementById('auth-toggle-text');
+            const backBtn = document.getElementById('btn-auth-back');
+            const authError = document.getElementById('auth-error');
+            
+            authError.classList.add('hidden'); // Ocultar error al cambiar modo
+            
+            if (isLoginMode) {
+                nameField.classList.add('hidden');
+                document.getElementById('auth-nombre').removeAttribute('required');
+                backBtn.classList.add('hidden');
+                toggleText.innerHTML = '¿No tienes cuenta? <button type="button" onclick="toggleAuthMode()" class="text-red-400 font-bold hover:underline transition">Regístrate aquí</button>';
+            } else {
+                nameField.classList.remove('hidden');
+                document.getElementById('auth-nombre').setAttribute('required', 'true');
+                backBtn.classList.remove('hidden');
+                toggleText.innerHTML = '¿Ya tienes cuenta? <button type="button" onclick="toggleAuthMode()" class="text-red-400 font-bold hover:underline transition">Inicia Sesión</button>';
+            }
+            lucide.createIcons();
+        }
+
+        document.getElementById('auth-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim();
+            const pass = document.getElementById('auth-pass').value.trim();
+            const authError = document.getElementById('auth-error');
+            
+            authError.classList.add('hidden'); // Reiniciar error
+            
+            const btn = document.getElementById('btn-auth');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader" class="animate-spin w-5 h-5"></i> Procesando...';
+            btn.disabled = true;
+
+            if (isLoginMode) {
+                const { data, error } = await supabaseClient
+                    .from('usuarios_web')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', pass)
+                    .single();
+
+                if (error || !data) {
+                    authError.innerText = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
+                    authError.classList.remove('hidden');
+                    showToast('Error', 'Credenciales incorrectas', 'error');
+                } else {
+                    currentUser = data;
+                    localStorage.setItem('emzoom_user', JSON.stringify(currentUser));
+                    document.getElementById('bottom-nav').classList.remove('hidden');
+                    setupLogoutBtn();
+                    await loadData(true);
+                    navTo('home');
+                    showToast('¡Bienvenido!', `Hola, ${currentUser.nombre_completo}`);
+                }
+            } else {
+                const nombre = document.getElementById('auth-nombre').value.trim();
+                const newUser = {
+                    nombre_completo: nombre,
+                    email: email,
+                    password: pass,
+                    rol: 'Usuario'
+                };
+
+                const { data, error } = await supabaseClient.from('usuarios_web').insert([newUser]).select().single();
+                
+                if (error) {
+                    authError.innerText = 'El correo ya está registrado o hubo un fallo de conexión.';
+                    authError.classList.remove('hidden');
+                    showToast('Error', 'El correo ya está registrado o hubo un fallo', 'error');
+                } else {
+                    currentUser = data;
+                    localStorage.setItem('emzoom_user', JSON.stringify(currentUser));
+                    document.getElementById('bottom-nav').classList.remove('hidden');
+                    setupLogoutBtn();
+                    await loadData(true);
+                    navTo('home');
+                    showToast('¡Cuenta Creada!', 'Bienvenido a la Familia Emzoom 507');
+                    this.reset();
+                }
+            }
+
+            btn.innerHTML = orig;
+            btn.disabled = false;
+            lucide.createIcons();
+        });
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('emzoom_user');
+            localStorage.removeItem(CACHE_KEY);
+            localStorage.removeItem(CACHE_TIME_KEY);
+            document.getElementById('bottom-nav').classList.add('hidden');
+            
+            const existingBtn = document.getElementById('btn-logout-header');
+            if(existingBtn) existingBtn.remove();
+            
+            navTo('login');
+            showToast('Aviso', 'Sesión cerrada');
+        }
+
+        function setupLogoutBtn() {
+            const headerActions = document.getElementById('header-actions');
+            if (headerActions && !document.getElementById('btn-logout-header')) {
+                const logoutBtn = document.createElement('button');
+                logoutBtn.id = 'btn-logout-header';
+                logoutBtn.innerHTML = '<i data-lucide="log-out" class="w-5 h-5 text-gray-400 hover:text-red-500 transition pointer-events-none"></i>';
+                logoutBtn.onclick = logout;
+                logoutBtn.className = 'p-1 active:scale-90 transition mr-2 mt-0.5';
+                headerActions.insertBefore(logoutBtn, headerActions.firstChild);
+                lucide.createIcons();
+            }
+        }
+        
+        if (currentUser) {
+            setupLogoutBtn();
+        }
+
+        // ==========================================
+        // PUBLICAR ESTADO
+        // ==========================================
+        document.getElementById('status-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!base64Images.statusImg) {
+                showToast('Aviso', 'Selecciona una imagen primero');
+                return;
+            }
+
+            if (!currentUser) return;
+
+            // Validación local: solo un post de estado cada 24 hrs POR USUARIO
+            const lastPost = localStorage.getItem('last_status_post_' + currentUser.id);
+            if (lastPost && (Date.now() - parseInt(lastPost)) < 24 * 60 * 60 * 1000) {
+                showToast('Límite Alcanzado', 'Solo puedes publicar un estado cada 24 horas.');
+                return;
+            }
+            
+            const btn = document.getElementById('btn-save-status');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader" class="animate-spin w-4 h-4 pointer-events-none"></i> Publicando...';
+            btn.disabled = true;
+            lucide.createIcons();
+            
+            const myId = getMyMemberId();
+            let uNombre = currentUser ? currentUser.nombre_completo : 'Usuario';
+            let uModelo = 'Auto Sin Registrar';
+            let uProvincia = 'Ubicación No Definida';
+            
+            if (myId) {
+                const member = members.find(m => m.id === myId);
+                if (member) {
+                    uNombre = member.nombre;
+                    uModelo = member.modelo;
+                    uProvincia = member.provincia;
+                }
+            }
+            
+            const textoIngresado = document.getElementById('status-texto').value.trim();
+            
+            const statusData = {
+                texto: textoIngresado,
+                nombre: uNombre,
+                modelo: uModelo,
+                provincia: uProvincia
+            };
+            
+            const { error } = await supabaseClient.from('estados').insert([{ 
+                imagen: base64Images.statusImg, 
+                texto: JSON.stringify(statusData),
+                usuario_id: currentUser.id
+            }]);
+            
+            if (error) {
+                if (error.message && error.message.includes('Solo se puede publicar')) {
+                    showToast('Límite Alcanzado', 'Bloqueado por base de datos: solo se permite 1 estado cada 24 horas');
+                } else {
+                    showToast('Error', 'Fallo al publicar el estado');
+                    console.error(error);
+                }
+            } else {
+                localStorage.setItem('last_status_post_' + currentUser.id, Date.now().toString());
+                showToast('¡Éxito!', 'Estado publicado en el panel');
+                this.reset();
+                removeImage('status-foto', 'status-preview', 'status-placeholder');
+                await loadData(true);
+                navTo('home');
+            }
+            
+            btn.innerHTML = orig;
+            btn.disabled = false;
+        });
+
+    </script>
+</body>
+</html>
