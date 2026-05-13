@@ -4,15 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Emzoom Rstyle Team 507</title>
-    
-    <!-- Configuración Web App / Acceso Directo -->
-    <link rel="icon" href="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png">
-    <link rel="apple-touch-icon" href="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0a0a0a">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Librería para Exportar a Excel -->
@@ -27,6 +18,10 @@
     <style>
         /* Custom Styles & Glassmorphism */
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;800&display=swap');
+
+        /* Ajuste de tamaño general para pantallas móviles */
+        html { font-size: 14px; }
+        @media (min-width: 768px) { html { font-size: 16px; } }
 
         body {
             font-family: 'Montserrat', sans-serif;
@@ -120,6 +115,12 @@
             100% { transform: scale(1); opacity: 1; filter: brightness(1); }
         }
 
+        @keyframes drift-smoke {
+            0% { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(0deg); }
+            30% { opacity: 0.4; }
+            100% { opacity: 0; transform: translate(-25px, -15px) scale(2.5) rotate(-20deg); }
+        }
+
         .img-preview {
             width: 100%;
             height: 120px;
@@ -162,7 +163,31 @@
             <div class="w-64 mb-8 splash-pulse flex justify-center items-center">
                 <img src="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png" alt="Emzoom Rstyle Logo" class="max-w-full h-auto drop-shadow-[0_0_25px_rgba(212,175,55,0.4)]">
             </div>
-            <p class="text-gray-500 mt-4 text-sm tracking-widest font-semibold uppercase">Iniciando Motor...</p>
+            
+            <div class="flex items-center gap-3 mt-4">
+                <p class="text-gray-500 text-sm tracking-widest font-semibold uppercase">Iniciando Motor</p>
+                <div class="relative w-6 h-6 flex items-center justify-center">
+                    <!-- Efecto de humo blanco -->
+                    <div class="absolute -bottom-1 -left-2 w-4 h-4 bg-white/80 rounded-full opacity-0 animate-[drift-smoke_1s_ease-out_infinite] blur-[3px]"></div>
+                    <div class="absolute -bottom-1 -left-4 w-5 h-5 bg-white/60 rounded-full opacity-0 animate-[drift-smoke_1.2s_ease-out_0.3s_infinite] blur-[4px]"></div>
+                    <div class="absolute bottom-1 -left-1 w-3 h-3 bg-white/90 rounded-full opacity-0 animate-[drift-smoke_0.8s_ease-out_0.6s_infinite] blur-[2px]"></div>
+                    
+                    <!-- Rueda girando rápido blanca con resplandor blanco -->
+                    <svg class="w-6 h-6 text-white animate-[spin_0.3s_linear_infinite] relative z-10 drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" stroke-width="3"></circle>
+                        <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+                        <path d="M12 10 L12 3"></path>
+                        <path d="M12 14 L12 21"></path>
+                        <path d="M10 12 L3 12"></path>
+                        <path d="M14 12 L21 12"></path>
+                        <path d="M10.5 10.5 L5 5"></path>
+                        <path d="M13.5 13.5 L19 19"></path>
+                        <path d="M13.5 10.5 L19 5"></path>
+                        <path d="M10.5 13.5 L5 19"></path>
+                    </svg>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -461,10 +486,47 @@
                                 <div class="relative">
                                     <select id="modelo" required class="input-dark w-full px-4 py-3 rounded-xl text-sm appearance-none" onchange="updateTechInfo()">
                                         <option value="" disabled selected>Selecciona tu versión</option>
-                                        <option value="GB">GAC Emzoom GB</option>
-                                        <option value="GL">GAC Emzoom GL</option>
-                                        <option value="GT">GAC Emzoom GT</option>
-                                        <option value="R-Style">GAC Emzoom R-Style</option>
+                                        <optgroup label="EMZOOM" class="bg-gray-900 text-gray-400">
+                                            <option value="Emzoom - GB" class="text-white">GB</option>
+                                            <option value="Emzoom - GB R-STYLE" class="text-white">GB R-STYLE</option>
+                                            <option value="Emzoom - GL" class="text-white">GL</option>
+                                            <option value="Emzoom - GL R-STYLE" class="text-white">GL R-STYLE</option>
+                                            <option value="Emzoom - GS" class="text-white">GS</option>
+                                        </optgroup>
+                                        <optgroup label="EMPOW" class="bg-gray-900 text-gray-400">
+                                            <option value="Empow - GE" class="text-white">GE</option>
+                                            <option value="Empow - GL" class="text-white">GL</option>
+                                        </optgroup>
+                                        <optgroup label="EMKOO" class="bg-gray-900 text-gray-400">
+                                            <option value="Emkoo - GL" class="text-white">GL</option>
+                                            <option value="Emkoo - GT" class="text-white">GT</option>
+                                        </optgroup>
+                                        <optgroup label="GS4 MAX" class="bg-gray-900 text-gray-400">
+                                            <option value="GS4 Max - GB" class="text-white">GB</option>
+                                            <option value="GS4 Max - GL" class="text-white">GL</option>
+                                            <option value="GS4 Max - GT" class="text-white">GT</option>
+                                        </optgroup>
+                                        <optgroup label="GS8" class="bg-gray-900 text-gray-400">
+                                            <option value="GS8 - GL" class="text-white">GL</option>
+                                            <option value="GS8 - GT" class="text-white">GT</option>
+                                            <option value="GS8 - GX" class="text-white">GX</option>
+                                        </optgroup>
+                                        <optgroup label="M6 PRO" class="bg-gray-900 text-gray-400">
+                                            <option value="M6 Pro - GL" class="text-white">GL</option>
+                                            <option value="M6 Pro - GT" class="text-white">GT</option>
+                                        </optgroup>
+                                        <optgroup label="SMILODON" class="bg-gray-900 text-gray-400">
+                                            <option value="Smilodon - 4x2" class="text-white">4x2</option>
+                                            <option value="Smilodon - 4x4" class="text-white">4x4</option>
+                                        </optgroup>
+                                        <optgroup label="AION Y PLUS" class="bg-gray-900 text-gray-400">
+                                            <option value="Aion Y Plus - Elite" class="text-white">Elite</option>
+                                            <option value="Aion Y Plus - Premium" class="text-white">Premium</option>
+                                        </optgroup>
+                                        <optgroup label="S7" class="bg-gray-900 text-gray-400">
+                                            <option value="S7 - Max" class="text-white">Max</option>
+                                            <option value="S7 - Ultra" class="text-white">Ultra</option>
+                                        </optgroup>
                                     </select>
                                     <i data-lucide="chevron-down" class="absolute right-4 top-3.5 w-5 h-5 text-gray-400 pointer-events-none"></i>
                                 </div>
@@ -591,7 +653,7 @@
                 <div id="events-list" class="space-y-6 pb-4"></div>
                 
                 <div id="empty-events-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in">
-                    <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                    <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700">
                         <i data-lucide="flag" class="w-8 h-8 text-gray-600"></i>
                     </div>
                     <h4 class="text-lg font-bold text-gray-300">No hay eventos</h4>
@@ -790,18 +852,28 @@
             </button>
             
             <!-- Botón Central Flotante -->
-            <div class="relative -top-5 mx-1">
+            <div id="nav-status-container" class="relative -top-5 mx-1">
                 <button onclick="navTo('status')" id="nav-status" class="nav-btn bg-gradient-to-r from-red-600 to-red-800 text-white rounded-full p-3 shadow-[0_4px_20px_rgba(220,38,38,0.5)] border-4 border-[#0a0a0a] transition-transform duration-200 active:scale-90">
                     <i data-lucide="plus" class="w-6 h-6 pointer-events-none"></i>
                 </button>
             </div>
 
             <button onclick="navTo('events')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-events">
-                <i data-lucide="calendar" class="w-5 h-5 mb-1 pointer-events-none"></i>
+                <div class="relative pointer-events-none">
+                    <i data-lucide="calendar" class="w-5 h-5 mb-1"></i>
+                    <div id="event-notification" class="hidden absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full p-[2px] shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse">
+                        <i data-lucide="bell" class="w-2 h-2 fill-current"></i>
+                    </div>
+                </div>
                 <span class="text-[8px] font-bold pointer-events-none">Eventos</span>
             </button>
             <button onclick="navTo('birthdays')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-birthdays">
-                <i data-lucide="gift" class="w-5 h-5 mb-1 pointer-events-none"></i>
+                <div class="relative pointer-events-none">
+                    <i data-lucide="gift" class="w-5 h-5 mb-1"></i>
+                    <div id="birthday-notification" class="hidden absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full p-[2px] shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse">
+                        <i data-lucide="bell" class="w-2 h-2 fill-current"></i>
+                    </div>
+                </div>
                 <span class="text-[8px] font-bold pointer-events-none">Cumpleaños</span>
             </button>
             <button onclick="navTo('users')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-users">
@@ -875,9 +947,15 @@
         let currentStatusIndex = 0;
         let statusCountdownInterval = null;
         let asistenciasTotales = [];
+        let likesMiembros = [];
         
         let currentUser = JSON.parse(localStorage.getItem('emzoom_user')) || null;
         let isLoginMode = true;
+
+        // NUEVO: Función para normalizar textos (quitar acentos y mayúsculas) para emparejar asistencias perfectas
+        function normalizeStr(str) {
+            return (str || "").trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        }
 
         const supabaseUrl = 'https://bcbbyfogofovgiesatuf.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYmJ5Zm9nb2ZvdmdpZXNhdHVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MTI3MzUsImV4cCI6MjA5NDE4ODczNX0.j08eQV4p5TIA4NsK7Lr7vdxgQ8OqBUb-8Xr6ZifHL_Y';
@@ -900,12 +978,15 @@
                     users = parsedData.users || [];
                     activeStatuses = parsedData.activeStatuses || [];
                     asistenciasTotales = parsedData.asistenciasTotales || [];
+                    likesMiembros = parsedData.likesMiembros || [];
 
                     startStatusRotation();
                     document.getElementById('home-member-count').innerText = `${members.length} registrados`;
                     document.getElementById('home-events-count').innerText = `${events.length} próximos`;
                     updateHomeRegisterButton();
                     updateUIPermissions();
+                    updateEventNotification();
+                    updateBirthdayNotification();
                     
                     if (!document.getElementById('view-members').classList.contains('hidden')) renderMembers();
                     if (!document.getElementById('view-events').classList.contains('hidden')) renderEvents();
@@ -916,12 +997,13 @@
                 // Si no hay caché válido, busca en Supabase
                 const limiteHoras = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-                const [m, e, u, st, ast] = await Promise.all([
+                const [m, e, u, st, ast, lk] = await Promise.all([
                     supabaseClient.from('miembros').select('*').order('fecha_registro', { ascending: false }),
                     supabaseClient.from('eventos').select('*').order('fecha', { ascending: true }),
                     supabaseClient.from('usuarios_web').select('*'),
                     supabaseClient.from('estados').select('*').gte('created_at', limiteHoras).order('created_at', { ascending: false }),
-                    supabaseClient.from('asistencias_eventos').select('usuario_nombre').eq('asistencia_verificada', true)
+                    supabaseClient.from('asistencias_eventos').select('usuario_nombre').eq('asistencia_verificada', true),
+                    supabaseClient.from('likes_miembros').select('*')
                 ]);
                 
                 members = m.data || [];
@@ -929,8 +1011,9 @@
                 users = u.data || [];
                 activeStatuses = st.data || [];
                 asistenciasTotales = ast.data || [];
+                likesMiembros = lk.data || [];
 
-                localStorage.setItem(CACHE_KEY, JSON.stringify({ members, events, users, activeStatuses, asistenciasTotales }));
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ members, events, users, activeStatuses, asistenciasTotales, likesMiembros }));
                 localStorage.setItem(CACHE_TIME_KEY, now.toString());
                 
                 startStatusRotation();
@@ -944,6 +1027,8 @@
                 
                 updateHomeRegisterButton();
                 updateUIPermissions();
+                updateEventNotification();
+                updateBirthdayNotification();
                 
                 if (!document.getElementById('view-members').classList.contains('hidden')) renderMembers();
                 if (!document.getElementById('view-events').classList.contains('hidden')) renderEvents();
@@ -974,6 +1059,59 @@
                 if (isAdmin) btnCreateEvent.classList.remove('hidden');
                 else btnCreateEvent.classList.add('hidden');
             }
+
+            const navStatusContainer = document.getElementById('nav-status-container');
+            if (navStatusContainer) {
+                if (currentUser && currentUser.rol === 'Admin') {
+                    navStatusContainer.classList.add('hidden');
+                } else {
+                    navStatusContainer.classList.remove('hidden');
+                }
+            }
+        }
+
+        function updateEventNotification() {
+            const notif = document.getElementById('event-notification');
+            if (!notif) return;
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Inicio del día actual
+            
+            // Revisa si hay eventos programados para hoy o para días futuros
+            const activeEvents = events.filter(ev => {
+                const eventDate = new Date(ev.fecha);
+                eventDate.setHours(0, 0, 0, 0);
+                return eventDate >= today;
+            });
+            
+            if (activeEvents.length > 0) {
+                notif.classList.remove('hidden');
+            } else {
+                notif.classList.add('hidden');
+            }
+        }
+
+        function updateBirthdayNotification() {
+            const notif = document.getElementById('birthday-notification');
+            if (!notif) return;
+            
+            const today = new Date();
+            const todayMonth = today.getMonth();
+            const todayDate = today.getDate();
+            
+            // Revisa si algún miembro cumple años exactamente el día de hoy
+            const hasBirthdayToday = members.some(m => {
+                if (!m.fecha_nac) return false;
+                const bDate = new Date(m.fecha_nac + 'T00:00:00');
+                if (isNaN(bDate.getTime())) return false;
+                return bDate.getMonth() === todayMonth && bDate.getDate() === todayDate;
+            });
+            
+            if (hasBirthdayToday) {
+                notif.classList.remove('hidden');
+            } else {
+                notif.classList.add('hidden');
+            }
         }
 
         function getMyMemberId() {
@@ -981,7 +1119,7 @@
             let id = localStorage.getItem('my_member_id_' + currentUser.id);
             if (id && members.find(m => m.id === id)) return id;
             
-            let matched = members.find(m => (m.nombre || "").toLowerCase() === currentUser.nombre_completo.toLowerCase());
+            let matched = members.find(m => normalizeStr(m.nombre) === normalizeStr(currentUser.nombre_completo));
             if (matched) {
                 localStorage.setItem('my_member_id_' + currentUser.id, matched.id);
                 return matched.id;
@@ -1134,10 +1272,30 @@
         }
 
         const techInfo = {
-            'GB': '<strong class="text-white text-sm">Versión GB:</strong><br>Versión base. Pantalla 10.25", Apple CarPlay/Android Auto inalámbrico, luces LED, sensores traseros y cámara de reversa.',
-            'GL': '<strong class="text-white text-sm">Versión GL:</strong><br>Añade pantalla 14.6", clúster digital, rines de 18", 6 airbags y acabados en piel sintética.',
-            'GT': '<strong class="text-white text-sm">Versión GT:</strong><br>Incluye techo panorámico, cámara 360°, monitoreo de punto ciego y compuerta eléctrica.',
-            'R-Style': '<strong class="text-white text-sm">Versión R-Style:</strong><br>Paquete aerodinámico deportivo, escape dual, kit de carrocería R-Style y detalles agresivos (Basado en GT).'
+            'Emzoom - GB': '<strong class="text-white text-sm">Versión GB:</strong><br>Versión base. Pantalla 10.25", Apple CarPlay/Android Auto inalámbrico.',
+            'Emzoom - GL': '<strong class="text-white text-sm">Versión GL:</strong><br>Añade pantalla 14.6", clúster digital, rines de 18", 6 airbags.',
+            'Emzoom - GT': '<strong class="text-white text-sm">Versión GT:</strong><br>Incluye techo panorámico, cámara 360°, monitoreo de punto ciego.',
+            'Emzoom - GB R-STYLE': '<strong class="text-white text-sm">Versión GB R-Style:</strong><br>Paquete aerodinámico deportivo en versión base.',
+            'Emzoom - GL R-STYLE': '<strong class="text-white text-sm">Versión GL R-Style:</strong><br>Paquete aerodinámico deportivo en versión GL.',
+            'Emzoom - GS': '<strong class="text-white text-sm">Versión GS:</strong><br>Versión especializada.',
+            'Empow - GE': '<strong class="text-white text-sm">Empow GE:</strong><br>Sedán deportivo base.',
+            'Empow - GL': '<strong class="text-white text-sm">Empow GL:</strong><br>Sedán deportivo full extras.',
+            'Emkoo - GL': '<strong class="text-white text-sm">Emkoo GL:</strong><br>SUV futurista versión inicial.',
+            'Emkoo - GT': '<strong class="text-white text-sm">Emkoo GT:</strong><br>SUV futurista máximo equipamiento.',
+            'GS4 Max - GB': '<strong class="text-white text-sm">GS4 Max GB:</strong><br>SUV compacto base.',
+            'GS4 Max - GL': '<strong class="text-white text-sm">GS4 Max GL:</strong><br>SUV compacto intermedio.',
+            'GS4 Max - GT': '<strong class="text-white text-sm">GS4 Max GT:</strong><br>SUV compacto full equipamiento.',
+            'GS8 - GL': '<strong class="text-white text-sm">GS8 GL:</strong><br>SUV premium 3 filas base.',
+            'GS8 - GT': '<strong class="text-white text-sm">GS8 GT:</strong><br>SUV premium intermedio.',
+            'GS8 - GX': '<strong class="text-white text-sm">GS8 GX:</strong><br>SUV premium máximo confort (4x4).',
+            'M6 Pro - GL': '<strong class="text-white text-sm">M6 Pro GL:</strong><br>Minivan familiar base.',
+            'M6 Pro - GT': '<strong class="text-white text-sm">M6 Pro GT:</strong><br>Minivan familiar full extras.',
+            'Smilodon - 4x2': '<strong class="text-white text-sm">Smilodon 4x2:</strong><br>Pick-up de tracción sencilla.',
+            'Smilodon - 4x4': '<strong class="text-white text-sm">Smilodon 4x4:</strong><br>Pick-up todoterreno.',
+            'Aion Y Plus - Elite': '<strong class="text-white text-sm">Aion Y Plus Elite:</strong><br>Vehículo 100% eléctrico.',
+            'Aion Y Plus - Premium': '<strong class="text-white text-sm">Aion Y Plus Premium:</strong><br>Eléctrico con mayor autonomía.',
+            'S7 - Max': '<strong class="text-white text-sm">S7 Max:</strong><br>Nuevo modelo S7 base.',
+            'S7 - Ultra': '<strong class="text-white text-sm">S7 Ultra:</strong><br>Nuevo modelo S7 máximo confort.'
         };
 
         function updateTechInfo() {
@@ -1464,7 +1622,11 @@
             document.getElementById('instagram').value = member.instagram || '';
             document.getElementById('tiktok').value = member.tiktok || '';
             if(member.fecha_nac) document.getElementById('fecha_nac')._flatpickr.setDate(member.fecha_nac);
-            document.getElementById('modelo').value = member.modelo;
+            
+            // Map legacy models para los usuarios antiguos que registraron con "GB", "GL", etc.
+            let mapLegacy = { 'GB': 'Emzoom - GB', 'GL': 'Emzoom - GL', 'GT': 'Emzoom - GT', 'R-Style': 'Emzoom - GB R-STYLE' };
+            document.getElementById('modelo').value = mapLegacy[member.modelo] || member.modelo;
+            
             updateTechInfo(); 
             
             resetColorSelection();
@@ -1570,8 +1732,8 @@
             const myId = getMyMemberId();
             const isAdmin = currentUser && (currentUser.rol === 'Admin' || currentUser.rol === 'Supervisor');
 
-            // Filtrar para ocultar el propio perfil del usuario en la lista general
-            const membersToDisplay = dataToRender.filter(member => member.id !== myId);
+            // Mostrar a todos los miembros incluyendo al usuario actual
+            const membersToDisplay = dataToRender;
 
             if (membersToDisplay.length === 0) {
                 emptyState.classList.remove('hidden');
@@ -1591,23 +1753,39 @@
                 
                 let socialsHtml = '';
                 if (member.instagram || member.tiktok) {
-                    socialsHtml = `<div class="flex items-center gap-4 mt-3 pt-3 border-t border-white/10">`;
+                    socialsHtml = `<div class="flex items-center gap-4">`;
                     if (member.instagram) { socialsHtml += `<a href="${member.instagram}" target="_blank" class="flex items-center gap-1.5 text-xs font-semibold text-pink-400 hover:text-pink-300 transition-colors active:scale-95"><i data-lucide="instagram" class="w-4 h-4"></i> Instagram</a>`; }
                     if (member.tiktok) { socialsHtml += `<a href="${member.tiktok}" target="_blank" class="flex items-center gap-1.5 text-xs font-semibold text-gray-300 hover:text-white transition-colors active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a5.64 5.64 0 0 1-1.04-.1z"/></svg> TikTok</a>`; }
                     socialsHtml += `</div>`;
                 }
+
+                const carColors = {
+                    'Ivory White': '#F4F4F5',
+                    'Graphene Grey': '#4B5563',
+                    'Elegant Black': '#525252',
+                    'Superstar Silver': '#D1D5DB',
+                    'Salt Lake Blue': '#3b82f6',
+                    'Moonlight Grey': '#9CA3AF',
+                    'Galaxy Lilac': '#8B5CF6'
+                };
+                const ringColor = carColors[member.color] || '#eab308';
                 
                 const card = document.createElement('div');
-                card.className = `glass-card p-5 rounded-2xl slide-up mb-4 border-l-4 border-l-red-600`;
+                card.className = `glass-card p-5 rounded-2xl slide-up mb-4 border-l-4`;
                 card.style.animationDelay = `${index * 0.05}s`;
+                card.style.borderLeftColor = ringColor;
                 
-                const canEdit = isAdmin || (myId === member.id);
-                const editButtonsHtml = canEdit ? `
-                    <div class="flex gap-2">
-                        <button onclick="editMember('${member.id}')" class="p-2 bg-gray-800 rounded-full text-blue-400 hover:bg-gray-700 transition-all active:scale-90"><i data-lucide="edit-2" class="w-4 h-4 pointer-events-none"></i></button>
-                        <button onclick="confirmDelete('${member.id}')" class="p-2 bg-gray-800 rounded-full text-red-500 hover:bg-gray-700 transition-all active:scale-90"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>
-                    </div>
-                ` : '';
+                let editButtonsHtml = '';
+                if (isAdmin || myId === member.id) {
+                    editButtonsHtml = '<div class="flex items-center gap-2">';
+                    
+                    if (myId === member.id) {
+                        editButtonsHtml += `<button onclick="editMember('${member.id}')" class="bg-gray-800 border border-gray-600 hover:bg-gray-700 text-white px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"><i data-lucide="edit-2" class="w-3 h-3 text-blue-400 pointer-events-none"></i> Editar</button>`;
+                    }
+                    
+                    editButtonsHtml += `<button onclick="confirmDelete('${member.id}')" class="p-1.5 bg-gray-800 rounded-md text-red-500 hover:bg-gray-700 transition-all active:scale-90 border border-gray-600"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>`;
+                    editButtonsHtml += '</div>';
+                }
 
                 let birthdayHtml = '';
                 if (member.fecha_nac) {
@@ -1619,23 +1797,28 @@
                     }
                 }
                 
-                const eventsAttended = asistenciasTotales.filter(a => a.usuario_nombre && a.usuario_nombre.toLowerCase() === member.nombre.toLowerCase()).length;
+                // Calculando las asistencias validadas con normalizeStr (evita fallos por tildes)
+                const eventsAttended = asistenciasTotales.filter(a => normalizeStr(a.usuario_nombre) === normalizeStr(member.nombre)).length;
                 const attendanceHtml = `<div class="flex items-center gap-2"><i data-lucide="flag" class="w-4 h-4 text-gray-500"></i> <span><span class="text-green-400 font-bold text-[15px] animate-pulse drop-shadow-[0_0_8px_rgba(74,222,128,0.8)]">${eventsAttended}</span> MEET EMZOOM RSTYLE 507 TEAM</span></div>`;
-                
-                const carColors = {
-                    'Ivory White': '#F4F4F5',
-                    'Graphene Grey': '#4B5563',
-                    'Elegant Black': '#525252', /* Gris visible en fondo oscuro */
-                    'Superstar Silver': '#D1D5DB',
-                    'Salt Lake Blue': '#3b82f6',
-                    'Moonlight Grey': '#9CA3AF',
-                    'Galaxy Lilac': '#8B5CF6'
-                };
-                const ringColor = carColors[member.color] || '#eab308';
                 
                 const profileImgStr = member.foto_perfil 
                     ? `<img src="${member.foto_perfil}" class="w-20 h-20 rounded-full object-cover border-4 border-[#151515] ring-2 shadow-2xl" style="--tw-ring-color: ${ringColor};">` 
                     : `<div class="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center border-4 border-[#151515] ring-2 shadow-2xl" style="--tw-ring-color: ${ringColor};"><i data-lucide="user" class="text-gray-500 w-8 h-8"></i></div>`;
+
+                // Logica de Likes
+                const likesCount = likesMiembros.filter(l => l.miembro_id === member.id).length;
+                const hasLiked = currentUser ? likesMiembros.some(l => l.miembro_id === member.id && l.usuario_id === currentUser.id) : false;
+                const canLike = currentUser && myId !== member.id; // Un usuario logueado que no sea él mismo
+                
+                const actionsHtml = `
+                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
+                        ${socialsHtml}
+                        <button ${canLike ? `onclick="toggleLike('${member.id}')"` : 'disabled'} id="btn-like-${member.id}" class="flex items-center gap-1.5 transition-all active:scale-90 ${hasLiked ? 'text-red-500' : 'text-gray-400'} ${canLike ? 'hover:text-red-400 cursor-pointer' : 'cursor-default opacity-80'}">
+                            <i data-lucide="heart" id="icon-like-${member.id}" class="w-5 h-5 ${hasLiked ? 'fill-current' : ''}"></i>
+                            <span id="count-like-${member.id}" class="font-bold text-sm">${likesCount}</span>
+                        </button>
+                    </div>
+                `;
 
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-3">
@@ -1661,7 +1844,7 @@
                         <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-gray-500"></i> ${member.provincia}</div>
                         <div class="flex items-center gap-2"><i data-lucide="palette" class="w-4 h-4 text-gray-500"></i> ${member.color}</div>
                         ${attendanceHtml}
-                        ${socialsHtml}
+                        ${actionsHtml}
                     </div>
                 `;
                 listContainer.appendChild(card);
@@ -1669,14 +1852,60 @@
             lucide.createIcons();
         }
 
+        async function toggleLike(miembroId) {
+            if (!currentUser) {
+                showToast('Aviso', 'Debes iniciar sesión para dar like', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById(`btn-like-${miembroId}`);
+            const icon = document.getElementById(`icon-like-${miembroId}`);
+            const countSpan = document.getElementById(`count-like-${miembroId}`);
+            
+            let hasLiked = likesMiembros.some(l => l.miembro_id === miembroId && l.usuario_id === currentUser.id);
+            
+            try {
+                if (hasLiked) {
+                    // Quitar Like (Actualización visual rápida)
+                    likesMiembros = likesMiembros.filter(l => !(l.miembro_id === miembroId && l.usuario_id === currentUser.id));
+                    countSpan.innerText = parseInt(countSpan.innerText) - 1;
+                    btn.classList.remove('text-red-500');
+                    btn.classList.add('text-gray-400');
+                    icon.classList.remove('fill-current');
+                    
+                    // Actualizar Nube
+                    await supabaseClient.from('likes_miembros').delete().match({ miembro_id: miembroId, usuario_id: currentUser.id });
+                } else {
+                    // Dar Like (Actualización visual rápida)
+                    likesMiembros.push({ miembro_id: miembroId, usuario_id: currentUser.id });
+                    countSpan.innerText = parseInt(countSpan.innerText) + 1;
+                    btn.classList.remove('text-gray-400');
+                    btn.classList.add('text-red-500');
+                    icon.classList.add('fill-current');
+                    
+                    // Actualizar Nube
+                    await supabaseClient.from('likes_miembros').insert([{ miembro_id: miembroId, usuario_id: currentUser.id }]);
+                }
+                
+                // Refrescar caché local silenciosamente
+                const cachedData = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}');
+                cachedData.likesMiembros = likesMiembros;
+                localStorage.setItem(CACHE_KEY, JSON.stringify(cachedData));
+                
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'No se pudo procesar tu like', 'error');
+            }
+        }
+
         function filterMembers() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const searchTerm = normalizeStr(document.getElementById('search-input').value);
             const provFilter = document.getElementById('filter-provincia').value;
 
             const filtered = members.filter(m => {
-                const matchesSearch = (m.nombre || "").toLowerCase().includes(searchTerm) || 
-                                      (m.modelo || "").toLowerCase().includes(searchTerm) || 
-                                      (m.apodo || "").toLowerCase().includes(searchTerm);
+                const matchesSearch = normalizeStr(m.nombre).includes(searchTerm) || 
+                                      normalizeStr(m.modelo).includes(searchTerm) || 
+                                      normalizeStr(m.apodo).includes(searchTerm);
                 const matchesProv = provFilter === 'all' || m.provincia === provFilter;
                 return matchesSearch && matchesProv;
             });
@@ -1727,11 +1956,11 @@
                 const day = dateObj.getDate();
                 
                 let subtitle = '';
-                let borderClass = 'border-l-gray-600';
+                let borderClass = 'border-l-4 border-l-gray-600';
                 
                 if (m.diffDays === 0) {
                     subtitle = '<span class="text-pink-500 font-bold">¡Es hoy! 🎉</span>';
-                    borderClass = 'border-l-pink-500 bg-pink-900/10 shadow-[0_4px_20px_rgba(236,72,153,0.15)]';
+                    borderClass = 'border-2 border-pink-500 bg-pink-900/20 shadow-[0_0_25px_rgba(236,72,153,0.4)] relative z-10 scale-[1.02]';
                 } else if (m.diffDays === 1) {
                     subtitle = '<span class="text-yellow-400 font-semibold">Mañana</span>';
                 } else {
@@ -1745,7 +1974,7 @@
                         : `<div class="w-14 h-14 bg-gray-800 rounded-full flex items-center justify-center border-2 border-gray-700 flex-shrink-0"><i data-lucide="user" class="text-gray-500 w-6 h-6"></i></div>`);
 
                 const card = document.createElement('div');
-                card.className = `glass-card p-4 rounded-2xl flex items-center gap-4 slide-up border-l-4 ${borderClass}`;
+                card.className = `glass-card p-4 rounded-2xl flex items-center gap-4 slide-up transition-all duration-300 hover:scale-[1.04] hover:shadow-2xl hover:z-20 cursor-default ${borderClass}`;
                 card.style.animationDelay = `${index * 0.05}s`;
                 
                 card.innerHTML = `
@@ -1911,7 +2140,6 @@
                     </div>
                 ` : '';
 
-                // RSVP para TODOS los usuarios que hayan iniciado sesión, desaparece si ya respondió (!rsvpStatus)
                 let rsvpHtml = '';
                 if (currentUser && !rsvpStatus) {
                     rsvpHtml = `
@@ -1996,7 +2224,7 @@
                     estado: status
                 }]);
                 showToast('Asistencia', status === 'yes' ? 'Confirmaste tu asistencia' : 'Has declinado la invitación');
-                loadData(true);
+                await loadData(true);
             } catch (err) {
                 console.error("Error al sincronizar RSVP", err);
             }
@@ -2025,11 +2253,10 @@
             
             // Enriquecer datos con modelo y provincia cruzando con el arreglo members
             currentEventDetails = (data || []).map(u => {
-                const member = members.find(m => (m.nombre || "").toLowerCase() === u.usuario_nombre.toLowerCase());
-                const modelFullNames = { 'GB': 'GAC Emzoom GB', 'GL': 'GAC Emzoom GL', 'GT': 'GAC Emzoom GT', 'R-Style': 'GAC Emzoom R-Style' };
+                const member = members.find(m => normalizeStr(m.nombre) === normalizeStr(u.usuario_nombre));
                 return {
                     ...u,
-                    modelo: member ? (modelFullNames[member.modelo] || member.modelo) : 'No registrado',
+                    modelo: member ? member.modelo : 'No registrado',
                     provincia: member ? member.provincia : 'No registrada'
                 };
             });
@@ -2091,10 +2318,10 @@
                 showToast('Verificación', isVerified ? 'Asistencia validada ✅' : 'Asistencia denegada ❌');
                 
                 // Recargar detalles y la data global para actualizar la bandera en perfiles
+                await loadData(true);
                 viewEventDetails(eventId, currentEventName);
-                loadData(true);
             } catch (error) {
-                showToast('Error', 'No se pudo verificar la asistencia');
+                showToast('Error', 'No se pudo verificar la asistencia', 'error');
                 console.error(error);
             }
         }
@@ -2168,7 +2395,7 @@
 
             const { error } = id ? await supabaseClient.from('usuarios_web').update(data).eq('id', id) : await supabaseClient.from('usuarios_web').insert([data]);
             
-            if (error) { showToast('Error', 'Error al procesar el usuario'); console.error(error); }
+            if (error) { showToast('Error', 'Error al procesar el usuario', 'error'); console.error(error); }
             else { showToast('¡Éxito!', 'Usuario guardado exitosamente'); resetUserForm(); await loadData(true); }
             
             btnSave.innerHTML = originalBtnHtml;
@@ -2182,7 +2409,7 @@
             document.getElementById('user-id').value = u.id;
             document.getElementById('user-nombre').value = u.nombre_completo;
             document.getElementById('user-email').value = u.email;
-            document.getElementById('user-pass').value = u.password;
+            document.getElementById('sys-user-pass').value = u.password;
             document.getElementById('user-rol').value = u.rol;
             document.getElementById('btn-cancel-user').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2470,7 +2697,7 @@
                 if (error.message && error.message.includes('Solo se puede publicar')) {
                     showToast('Límite Alcanzado', 'Bloqueado por base de datos: solo se permite 1 estado cada 24 horas');
                 } else {
-                    showToast('Error', 'Fallo al publicar el estado');
+                    showToast('Error', 'Fallo al publicar el estado', 'error');
                     console.error(error);
                 }
             } else {
