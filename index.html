@@ -8,11 +8,15 @@
     <!-- Configuración PWA / Metatags -->
     <meta name="theme-color" content="#0a0a0a">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Emzoom 507">
+    
+    <!-- Íconos de la App -->
+    <link rel="icon" type="image/png" href="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/icono.png">
     <link rel="apple-touch-icon" href="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/icono.png">
     
-    <!-- Manifiesto de Aplicación (Incrustado como Data URI) -->
+    <!-- Manifiesto de Aplicación (Incrustado para archivo único) -->
     <link rel="manifest" href='data:application/manifest+json,{"name":"Emzoom Rstyle Team 507","short_name":"Rstyle 507","description":"Club oficial de GAC Emzoom en Panamá","start_url":".","display":"standalone","background_color":"#0a0a0a","theme_color":"#dc2626","icons":[{"src":"https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/icono.png","sizes":"192x192","type":"image/png"},{"src":"https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/icono.png","sizes":"512x512","type":"image/png"}]}'>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -1801,7 +1805,7 @@
                     'Galaxy Lilac': '#8B5CF6'
                 };
                 
-                // Mover definición de ringColor aquí arriba para que exista antes de usarlo
+                // Definir color del borde de acuerdo al color del auto
                 const ringColor = carColors[member.color] || '#eab308';
                 
                 const card = document.createElement('div');
