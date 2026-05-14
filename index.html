@@ -1371,8 +1371,8 @@
                     const delay = Math.random() * 0.4;
                     linesHtml += `<div class="speed-line" style="top: ${top}%; animation-duration: ${dur}s; animation-delay: ${delay}s;"></div>`;
                 }
-                // Usamos el icono 'car' (lateral) en vez de 'car-front' para que las líneas tengan sentido
-                return `<div class="car-anim-wrapper"><div class="speed-lines">${linesHtml}</div><i data-lucide="car" class="w-5 h-5 car-icon-svg text-gray-100"></i></div>`;
+                // Usamos shrink-0 para que el ícono no se aplaste si el texto es muy largo
+                return `<div class="car-anim-wrapper shrink-0"><div class="speed-lines">${linesHtml}</div><i data-lucide="car" class="w-5 h-5 car-icon-svg text-gray-100"></i></div>`;
             };
 
             // Renderizar Modelos en la lista detallada con barras de progreso
@@ -1383,10 +1383,13 @@
             sortedModels.forEach((mod, index) => {
                 const percentage = (modelsCount[mod] / maxModel) * 100;
                 modelsHtml += `
-                    <div class="flex flex-col gap-1.5 slide-up" style="animation-delay: ${index * 0.1}s">
-                        <div class="flex justify-between items-center text-[10px] font-bold text-gray-200 uppercase tracking-widest">
-                            <span class="flex items-center gap-2">${generateCarAnim()} ${mod}</span>
-                            <span class="text-white text-sm">${modelsCount[mod]}</span>
+                    <div class="flex flex-col gap-2 slide-up" style="animation-delay: ${index * 0.1}s">
+                        <div class="flex justify-between items-end w-full">
+                            <span class="flex items-center gap-2 text-[10px] font-bold text-gray-200 uppercase tracking-widest truncate pr-2">
+                                ${generateCarAnim()} 
+                                <span class="truncate">${mod}</span>
+                            </span>
+                            <span class="text-white text-sm font-black leading-none shrink-0">${modelsCount[mod]}</span>
                         </div>
                         <div class="progress-track"><div class="progress-fill" style="width: 0%" data-width="${percentage}%"></div></div>
                     </div>`;
@@ -1402,10 +1405,13 @@
                 sortedProvs.forEach((prov, index) => {
                     const percentage = (provsCount[prov] / maxProv) * 100;
                     provsHtml += `
-                        <div class="flex flex-col gap-1.5 slide-up" style="animation-delay: ${index * 0.1}s">
-                            <div class="flex justify-between items-center text-[10px] font-bold text-gray-200 uppercase tracking-widest">
-                                <span class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-gray-400"></i> ${prov}</span>
-                                <span class="text-white text-sm">${provsCount[prov]}</span>
+                        <div class="flex flex-col gap-2 slide-up" style="animation-delay: ${index * 0.1}s">
+                            <div class="flex justify-between items-end w-full">
+                                <span class="flex items-center gap-2 text-[10px] font-bold text-gray-200 uppercase tracking-widest truncate pr-2">
+                                    <i data-lucide="map-pin" class="w-4 h-4 text-gray-400 shrink-0"></i> 
+                                    <span class="truncate">${prov}</span>
+                                </span>
+                                <span class="text-white text-sm font-black leading-none shrink-0">${provsCount[prov]}</span>
                             </div>
                             <div class="progress-track"><div class="progress-fill" style="width: 0%" data-width="${percentage}%"></div></div>
                         </div>`;
