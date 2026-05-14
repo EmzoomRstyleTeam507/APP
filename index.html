@@ -305,6 +305,20 @@
 
                 <div class="glass-card rounded-2xl p-6 text-center mb-6 slide-up border border-red-500/30 shadow-[0_0_25px_rgba(220,38,38,0.15)] relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-br from-red-600/10 to-transparent pointer-events-none"></div>
+                    
+                    <!-- NUEVO INDICADOR DE ESTADÍSTICAS -->
+                    <div class="absolute top-3 left-3 z-20 text-left pointer-events-none">
+                        <div class="bg-black/60 border border-white/10 rounded-xl p-2.5 backdrop-blur-md shadow-lg">
+                            <div class="text-[11px] font-black text-white uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                                <i data-lucide="users" class="w-3.5 h-3.5 text-red-500"></i> <span id="home-total-members-badge" class="text-red-500">0</span> Miembros
+                            </div>
+                            <div class="w-full h-px bg-white/10 mb-1.5"></div>
+                            <div id="home-models-breakdown" class="text-[9px] text-gray-300 font-semibold uppercase tracking-wider flex flex-col gap-1">
+                                <!-- Datos inyectados vía JS -->
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="w-14 h-14 mx-auto bg-[#121212] rounded-full flex items-center justify-center mb-4 border border-red-500/50 relative z-10 shadow-[0_0_15px_rgba(220,38,38,0.4)]">
                         <i data-lucide="award" class="w-6 h-6 text-red-500"></i>
                     </div>
@@ -634,7 +648,7 @@
             <section id="view-events" class="view-section hidden fade-in">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Próximas Rutas</h3>
-                    <button id="btn-create-event" onclick="navTo('event-form')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 shadow-lg flex items-center gap-1 text-sm font-semibold">
+                    <button id="btn-create-event" onclick="navTo('event-form')" class="hidden bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 shadow-lg flex items-center gap-1 text-sm font-semibold">
                         <i data-lucide="plus" class="w-4 h-4"></i> Crear
                     </button>
                 </div>
@@ -842,7 +856,7 @@
             
             <!-- Botón Central Flotante -->
             <div id="nav-status-container" class="relative -top-5 mx-1">
-                <button onclick="navTo('status')" id="nav-status" class="nav-btn bg-gradient-to-r from-red-600 to-red-800 text-white rounded-full p-3 border-4 border-[#0a0a0a] transition-all duration-200 active:scale-90 animate-[breathe-glow_2.5s_ease-in-out_infinite]">
+                <button onclick="navTo('status')" id="nav-status" class="nav-btn bg-gradient-to-r from-red-600 to-red-800 text-white rounded-full p-3 shadow-[0_4px_20px_rgba(220,38,38,0.5)] border-4 border-[#0a0a0a] transition-transform duration-200 active:scale-90">
                     <i data-lucide="plus" class="w-6 h-6 pointer-events-none"></i>
                 </button>
             </div>
@@ -865,13 +879,13 @@
                 </div>
                 <span class="text-[8px] font-bold pointer-events-none">Cumpleaños</span>
             </button>
-            <button onclick="navTo('users')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-users">
+            <button onclick="navTo('users')" class="nav-btn hidden flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-users">
                 <i data-lucide="settings" class="w-5 h-5 mb-1 pointer-events-none"></i>
                 <span class="text-[8px] font-bold pointer-events-none">Sistema</span>
             </button>
         </nav>
-    </div>
 
+        <!-- Modal Visor (Galería interactiva) -->
     <!-- Modal Visor (Galería interactiva) -->
     <div id="image-modal" class="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm hidden flex-col justify-center items-center opacity-0 transition-opacity duration-300">
         <button onclick="closeModal()" class="absolute top-6 right-6 p-2 bg-gray-800/50 rounded-full text-white hover:bg-gray-700 transition-all duration-200 active:scale-90 z-50">
@@ -996,6 +1010,7 @@
                     updateUIPermissions();
                     updateEventNotification();
                     updateBirthdayNotification();
+                    updateHomeStats();
                     
                     if (!document.getElementById('view-members').classList.contains('hidden')) renderMembers();
                     if (!document.getElementById('view-events').classList.contains('hidden')) renderEvents();
@@ -1023,6 +1038,15 @@
                 asistenciasTotales = ast.data || [];
                 likesMiembros = lk.data || [];
 
+                if (currentUser) {
+                    const myUser = users.find(x => x.id === currentUser.id);
+                    if (myUser && myUser.is_banned) {
+                        logout();
+                        showToast('Cuenta Suspendida', 'Tu cuenta ha sido deshabilitada por un administrador.', 'error');
+                        return;
+                    }
+                }
+
                 try {
                     localStorage.setItem(CACHE_KEY, JSON.stringify({ members, events, users, activeStatuses, asistenciasTotales, likesMiembros }));
                     localStorage.setItem(CACHE_TIME_KEY, now.toString());
@@ -1045,6 +1069,7 @@
                 updateUIPermissions();
                 updateEventNotification();
                 updateBirthdayNotification();
+                updateHomeStats();
                 
                 if (!document.getElementById('view-members').classList.contains('hidden')) renderMembers();
                 if (!document.getElementById('view-events').classList.contains('hidden')) renderEvents();
@@ -1159,6 +1184,35 @@
             lucide.createIcons();
         }
 
+        function updateHomeStats() {
+            const totalMembersEl = document.getElementById('home-total-members-badge');
+            const breakdownEl = document.getElementById('home-models-breakdown');
+            if (!totalMembersEl || !breakdownEl) return;
+
+            totalMembersEl.innerText = members.length;
+
+            let counts = {};
+            members.forEach(m => {
+                let mName = m.modelo || 'Otros';
+                // Simplificamos los nombres para mostrar un resumen limpio
+                if (mName.includes('-')) {
+                    mName = mName.split('-')[1].trim();
+                } else if (mName === 'R-Style') {
+                    mName = 'GB R-STYLE'; 
+                }
+                counts[mName] = (counts[mName] || 0) + 1;
+            });
+
+            // Ordenar por cantidad (mayor a menor) y mostrar el top 5 para no saturar
+            let sortedModels = Object.keys(counts).sort((a,b) => counts[b] - counts[a]).slice(0, 5);
+            
+            let html = '';
+            sortedModels.forEach(mod => {
+                html += `<div class="flex justify-between items-center gap-3"><span class="flex items-center gap-1.5"><i data-lucide="car" class="w-2.5 h-2.5 text-gray-500"></i> ${mod}</span> <span class="text-white">${counts[mod]}</span></div>`;
+            });
+            breakdownEl.innerHTML = html;
+        }
+
         function handleHomeRegisterClick() {
             const myId = getMyMemberId();
             if (myId) {
@@ -1216,7 +1270,6 @@
                 bannerImg.src = status.imagen;
                 bannerImg.classList.remove('hidden');
                 bannerPl.classList.add('hidden');
-                defaultTitle.classList.add('hidden');
                 
                 let displayTexto = status.texto;
                 let displayNombre = '';
@@ -1260,7 +1313,6 @@
             } else {
                 bannerImg.classList.add('hidden');
                 bannerPl.classList.remove('hidden');
-                defaultTitle.classList.remove('hidden');
                 textCont.classList.add('hidden');
             }
         }
@@ -1820,7 +1872,7 @@
                 const attendanceHtml = `<div class="flex items-center gap-2"><i data-lucide="flag" class="w-4 h-4 text-gray-500"></i> <span><span class="text-green-400 font-bold text-[15px] animate-pulse drop-shadow-[0_0_8px_rgba(74,222,128,0.8)]">${eventsAttended}</span> MEET EMZOOM RSTYLE 507 TEAM</span></div>`;
                 
                 const profileImgStr = member.foto_perfil 
-                    ? `<img src="${member.foto_perfil}" class="w-20 h-20 rounded-full object-cover border-4 border-[#151515] ring-2 shadow-2xl" style="--tw-ring-color: ${ringColor};">` 
+                    ? `<img src="${member.foto_perfil}" class="w-20 h-20 rounded-full object-cover border-4 border-[#151515] ring-2 shadow-2xl cursor-pointer transition-transform hover:scale-105 active:scale-95" style="--tw-ring-color: ${ringColor};" onclick="openGallery('${member.foto_perfil}', null, 'Perfil de ${member.nombre}', 0)">` 
                     : `<div class="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center border-4 border-[#151515] ring-2 shadow-2xl" style="--tw-ring-color: ${ringColor};"><i data-lucide="user" class="text-gray-500 w-8 h-8"></i></div>`;
 
                 // Logica de Likes
@@ -2383,13 +2435,22 @@
             const body = document.getElementById('user-table-body');
             body.innerHTML = users.length ? '' : '<tr><td colspan="3" class="p-6 text-center text-gray-500 uppercase text-xs font-bold tracking-widest">Sin personal registrado</td></tr>';
             users.forEach(u => {
+                const isBanned = u.is_banned === true;
+                const nameHtml = isBanned 
+                    ? `<span class="line-through text-gray-500">${u.nombre_completo}</span> <span class="bg-red-900/50 text-red-500 text-[8px] px-1.5 py-0.5 rounded ml-1">BANEADO</span>` 
+                    : u.nombre_completo;
+                
+                const banBtnIcon = isBanned ? 'unlock' : 'ban';
+                const banBtnColor = isBanned ? 'text-green-500 hover:text-green-400' : 'text-orange-500 hover:text-orange-400';
+                
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-5 py-4 font-bold text-white uppercase text-xs">${u.nombre_completo}</td>
+                    <td class="px-5 py-4 font-bold text-white uppercase text-xs">${nameHtml}</td>
                     <td class="px-5 py-4">
                         <span class="px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider ${u.rol === 'Admin' ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}">${u.rol}</span>
                     </td>
-                    <td class="px-5 py-4 text-right">
+                    <td class="px-5 py-4 text-right whitespace-nowrap">
+                        <button onclick="toggleBanUser('${u.id}', ${isBanned})" class="${banBtnColor} transition active:scale-90 mr-3" title="${isBanned ? 'Desbanear' : 'Banear'}"><i data-lucide="${banBtnIcon}" class="w-4 h-4"></i></button>
                         <button onclick="editUser('${u.id}')" class="text-blue-400 hover:text-white transition active:scale-90 mr-3"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
                         <button onclick="deleteUser('${u.id}')" class="text-red-500 hover:text-white transition active:scale-90"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </td>
@@ -2397,6 +2458,16 @@
                 body.appendChild(row);
             });
             lucide.createIcons();
+        }
+
+        function toggleBanUser(id, currentStatus) {
+            const newStatus = !currentStatus;
+            const actionText = newStatus ? 'banear (suspender)' : 'desbanear (activar)';
+            customConfirm('Cambiar Estado de Usuario', `¿Estás seguro de ${actionText} a este usuario?`, async () => {
+                const { error } = await supabaseClient.from('usuarios_web').update({ is_banned: newStatus }).eq('id', id);
+                if (error) { showToast('Error', 'No se pudo actualizar el estado', 'error'); }
+                else { showToast('Aviso', `Usuario ${newStatus ? 'baneado' : 'desbaneado'}`); await loadData(true); }
+            });
         }
 
         document.getElementById('user-form').addEventListener('submit', async e => {
@@ -2589,6 +2660,10 @@
                     authError.innerText = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
                     authError.classList.remove('hidden');
                     showToast('Error', 'Credenciales incorrectas', 'error');
+                } else if (data.is_banned) {
+                    authError.innerText = 'Tu cuenta ha sido suspendida. Contacta a un administrador.';
+                    authError.classList.remove('hidden');
+                    showToast('Cuenta Suspendida', 'No puedes acceder.', 'error');
                 } else {
                     currentUser = data;
                     localStorage.setItem('emzoom_user', JSON.stringify(currentUser));
