@@ -1103,9 +1103,12 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYmJ5Zm9nb2ZvdmdpZXNhdHVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MTI3MzUsImV4cCI6MjA5NDE4ODczNX0.j08eQV4p5TIA4NsK7Lr7vdxgQ8OqBUb-8Xr6ZifHL_Y';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+        // ==========================================
+        // GESTOR DE TRÁFICO Y CACHÉ (OPTIMIZACIÓN DE EGRESS)
+        // ==========================================
         const CACHE_KEY = 'emzoom_data_cache';
-        const CACHE_TIME_KEY = 'emzoom_data_time';
-        const CACHE_TTL = 5 * 60 * 1000; // 5 Minutos
+        // Se elimina el tiempo de expiración. Los datos se leerán de la memoria del teléfono 
+        // para ahorrar el 99% del ancho de banda y solo conectarán a la nube cuando se fuerce.
 
         // Registrar Service Worker para PWA (Desde Blob para archivo único)
         if ('serviceWorker' in navigator) {
@@ -1124,11 +1127,10 @@
 
         async function loadData(forceRefresh = false) {
             try {
-                const now = Date.now();
-                const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
                 const cachedData = localStorage.getItem(CACHE_KEY);
 
-                if (!forceRefresh && cachedTime && cachedData && (now - parseInt(cachedTime)) < CACHE_TTL) {
+                // GESTOR DE TRÁFICO: Usar caché siempre, a menos que se fuerce explícitamente la actualización
+                if (!forceRefresh && cachedData) {
                     const parsedData = JSON.parse(cachedData);
                     members = parsedData.members || [];
                     events = parsedData.events || [];
@@ -1158,7 +1160,7 @@
                     return;
                 }
 
-                // Si no hay caché válido, busca en Supabase
+                // Si no hay caché válido o se solicitó forzar la actualización, busca en Supabase
                 const limiteHoras = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
                 const [m, e, u, st, ast, lk] = await Promise.all([
@@ -1187,12 +1189,11 @@
                 }
 
                 try {
+                    // Guardar los datos frescos
                     localStorage.setItem(CACHE_KEY, JSON.stringify({ members, events, users, activeStatuses, asistenciasTotales, likesMiembros }));
-                    localStorage.setItem(CACHE_TIME_KEY, now.toString());
                 } catch (storageErr) {
                     console.warn("Caché local llena (QuotaExceeded). Se limpiará el caché antiguo.", storageErr);
                     localStorage.removeItem(CACHE_KEY);
-                    localStorage.removeItem(CACHE_TIME_KEY);
                 }
                 
                 startStatusRotation();
