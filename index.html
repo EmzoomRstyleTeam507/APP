@@ -179,20 +179,20 @@
     <!-- Splash Screen -->
     <div id="splash" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black transition-opacity duration-700">
         <div class="relative flex flex-col items-center">
-            <div class="w-64 mb-8 splash-pulse flex justify-center items-center">
+            <div class="w-80 md:w-96 mb-10 splash-pulse flex justify-center items-center">
                 <img src="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png" alt="Emzoom Rstyle Logo" class="max-w-full h-auto drop-shadow-[0_0_25px_rgba(212,175,55,0.4)]">
             </div>
             
-            <div class="flex items-center gap-3 mt-4">
-                <p class="text-gray-500 text-sm tracking-widest font-semibold uppercase">Iniciando Motor</p>
-                <div class="relative w-6 h-6 flex items-center justify-center">
+            <div class="flex items-center gap-4 mt-6">
+                <p class="text-gray-400 text-lg md:text-xl tracking-widest font-bold uppercase">Iniciando Motor</p>
+                <div class="relative w-8 h-8 flex items-center justify-center">
                     <!-- Efecto de humo blanco -->
-                    <div class="absolute -bottom-1 -left-2 w-4 h-4 bg-white/80 rounded-full opacity-0 animate-[drift-smoke_1s_ease-out_infinite] blur-[3px]"></div>
-                    <div class="absolute -bottom-1 -left-4 w-5 h-5 bg-white/60 rounded-full opacity-0 animate-[drift-smoke_1.2s_ease-out_0.3s_infinite] blur-[4px]"></div>
-                    <div class="absolute bottom-1 -left-1 w-3 h-3 bg-white/90 rounded-full opacity-0 animate-[drift-smoke_0.8s_ease-out_0.6s_infinite] blur-[2px]"></div>
+                    <div class="absolute -bottom-1.5 -left-3 w-5 h-5 bg-white/80 rounded-full opacity-0 animate-[drift-smoke_1s_ease-out_infinite] blur-[3px]"></div>
+                    <div class="absolute -bottom-1.5 -left-5 w-6 h-6 bg-white/60 rounded-full opacity-0 animate-[drift-smoke_1.2s_ease-out_0.3s_infinite] blur-[4px]"></div>
+                    <div class="absolute bottom-1 -left-2 w-4 h-4 bg-white/90 rounded-full opacity-0 animate-[drift-smoke_0.8s_ease-out_0.6s_infinite] blur-[2px]"></div>
                     
                     <!-- Rueda girando rápido blanca con resplandor blanco -->
-                    <svg class="w-6 h-6 text-white animate-[spin_0.3s_linear_infinite] relative z-10 drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg class="w-8 h-8 text-white animate-[spin_0.3s_linear_infinite] relative z-10 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10" stroke-width="3"></circle>
                         <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
                         <path d="M12 10 L12 3"></path>
@@ -289,6 +289,11 @@
                         <span class="text-xs text-gray-500 font-bold uppercase tracking-widest">Sin Estado Reciente</span>
                     </div>
                     
+                    <!-- ETIQUETA DE ESTADOS DE USUARIOS -->
+                    <div class="absolute top-3 right-3 z-30 pointer-events-none">
+                        <span class="bg-black/60 backdrop-blur-sm text-gray-300 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border border-white/10 shadow-lg">ESTADOS DE USUARIOS</span>
+                    </div>
+
                     <!-- Contenedor del texto del estado -->
                     <div id="status-text-container" class="absolute top-4 left-4 right-4 z-20 hidden pointer-events-none flex justify-center transition-opacity duration-500">
                         <div class="bg-black/70 px-4 py-2 rounded-xl backdrop-blur-md shadow-lg text-center border border-white/10 flex flex-col items-center max-w-[90%]">
@@ -305,19 +310,6 @@
 
                 <div class="glass-card rounded-2xl p-6 text-center mb-6 slide-up border border-red-500/30 shadow-[0_0_25px_rgba(220,38,38,0.15)] relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-br from-red-600/10 to-transparent pointer-events-none"></div>
-                    
-                    <!-- NUEVO INDICADOR DE ESTADÍSTICAS -->
-                    <div class="absolute top-3 left-3 z-20 text-left pointer-events-none">
-                        <div class="bg-black/60 border border-white/10 rounded-xl p-2.5 backdrop-blur-md shadow-lg">
-                            <div class="text-[11px] font-black text-white uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                                <i data-lucide="users" class="w-3.5 h-3.5 text-red-500"></i> <span id="home-total-members-badge" class="text-red-500">0</span> Miembros
-                            </div>
-                            <div class="w-full h-px bg-white/10 mb-1.5"></div>
-                            <div id="home-models-breakdown" class="text-[9px] text-gray-300 font-semibold uppercase tracking-wider flex flex-col gap-1">
-                                <!-- Datos inyectados vía JS -->
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="w-14 h-14 mx-auto bg-[#121212] rounded-full flex items-center justify-center mb-4 border border-red-500/50 relative z-10 shadow-[0_0_15px_rgba(220,38,38,0.4)]">
                         <i data-lucide="award" class="w-6 h-6 text-red-500"></i>
@@ -330,23 +322,19 @@
                     </button>
                 </div>
 
-                <!-- Leyenda del Club y Redes Sociales -->
-                <div class="glass-card rounded-2xl p-6 text-center slide-up" style="animation-delay: 0.1s;">
-                    <h3 class="text-sm font-bold text-gray-200 uppercase tracking-wider mb-2">
-                        La Familia R-Style 507
-                    </h3>
-                    <p class="text-xs text-gray-400 leading-relaxed mb-6">
-                        Somos una comunidad apasionada por la innovación y el estilo del GAC Emzoom. Organizamos rutas, meets y compartimos experiencias únicas en Panamá.
-                    </p>
-                    
-                    <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Síguenos en Redes</h4>
-                    <div class="flex justify-center gap-5">
-                        <a href="https://www.tiktok.com/@emzoomrstyleteam507?_r=1&_t=ZS-96JMwGRfdR2" target="_blank" class="w-12 h-12 rounded-full bg-black border border-gray-700 flex items-center justify-center transition-transform active:scale-90 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
-                            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a5.64 5.64 0 0 1-1.04-.1z"/></svg>
-                        </a>
-                        <a href="https://www.instagram.com/emzoomrstyleteam507?igsh=MWs1Z29qYjJyM2szYw==" target="_blank" class="w-12 h-12 rounded-full bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 flex items-center justify-center transition-transform active:scale-90 shadow-[0_4px_15px_rgba(236,72,153,0.3)]">
-                            <i data-lucide="instagram" class="w-5 h-5 text-white"></i>
-                        </a>
+                <!-- Estadísticas del Club (Reemplaza a Leyenda y Redes) -->
+                <div class="glass-card rounded-2xl p-6 slide-up" style="animation-delay: 0.1s;">
+                    <div class="bg-black/60 border border-white/10 rounded-xl p-5 backdrop-blur-md shadow-lg w-full text-left">
+                        <div class="text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="users" class="w-5 h-5 text-red-500"></i> MIEMBROS
+                            </div>
+                            <span id="home-total-members-badge" class="text-red-500 text-lg">0</span>
+                        </div>
+                        <div class="w-full h-px bg-white/10 mb-4"></div>
+                        <div id="home-models-breakdown" class="text-xs text-gray-300 font-semibold uppercase tracking-wider flex flex-col gap-3">
+                            <!-- Datos inyectados vía JS -->
+                        </div>
                     </div>
                 </div>
 
@@ -1208,9 +1196,10 @@
             
             let html = '';
             sortedModels.forEach(mod => {
-                html += `<div class="flex justify-between items-center gap-3"><span class="flex items-center gap-1.5"><i data-lucide="car" class="w-2.5 h-2.5 text-gray-500"></i> ${mod}</span> <span class="text-white">${counts[mod]}</span></div>`;
+                html += `<div class="flex justify-between items-center gap-3"><span class="flex items-center gap-2"><i data-lucide="car" class="w-4 h-4 text-gray-500"></i> ${mod}</span> <span class="text-white text-sm">${counts[mod]}</span></div>`;
             });
             breakdownEl.innerHTML = html;
+            lucide.createIcons();
         }
 
         function handleHomeRegisterClick() {
@@ -1746,11 +1735,12 @@
             document.getElementById('header-title').innerText = 'Registrar Auto';
         }
 
-        function customConfirm(title, msg, onConfirm) {
+        function customConfirm(title, msg, onConfirm, confirmText = 'Eliminar') {
             const modal = document.getElementById('confirm-modal');
             const content = document.getElementById('confirm-modal-content');
             document.getElementById('confirm-title').innerText = title;
             document.getElementById('confirm-msg').innerText = msg;
+            document.getElementById('btn-confirm-ok').innerText = confirmText;
             
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -2215,7 +2205,7 @@
                 ` : '';
 
                 let rsvpHtml = '';
-                if (currentUser && !rsvpStatus) {
+                if (currentUser && currentUser.rol !== 'Admin' && !rsvpStatus) {
                     rsvpHtml = `
                         <div class="flex gap-3 mb-4 pt-3 border-t border-white/10">
                             <button onclick="setRSVP('${ev.id}', 'yes')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 bg-gray-800 text-gray-400 hover:text-green-400">
@@ -2463,11 +2453,12 @@
         function toggleBanUser(id, currentStatus) {
             const newStatus = !currentStatus;
             const actionText = newStatus ? 'banear (suspender)' : 'desbanear (activar)';
+            const btnText = newStatus ? 'BANEAR' : 'DESBANEAR';
             customConfirm('Cambiar Estado de Usuario', `¿Estás seguro de ${actionText} a este usuario?`, async () => {
                 const { error } = await supabaseClient.from('usuarios_web').update({ is_banned: newStatus }).eq('id', id);
                 if (error) { showToast('Error', 'No se pudo actualizar el estado', 'error'); }
                 else { showToast('Aviso', `Usuario ${newStatus ? 'baneado' : 'desbaneado'}`); await loadData(true); }
-            });
+            }, btnText);
         }
 
         document.getElementById('user-form').addEventListener('submit', async e => {
