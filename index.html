@@ -516,36 +516,6 @@
                                             <option value="Empow - GE" class="text-white">GE</option>
                                             <option value="Empow - GL" class="text-white">GL</option>
                                         </optgroup>
-                                        <optgroup label="EMKOO" class="bg-gray-900 text-gray-400">
-                                            <option value="Emkoo - GL" class="text-white">GL</option>
-                                            <option value="Emkoo - GT" class="text-white">GT</option>
-                                        </optgroup>
-                                        <optgroup label="GS4 MAX" class="bg-gray-900 text-gray-400">
-                                            <option value="GS4 Max - GB" class="text-white">GB</option>
-                                            <option value="GS4 Max - GL" class="text-white">GL</option>
-                                            <option value="GS4 Max - GT" class="text-white">GT</option>
-                                        </optgroup>
-                                        <optgroup label="GS8" class="bg-gray-900 text-gray-400">
-                                            <option value="GS8 - GL" class="text-white">GL</option>
-                                            <option value="GS8 - GT" class="text-white">GT</option>
-                                            <option value="GS8 - GX" class="text-white">GX</option>
-                                        </optgroup>
-                                        <optgroup label="M6 PRO" class="bg-gray-900 text-gray-400">
-                                            <option value="M6 Pro - GL" class="text-white">GL</option>
-                                            <option value="M6 Pro - GT" class="text-white">GT</option>
-                                        </optgroup>
-                                        <optgroup label="SMILODON" class="bg-gray-900 text-gray-400">
-                                            <option value="Smilodon - 4x2" class="text-white">4x2</option>
-                                            <option value="Smilodon - 4x4" class="text-white">4x4</option>
-                                        </optgroup>
-                                        <optgroup label="AION Y PLUS" class="bg-gray-900 text-gray-400">
-                                            <option value="Aion Y Plus - Elite" class="text-white">Elite</option>
-                                            <option value="Aion Y Plus - Premium" class="text-white">Premium</option>
-                                        </optgroup>
-                                        <optgroup label="S7" class="bg-gray-900 text-gray-400">
-                                            <option value="S7 - Max" class="text-white">Max</option>
-                                            <option value="S7 - Ultra" class="text-white">Ultra</option>
-                                        </optgroup>
                                     </select>
                                     <i data-lucide="chevron-down" class="absolute right-4 top-3.5 w-5 h-5 text-gray-400 pointer-events-none"></i>
                                 </div>
@@ -872,7 +842,7 @@
             
             <!-- Botón Central Flotante -->
             <div id="nav-status-container" class="relative -top-5 mx-1">
-                <button onclick="navTo('status')" id="nav-status" class="nav-btn bg-gradient-to-r from-red-600 to-red-800 text-white rounded-full p-3 shadow-[0_4px_20px_rgba(220,38,38,0.5)] border-4 border-[#0a0a0a] transition-transform duration-200 active:scale-90">
+                <button onclick="navTo('status')" id="nav-status" class="nav-btn bg-gradient-to-r from-red-600 to-red-800 text-white rounded-full p-3 border-4 border-[#0a0a0a] transition-all duration-200 active:scale-90 animate-[breathe-glow_2.5s_ease-in-out_infinite]">
                     <i data-lucide="plus" class="w-6 h-6 pointer-events-none"></i>
                 </button>
             </div>
@@ -1053,8 +1023,14 @@
                 asistenciasTotales = ast.data || [];
                 likesMiembros = lk.data || [];
 
-                localStorage.setItem(CACHE_KEY, JSON.stringify({ members, events, users, activeStatuses, asistenciasTotales, likesMiembros }));
-                localStorage.setItem(CACHE_TIME_KEY, now.toString());
+                try {
+                    localStorage.setItem(CACHE_KEY, JSON.stringify({ members, events, users, activeStatuses, asistenciasTotales, likesMiembros }));
+                    localStorage.setItem(CACHE_TIME_KEY, now.toString());
+                } catch (storageErr) {
+                    console.warn("Caché local llena (QuotaExceeded). Se limpiará el caché antiguo.", storageErr);
+                    localStorage.removeItem(CACHE_KEY);
+                    localStorage.removeItem(CACHE_TIME_KEY);
+                }
                 
                 startStatusRotation();
                 
@@ -1930,9 +1906,13 @@
                 }
                 
                 // Refrescar caché local silenciosamente
-                const cachedData = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}');
-                cachedData.likesMiembros = likesMiembros;
-                localStorage.setItem(CACHE_KEY, JSON.stringify(cachedData));
+                try {
+                    const cachedData = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}');
+                    cachedData.likesMiembros = likesMiembros;
+                    localStorage.setItem(CACHE_KEY, JSON.stringify(cachedData));
+                } catch (storageErr) {
+                    console.warn("No se pudo actualizar la caché de likes por límite de cuota.", storageErr);
+                }
                 
             } catch (err) {
                 console.error(err);
