@@ -289,9 +289,9 @@
                         <span class="text-xs text-gray-500 font-bold uppercase tracking-widest">Sin Estado Reciente</span>
                     </div>
                     
-                    <!-- ETIQUETA DE ESTADOS DE USUARIOS -->
-                    <div class="absolute top-3 right-3 z-30 pointer-events-none">
-                        <span class="bg-black/60 backdrop-blur-sm text-gray-300 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border border-white/10 shadow-lg">ESTADOS DE USUARIOS</span>
+                    <!-- ETIQUETA DE ESTADO EN EL BORDE -->
+                    <div class="absolute top-0 right-0 z-30 pointer-events-none">
+                        <span class="bg-black/80 backdrop-blur-md text-gray-300 text-[9px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-bl-xl border-b border-l border-white/10 shadow-lg block">ESTADO</span>
                     </div>
 
                     <!-- Contenedor del texto del estado -->
@@ -943,6 +943,57 @@
         let currentUser = JSON.parse(localStorage.getItem('emzoom_user')) || null;
         let isLoginMode = true;
 
+        // ==========================================
+        // NUEVO: MANEJO DEL BOTÓN ATRÁS EN CELULARES
+        // ==========================================
+        let lastBackPressTime = 0;
+
+        function initHistoryTrap() {
+            history.pushState({ trapped: true }, "");
+        }
+
+        window.addEventListener('popstate', (e) => {
+            // Evaluamos qué elementos están abiertos actualmente
+            const imgModal = document.getElementById('image-modal');
+            const isImgModalOpen = imgModal && !imgModal.classList.contains('hidden');
+            
+            const confirmModal = document.getElementById('confirm-modal');
+            const isConfirmOpen = confirmModal && !confirmModal.classList.contains('hidden');
+            
+            const viewHome = document.getElementById('view-home');
+            const isHome = viewHome && !viewHome.classList.contains('hidden');
+            
+            const viewLogin = document.getElementById('view-login');
+            const isLogin = viewLogin && !viewLogin.classList.contains('hidden');
+
+            // 1. Si la galería está abierta, solo ciérrala
+            if (isImgModalOpen) {
+                closeModal();
+                history.pushState({ trapped: true }, ""); // Volver a atrapar
+            } 
+            // 2. Si el modal de confirmación está abierto, simula clic en "Cancelar"
+            else if (isConfirmOpen) {
+                document.getElementById('btn-confirm-cancel').click();
+                history.pushState({ trapped: true }, ""); 
+            } 
+            // 3. Si NO estamos en el inicio ni en el login, regresa al inicio
+            else if (!isHome && !isLogin) {
+                navTo('home');
+                history.pushState({ trapped: true }, ""); 
+            } 
+            // 4. Si estamos en inicio/login, exigir doble toque para salir
+            else {
+                const now = Date.now();
+                if (now - lastBackPressTime < 2000) {
+                    history.back(); // Salir de la app definitivamente
+                } else {
+                    lastBackPressTime = now;
+                    showToast('Aviso', 'Toca ATRÁS otra vez para salir');
+                    history.pushState({ trapped: true }, ""); 
+                }
+            }
+        });
+
         // NUEVO: Función para normalizar textos (quitar acentos y mayúsculas) para emparejar asistencias perfectas
         function normalizeStr(str) {
             return (str || "").trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -1399,6 +1450,8 @@
         }
 
         window.addEventListener('load', async () => {
+            initHistoryTrap(); // Inicializa el bloqueo del botón "Atrás"
+            
             flatpickr("#fecha_nac", { locale: "es", dateFormat: "Y-m-d", altInput: true, altFormat: "d \\de F \\de Y", maxDate: "today", disableMobile: "true" });
             flatpickr("#ev-fecha", { locale: "es", enableTime: true, dateFormat: "Y-m-d H:i", altInput: true, altFormat: "d \\de F \\de Y - h:i K", time_24hr: false, disableMobile: "true" });
 
