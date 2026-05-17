@@ -1945,6 +1945,9 @@
             document.getElementById('btn-save').classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
             document.getElementById('btn-cancel-edit').classList.remove('hidden');
             
+            const topTitle = document.getElementById('register-top-title');
+            if (topTitle) topTitle.innerText = 'Editar Auto';
+            
             lucide.createIcons();
             navTo('register');
         }
@@ -1965,6 +1968,8 @@
         }
 
         function cancelEdit() {
+            const wasEdit = editMode; // Guardamos el estado para saber si estábamos editando
+            
             editMode = false;
             document.getElementById('register-form').reset();
             document.getElementById('member-id').value = '';
@@ -1975,8 +1980,19 @@
             document.getElementById('btn-save').classList.replace('bg-blue-600', 'bg-red-600');
             document.getElementById('btn-save').classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
             document.getElementById('btn-cancel-edit').classList.add('hidden');
+            
+            const topTitle = document.getElementById('register-top-title');
+            if (topTitle) topTitle.innerText = 'Registrar Auto';
+            
             lucide.createIcons();
             document.getElementById('header-title').innerText = 'Registrar Auto';
+            
+            // NUEVO: Redirigir a la vista de miembros tras cancelar la edición
+            if (wasEdit) {
+                navTo('members');
+            } else {
+                navTo('home');
+            }
         }
 
         function customConfirm(title, msg, onConfirm, confirmText = 'Eliminar') {
@@ -2083,9 +2099,8 @@
                 if (isAdmin || myId === member.id) {
                     editButtonsHtml = '<div class="flex items-center gap-2">';
                     
-                    if (myId === member.id) {
-                        editButtonsHtml += `<button onclick="editMember('${member.id}')" class="bg-gray-800 border border-gray-600 hover:bg-gray-700 text-white px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"><i data-lucide="edit-2" class="w-3 h-3 text-blue-400 pointer-events-none"></i> Editar</button>`;
-                    }
+                    // O administrador e o propietario poden editar o perfil
+                    editButtonsHtml += `<button onclick="editMember('${member.id}')" class="bg-gray-800 border border-gray-600 hover:bg-gray-700 text-white px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"><i data-lucide="edit-2" class="w-3 h-3 text-blue-400 pointer-events-none"></i> Editar</button>`;
                     
                     editButtonsHtml += `<button onclick="confirmDelete('${member.id}')" class="p-1.5 bg-gray-800 rounded-md text-red-500 hover:bg-gray-700 transition-all active:scale-90 border border-gray-600"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>`;
                     editButtonsHtml += '</div>';
@@ -2276,9 +2291,9 @@
                 }
 
                 const imgStr = m.foto_perfil 
-                    ? `<img src="${m.foto_perfil}" class="w-14 h-14 rounded-full object-cover border-2 border-gray-700 flex-shrink-0 shadow-lg">` 
+                    ? `<img src="${m.foto_perfil}" onclick="openGallery('${m.foto_perfil}', null, 'Perfil de ${m.nombre}', 0)" class="w-14 h-14 rounded-full object-cover border-2 border-gray-700 flex-shrink-0 shadow-lg cursor-pointer transition-transform hover:scale-105 active:scale-95">` 
                     : (m.foto1 
-                        ? `<img src="${m.foto1}" class="w-14 h-14 rounded-full object-cover border-2 border-gray-700 flex-shrink-0 shadow-lg">` 
+                        ? `<img src="${m.foto1}" onclick="openGallery('${m.foto1}', null, 'Foto de ${m.nombre}', 0)" class="w-14 h-14 rounded-full object-cover border-2 border-gray-700 flex-shrink-0 shadow-lg cursor-pointer transition-transform hover:scale-105 active:scale-95">` 
                         : `<div class="w-14 h-14 bg-gray-800 rounded-full flex items-center justify-center border-2 border-gray-700 flex-shrink-0"><i data-lucide="user" class="text-gray-500 w-6 h-6"></i></div>`);
 
                 const card = document.createElement('div');
@@ -3106,20 +3121,24 @@
                 imagen: base64Images.statusImg || null
             };
             
-            const { error } = await supabaseClient.from('estados').insert([nuevoEstado]);
+            const { data, error } = await supabaseClient.from('estados').insert([nuevoEstado]).select();
             
             if (error) { 
                 showToast('Error', 'Error al publicar estado'); 
                 console.error(error); 
             } else { 
                 showToast('¡Éxito!', 'Estado publicado. Será visible por 24 horas.'); 
+                if (data && data.length > 0) {
+                    activeStatuses.unshift(data[0]);
+                    localStorage.setItem(CACHE_KEY, JSON.stringify({ members, events, users, activeStatuses, asistenciasTotales, likesMiembros }));
+                }
                 document.getElementById('status-form').reset();
                 removeImage('status-foto', 'status-preview', 'status-placeholder');
                 
                 // Guardar la hora del post
                 localStorage.setItem('last_status_post_' + currentUser.id, Date.now().toString());
                 
-                await loadData(true); 
+                startStatusRotation();
                 navTo('home'); 
             }
             
