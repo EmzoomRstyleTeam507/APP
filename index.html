@@ -3096,6 +3096,8 @@
             btnSave.disabled = true;
             lucide.createIcons();
             
+            showToast('Procesando...', 'Subiendo estado a la nube...');
+
             const textoInput = document.getElementById('status-texto').value.trim();
             const memberRecord = members.find(m => normalizeStr(m.nombre) === normalizeStr(currentUser.nombre_completo));
             
@@ -3116,9 +3118,12 @@
                 });
             }
 
+            // --- OPTIMIZACIÓN DEFINITIVA: Subir foto de historia a Storage ---
+            const urlImagen = await uploadImageToStorage(base64Images.statusImg, 'estados');
+
             const nuevoEstado = {
                 texto: structuredTexto,
-                imagen: base64Images.statusImg || null
+                imagen: urlImagen
             };
             
             const { data, error } = await supabaseClient.from('estados').insert([nuevoEstado]).select();
