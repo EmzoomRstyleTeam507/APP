@@ -3096,7 +3096,7 @@
             btnSave.disabled = true;
             lucide.createIcons();
             
-            showToast('Procesando...', 'Subiendo estado a la nube...');
+            showToast('Procesando...', 'Subiendo historia a la nube de manera segura...');
 
             const textoInput = document.getElementById('status-texto').value.trim();
             const memberRecord = members.find(m => normalizeStr(m.nombre) === normalizeStr(currentUser.nombre_completo));
@@ -3118,7 +3118,7 @@
                 });
             }
 
-            // --- OPTIMIZACIÓN DEFINITIVA: Subir foto de historia a Storage ---
+            // Subir la imagen de historia a Storage
             const urlImagen = await uploadImageToStorage(base64Images.statusImg, 'estados');
 
             const nuevoEstado = {
