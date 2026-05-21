@@ -777,9 +777,14 @@
                     return;
                 }
 
+                const limiteHoras = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+                
+                // Límite para ocultar eventos pasados (24 horas después de la fecha pactada)
+                const limiteEventos = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
                 const [m, e, u, ast, lk, ti, pt] = await Promise.all([
                     supabaseClient.from('miembros').select('*').order('fecha_registro', { ascending: false }),
-                    supabaseClient.from('eventos').select('*').order('fecha', { ascending: true }),
+                    supabaseClient.from('eventos').select('*').gte('fecha', limiteEventos).order('fecha', { ascending: true }),
                     supabaseClient.from('usuarios_web').select('*'),
                     supabaseClient.from('asistencias_eventos').select('usuario_nombre').eq('asistencia_verificada', true),
                     supabaseClient.from('likes_miembros').select('*'),
@@ -1686,7 +1691,12 @@
 
             editMode = true;
             document.getElementById('member-id').value = member.id;
-            document.getElementById('nombre').value = member.nombre;
+            
+            const nombreInput = document.getElementById('nombre');
+            nombreInput.value = member.nombre;
+            nombreInput.readOnly = true;
+            nombreInput.classList.add('opacity-50', 'pointer-events-none');
+            
             document.getElementById('telefono').value = member.telefono;
             document.getElementById('provincia').value = member.provincia;
             document.getElementById('instagram').value = member.instagram || '';
@@ -1748,6 +1758,13 @@
             document.getElementById('member-id').value = '';
             document.getElementById('tech-info-box').classList.add('hidden'); 
             resetColorSelection(); resetImagePreviews();
+            
+            if (currentUser) {
+                const nombreInput = document.getElementById('nombre');
+                nombreInput.value = currentUser.nombre_completo;
+                nombreInput.readOnly = true;
+                nombreInput.classList.add('opacity-50', 'pointer-events-none');
+            }
             
             document.getElementById('btn-save').innerHTML = '<i data-lucide="save" class="w-4 h-4 pointer-events-none"></i> Guardar Registro';
             document.getElementById('btn-save').classList.replace('bg-blue-600', 'bg-red-600');
