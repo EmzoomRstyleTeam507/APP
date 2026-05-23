@@ -182,7 +182,7 @@
             <!-- VISTA: INICIO -->
             <section id="view-home" class="view-section hidden fade-in">
                 <!-- Panel de Tienda Promocional -->
-                <div id="store-banner-container" onclick="navTo('store')" class="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-2xl border border-gray-800 cursor-pointer transition-transform active:scale-[0.98]">
+                <div id="store-banner-container" style="display:none !important;" onclick="navTo('store')" class="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-2xl border border-gray-800 cursor-pointer transition-transform active:scale-[0.98]">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50 z-10"></div>
                     <img id="store-banner-img" src="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png" class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 transition-opacity duration-700">
                     <div class="absolute top-0 right-0 z-30 pointer-events-none">
@@ -560,7 +560,37 @@
                 <div id="empty-birthdays-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in"><div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700"><i data-lucide="gift" class="w-8 h-8 text-gray-600"></i></div><h4 class="text-lg font-bold text-gray-300">Sin cumpleaños</h4><p class="text-sm text-gray-500 mt-2 px-6">No hay fechas registradas. ¡Sé el primero en actualizar tu perfil!</p></div>
             </section>
 
-        </main>
+        
+<!-- VISTA: CUMPLEAÑOS -->
+<section id="view-birthdays" class="view-section fade-in">
+    <div class="glass-card p-6 rounded-2xl">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="p-3 bg-pink-500/20 rounded-xl">
+                <i data-lucide="cake" class="w-6 h-6 text-pink-400"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-black uppercase tracking-wide text-white">Cumpleaños</h2>
+                <p class="text-sm text-gray-400">Miembros que celebran este mes</p>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <div class="bg-[#111] border border-white/10 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-white">No hay cumpleaños registrados</h3>
+                    <p class="text-xs text-gray-400 mt-1">
+                        Agrega fechas de nacimiento en el registro de miembros.
+                    </p>
+                </div>
+                <div class="bg-pink-500/10 p-3 rounded-full">
+                    <i data-lucide="gift" class="w-5 h-5 text-pink-400"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
 
         <nav id="bottom-nav" class="glass fixed bottom-0 w-full z-40 rounded-t-3xl border-t border-gray-800 flex justify-around items-center h-16 hidden px-1">
             <button onclick="navTo('home')" class="nav-btn flex flex-col items-center p-1 text-red-500 transition-all duration-200 active:scale-90 w-14" id="nav-home"><i data-lucide="home" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Inicio</span></button>
@@ -569,9 +599,9 @@
                 <div class="relative pointer-events-none"><i data-lucide="calendar" class="w-5 h-5 mb-1"></i><div id="event-notification" class="hidden absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full p-[2px] shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse"><i data-lucide="bell" class="w-2 h-2 fill-current"></i></div></div>
                 <span class="text-[8px] font-bold pointer-events-none">Eventos</span>
             </button>
-            <button onclick="navTo('store')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-store"><i data-lucide="shopping-bag" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Tienda</span></button>
-            <button onclick="navTo('my-orders')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-my-orders"><i data-lucide="package" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Pedidos</span></button>
-            <button onclick="navTo('birthdays')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14 hidden" id="nav-birthdays">
+            <button onclick="navTo('store')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-store" style="display:none !important;"><i data-lucide="shopping-bag" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Tienda</span></button>
+            <button onclick="navTo('my-orders')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-my-orders" style="display:none !important;"><i data-lucide="package" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Pedidos</span></button>
+            <button onclick="navTo('birthdays')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-birthdays">
                 <div class="relative pointer-events-none"><i data-lucide="gift" class="w-5 h-5 mb-1"></i><div id="birthday-notification" class="hidden absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full p-[2px] shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse"><i data-lucide="bell" class="w-2 h-2 fill-current"></i></div></div>
                 <span class="text-[8px] font-bold pointer-events-none">Cumples</span>
             </button>
@@ -777,14 +807,9 @@
                     return;
                 }
 
-                const limiteHoras = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-                
-                // Límite para ocultar eventos pasados (24 horas después de la fecha pactada)
-                const limiteEventos = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-
                 const [m, e, u, ast, lk, ti, pt] = await Promise.all([
                     supabaseClient.from('miembros').select('*').order('fecha_registro', { ascending: false }),
-                    supabaseClient.from('eventos').select('*').gte('fecha', limiteEventos).order('fecha', { ascending: true }),
+                    supabaseClient.from('eventos').select('*').order('fecha', { ascending: true }),
                     supabaseClient.from('usuarios_web').select('*'),
                     supabaseClient.from('asistencias_eventos').select('usuario_nombre').eq('asistencia_verificada', true),
                     supabaseClient.from('likes_miembros').select('*'),
@@ -1385,7 +1410,7 @@
                     if (currentUser) {
                         document.getElementById('bottom-nav').classList.remove('hidden');
                         if (currentUser.rol === 'Proveedor') navTo('store');
-                        else navTo('home');
+                        else navTo('birthdays');
                     } else {
                         navTo('login');
                     }
@@ -2748,5 +2773,18 @@
             lucide.createIcons();
         }
     </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof navTo === 'function') {
+        setTimeout(() => {
+            try {
+                navTo('birthdays');
+            } catch(e) {}
+        }, 300);
+    }
+});
+</script>
+
 </body>
 </html>
