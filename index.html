@@ -1977,9 +1977,13 @@
             const evId = document.getElementById('ev-id').value;
             const urlImagen = await uploadImageToStorage(base64Images.evImg, 'eventos');
             
+            const fpInstance = document.getElementById('ev-fecha')._flatpickr;
+            const fechaSeleccionada = fpInstance.selectedDates[0];
+            const fechaISO = fechaSeleccionada ? fechaSeleccionada.toISOString() : new Date().toISOString();
+            
             const nuevoEvento = {
                 nombre: document.getElementById('ev-nombre').value.trim(),
-                fecha: document.getElementById('ev-fecha').value,
+                fecha: fechaISO,
                 punto: document.getElementById('ev-punto').value.trim(),
                 ruta: document.getElementById('ev-ruta').value.trim(),
                 detalles: document.getElementById('ev-detalles').value.trim(),
@@ -2041,7 +2045,7 @@
             editEventMode = true;
             document.getElementById('ev-id').value = ev.id;
             document.getElementById('ev-nombre').value = ev.nombre;
-            if(ev.fecha) document.getElementById('ev-fecha')._flatpickr.setDate(ev.fecha);
+            if(ev.fecha) document.getElementById('ev-fecha')._flatpickr.setDate(new Date(ev.fecha));
             document.getElementById('ev-punto').value = ev.punto;
             document.getElementById('ev-ruta').value = ev.ruta;
             document.getElementById('ev-detalles').value = ev.detalles || '';
@@ -2092,8 +2096,8 @@
 
             events.forEach((ev, index) => {
                 const fechaObj = new Date(ev.fecha);
-                const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' };
-                const fechaStr = fechaObj.toLocaleDateString('es-ES', opcionesFecha);
+                const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit', hour12: true };
+                const fechaStr = fechaObj.toLocaleString('es-PA', opcionesFecha);
                 
                 const imgStr = ev.imagen 
                     ? `<img src="${ev.imagen}" class="w-full h-48 object-cover cursor-pointer active:scale-95 transition-transform" onclick="openGallery('${ev.imagen}', null, '${ev.nombre.replace(/'/g, "\\'")}', 0)">` 
@@ -2129,7 +2133,7 @@
                     ${imgStr}
                     <div class="p-5 relative">
                         <div class="absolute -top-8 right-4 bg-red-600 text-white rounded-xl p-2 w-16 shadow-lg flex flex-col items-center justify-center border-4 border-[#121212]">
-                            <span class="text-[10px] font-bold uppercase tracking-widest">${fechaObj.toLocaleString('es-ES', {month: 'short'})}</span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest">${fechaObj.toLocaleString('es-PA', {month: 'short'})}</span>
                             <span class="text-xl font-black leading-none my-0.5">${fechaObj.getDate()}</span>
                         </div>
                         <div class="flex justify-between items-start mb-2 pr-16">
