@@ -79,7 +79,17 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
         .splash-pulse { animation: pulse 2s infinite ease-in-out; }
+        .splash-logo-sport {
+            animation: logoSportGlow 1.8s ease-in-out infinite;
+            transform-origin: center;
+            will-change: transform, filter;
+        }
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; filter: brightness(1); } 50% { transform: scale(1.08); opacity: 0.8; filter: brightness(1.2); } 100% { transform: scale(1); opacity: 1; filter: brightness(1); } }
+        @keyframes logoSportGlow {
+            0% { transform: scale(1) skewX(0deg); filter: drop-shadow(0 0 14px rgba(212,175,55,0.35)) drop-shadow(0 0 8px rgba(220,38,38,0.18)) brightness(1); }
+            45% { transform: scale(1.035) skewX(-1.5deg); filter: drop-shadow(0 0 28px rgba(212,175,55,0.72)) drop-shadow(0 0 18px rgba(220,38,38,0.42)) brightness(1.18); }
+            100% { transform: scale(1) skewX(0deg); filter: drop-shadow(0 0 14px rgba(212,175,55,0.35)) drop-shadow(0 0 8px rgba(220,38,38,0.18)) brightness(1); }
+        }
         @keyframes drift-smoke { 0% { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(0deg); } 30% { opacity: 0.4; } 100% { opacity: 0; transform: translate(-25px, -15px) scale(2.5) rotate(-20deg); } }
 
         .progress-track { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden; position: relative; margin-top: 4px; }
@@ -98,8 +108,299 @@
         .flatpickr-calendar { z-index: 9999 !important; font-family: 'Montserrat', sans-serif !important; background: #111827 !important; border: 1px solid rgba(220, 38, 38, 0.4) !important; box-shadow: 0 10px 25px rgba(0,0,0,0.8) !important; }
         .flatpickr-day.selected { background: #dc2626 !important; border-color: #dc2626 !important; }
 
+
+
+        /* Efecto racing para contador de meets */
+        .meet-racing-line { display: inline-flex; align-items: center; gap: .35rem; min-width: 0; }
+        .meet-race-count {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.75rem;
+            height: 1.35rem;
+            padding: 0 .45rem;
+            border-radius: .35rem;
+            border: 1px solid rgba(34, 197, 94, .7);
+            background: linear-gradient(135deg, rgba(6, 78, 59, .95), rgba(20, 83, 45, .55) 55%, rgba(0, 0, 0, .85));
+            color: #86efac;
+            font-size: .82rem;
+            font-weight: 1000;
+            letter-spacing: .03em;
+            transform: skewX(-14deg);
+            overflow: hidden;
+            box-shadow: 0 0 12px rgba(34, 197, 94, .45), inset 0 0 10px rgba(34, 197, 94, .16);
+            animation: meetBoost 1.25s ease-in-out infinite;
+        }
+        .meet-race-count::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -90%;
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+            animation: raceSweep 1.15s linear infinite;
+        }
+        .meet-race-count span { position: relative; z-index: 1; transform: skewX(14deg); }
+        .meet-race-text { color: #d1d5db; font-size: .82rem; font-weight: 700; letter-spacing: .015em; }
+        @keyframes meetBoost {
+            0%, 100% { filter: brightness(1); transform: skewX(-14deg) translateX(0); }
+            50% { filter: brightness(1.28); transform: skewX(-14deg) translateX(2px); }
+        }
+        @keyframes raceSweep { 0% { left: -90%; } 100% { left: 130%; } }
+
+        .store-action-card {
+            background: rgba(0,0,0,.35);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 1rem;
+            padding: .85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            font-size: .72rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            transition: transform .2s ease, border-color .2s ease, background .2s ease;
+        }
+        .store-action-card:active { transform: scale(.97); }
+
+
+
+        /* Efecto racing profesional para títulos de eventos */
+        .event-racing-title {
+            position: relative;
+            display: inline-block;
+            transform: skewX(-8deg);
+            letter-spacing: 0.035em;
+            color: #ffffff;
+            text-shadow:
+                0 1px 0 rgba(0,0,0,0.9),
+                0 0 10px rgba(220,38,38,0.35),
+                10px 0 18px rgba(255,255,255,0.08);
+            filter: drop-shadow(0 0 6px rgba(220,38,38,0.25));
+        }
+        .event-racing-title::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            width: 7px;
+            height: 70%;
+            transform: translateY(-50%) skewX(-16deg);
+            background: linear-gradient(180deg, #ef4444, #7f1d1d);
+            border-radius: 2px;
+            box-shadow: 0 0 12px rgba(239,68,68,0.55);
+        }
+        .event-racing-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #ef4444 0%, rgba(239,68,68,0.55) 45%, transparent 100%);
+            transform: skewX(-18deg);
+            border-radius: 999px;
+            animation: titleSpeedLine 1.8s ease-in-out infinite;
+        }
+        @keyframes titleSpeedLine {
+            0%, 100% { opacity: .45; transform: translateX(0) skewX(-18deg); }
+            50% { opacity: 1; transform: translateX(8px) skewX(-18deg); }
+        }
+        #store-banner-title {
+            max-width: 75%;
+            line-height: 0.95;
+        }
+        #store-banner-subtitle {
+            max-width: 75%;
+        }
+
         #toast { transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(100px); opacity: 0; z-index: 100; }
         #toast.show { transform: translateY(0); opacity: 1; }
+
+        /* ===== TITULO RACING PARA HEADER DE MIEMBROS ===== */
+        .header-racing-title {
+            position: relative;
+            display: inline-block;
+            font-style: italic;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow:
+                0 0 8px rgba(255,255,255,0.45),
+                0 0 18px rgba(220,38,38,0.65),
+                3px 3px 0 rgba(220,38,38,0.45);
+            transform: skewX(-10deg);
+            isolation: isolate;
+        }
+
+        .header-racing-title::before {
+            content: "";
+            position: absolute;
+            left: -14%;
+            right: -14%;
+            top: 52%;
+            height: 46%;
+            transform: translateY(-50%);
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0px,
+                    transparent 10px,
+                    rgba(220,38,38,0.35) 11px,
+                    rgba(220,38,38,0.35) 15px
+                );
+            opacity: 0.55;
+            z-index: -1;
+            animation: headerRacingLines 1.05s linear infinite;
+            clip-path: polygon(0 18%, 96% 0, 100% 100%, 4% 82%);
+        }
+
+        .header-racing-title::after {
+            content: "";
+            position: absolute;
+            left: -10%;
+            right: -10%;
+            bottom: -0.22rem;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ef4444, #facc15, transparent);
+            box-shadow: 0 0 14px rgba(239,68,68,0.9);
+            animation: headerRacingUnderline 1.35s ease-in-out infinite;
+        }
+
+        @keyframes headerRacingLines {
+            0% { background-position-x: 0px; opacity: 0.35; }
+            50% { opacity: 0.75; }
+            100% { background-position-x: 44px; opacity: 0.35; }
+        }
+
+        @keyframes headerRacingUnderline {
+            0%, 100% { opacity: 0.55; transform: scaleX(0.72); }
+            50% { opacity: 1; transform: scaleX(1); }
+        }
+
+
+        /* ===== EFECTOS RACING PROFESIONALES ===== */
+        .racing-team-title {
+            position: relative;
+            display: inline-block;
+            font-style: italic;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow:
+                0 0 8px rgba(255,255,255,0.45),
+                0 0 18px rgba(220,38,38,0.55),
+                3px 3px 0 rgba(220,38,38,0.45);
+            transform: skewX(-10deg);
+            isolation: isolate;
+        }
+
+        .racing-team-title::before {
+            content: "";
+            position: absolute;
+            left: -12%;
+            right: -12%;
+            top: 50%;
+            height: 48%;
+            transform: translateY(-50%);
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0px,
+                    transparent 11px,
+                    rgba(220,38,38,0.35) 12px,
+                    rgba(220,38,38,0.35) 16px
+                );
+            filter: blur(0.2px);
+            opacity: 0.55;
+            z-index: -1;
+            animation: racingTitleLines 1.15s linear infinite;
+            clip-path: polygon(0 20%, 95% 0, 100% 100%, 5% 82%);
+        }
+
+        .racing-team-title::after {
+            content: "";
+            position: absolute;
+            left: -20%;
+            right: -20%;
+            bottom: -0.35rem;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ef4444, #facc15, transparent);
+            box-shadow: 0 0 14px rgba(239,68,68,0.85);
+            animation: racingUnderline 1.4s ease-in-out infinite;
+        }
+
+        .motor-racing-text {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            padding: 0.15rem 0.55rem;
+            border-radius: 999px;
+            color: #f8fafc;
+            font-style: italic;
+            letter-spacing: 0.18em;
+            text-shadow:
+                0 0 8px rgba(255,255,255,0.45),
+                0 0 18px rgba(239,68,68,0.55);
+            transform: skewX(-8deg);
+        }
+
+        .motor-racing-text::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(
+                    115deg,
+                    transparent 0px,
+                    transparent 10px,
+                    rgba(255,255,255,0.18) 11px,
+                    rgba(255,255,255,0.18) 14px,
+                    transparent 15px,
+                    transparent 24px
+                );
+            transform: translateX(-130%);
+            animation: motorSpeedSweep 1.05s linear infinite;
+            pointer-events: none;
+        }
+
+        .motor-racing-text::after {
+            content: "";
+            position: absolute;
+            left: -10%;
+            right: -10%;
+            bottom: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ef4444, #facc15, transparent);
+            box-shadow: 0 0 12px rgba(239,68,68,0.9);
+            animation: racingUnderline 1.25s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes racingTitleLines {
+            0% { background-position-x: 0px; opacity: 0.35; }
+            50% { opacity: 0.7; }
+            100% { background-position-x: 48px; opacity: 0.35; }
+        }
+
+        @keyframes motorSpeedSweep {
+            0% { transform: translateX(-130%); opacity: 0; }
+            18% { opacity: 0.9; }
+            80% { opacity: 0.9; }
+            100% { transform: translateX(130%); opacity: 0; }
+        }
+
+        @keyframes racingUnderline {
+            0%, 100% { opacity: 0.55; transform: scaleX(0.72); }
+            50% { opacity: 1; transform: scaleX(1); }
+        }
+
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
@@ -110,10 +411,10 @@
     <div id="splash" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black transition-opacity duration-700">
         <div class="relative flex flex-col items-center">
             <div class="w-80 md:w-96 mb-10 splash-pulse flex justify-center items-center">
-                <img src="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-13_at_10.36.49_AM-removebg-preview.png" alt="Emzoom Rstyle Logo" class="max-w-full h-auto drop-shadow-[0_0_25px_rgba(212,175,55,0.4)]">
+                <img src="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-13_at_10.36.49_AM-removebg-preview.png" alt="Emzoom Rstyle Logo" class="max-w-full h-auto splash-logo-sport">
             </div>
             <div class="flex items-center gap-4 mt-6">
-                <p class="text-gray-400 text-lg md:text-xl tracking-widest font-bold uppercase">Iniciando Motor</p>
+                <p class="text-gray-400 text-lg md:text-xl tracking-widest font-bold uppercase motor-racing-text">Iniciando Motor</p>
                 <div class="relative w-8 h-8 flex items-center justify-center">
                     <div class="absolute -bottom-1.5 -left-3 w-5 h-5 bg-white/80 rounded-full opacity-0 animate-[drift-smoke_1s_ease-out_infinite] blur-[3px]"></div>
                     <div class="absolute -bottom-1.5 -left-5 w-6 h-6 bg-white/60 rounded-full opacity-0 animate-[drift-smoke_1.2s_ease-out_0.3s_infinite] blur-[4px]"></div>
@@ -182,15 +483,15 @@
             <!-- VISTA: INICIO -->
             <section id="view-home" class="view-section hidden fade-in">
                 <!-- Panel de Tienda Promocional -->
-                <div id="store-banner-container" style="display:none !important;" onclick="navTo('store')" class="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-2xl border border-gray-800 cursor-pointer transition-transform active:scale-[0.98]">
+                <div id="store-banner-container" onclick="navTo('store')" class="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-2xl border border-gray-800 cursor-pointer transition-transform active:scale-[0.98]">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50 z-10"></div>
                     <img id="store-banner-img" src="https://bcbbyfogofovgiesatuf.supabase.co/storage/v1/object/public/imagenes/WhatsApp_Image_2026-05-11_at_10.04.25_AM-removebg-preview.png" class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 transition-opacity duration-700">
                     <div class="absolute top-0 right-0 z-30 pointer-events-none">
                         <span class="bg-red-600/90 backdrop-blur-md text-white text-[9px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-bl-xl shadow-lg block">TIENDA</span>
                     </div>
                     <div class="absolute bottom-4 left-4 z-20 pointer-events-none">
-                        <h3 class="text-2xl font-black uppercase tracking-wider text-white drop-shadow-md">Tienda<br><span class="text-red-500">Oficial</span></h3>
-                        <p class="text-xs text-gray-300 mt-1 font-medium">Adquiere tu mercancía del club</p>
+                        <h3 id="store-banner-title" class="text-2xl font-black uppercase tracking-wider text-white drop-shadow-md">Tienda<br><span class="text-red-500">Oficial</span></h3>
+                        <p id="store-banner-subtitle" class="text-xs text-gray-300 mt-1 font-medium">Adquiere tu mercancía del club</p>
                     </div>
                     <div class="absolute bottom-4 right-4 z-20 pointer-events-none">
                         <div class="bg-white/10 backdrop-blur-sm border border-white/20 p-2 rounded-full text-white"><i data-lucide="shopping-bag" class="w-5 h-5"></i></div>
@@ -340,7 +641,7 @@
 
             <!-- VISTA: MIEMBROS -->
             <section id="view-members" class="view-section hidden fade-in">
-                <div class="mb-6 space-y-3 sticky top-[72px] z-20 glass p-3 rounded-2xl">
+                <div class="mb-6 space-y-3 glass p-3 rounded-2xl">
                     <div class="relative">
                         <i data-lucide="search" class="absolute left-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
                         <input type="text" id="search-input" placeholder="Buscar nombre o apodo..." class="input-dark w-full py-3 pl-10 pr-4 rounded-xl text-sm" oninput="filterMembers()">
@@ -362,7 +663,7 @@
             <!-- VISTA: EVENTOS (LISTA) -->
             <section id="view-events" class="view-section hidden fade-in">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Próximas Rutas</h3>
+                    <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200"><span class="racing-team-title">TEAM RSTYLE</span></h3>
                     <button id="btn-create-event" onclick="navTo('event-form')" class="hidden bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 shadow-lg flex items-center gap-1 text-sm font-semibold"><i data-lucide="plus" class="w-4 h-4"></i> Crear</button>
                 </div>
 
@@ -431,10 +732,65 @@
                 </form>
             </section>
 
-            <!-- VISTA: SISTEMA / USUARIOS -->
+            <!-- VISTA: SISTEMA / ADMINISTRADOR -->
             <section id="view-users" class="view-section hidden fade-in">
+                <div class="mb-6 slide-up">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="bg-red-500/10 p-3 rounded-2xl border border-red-500/20">
+                            <i data-lucide="settings" class="w-6 h-6 text-red-500"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-black uppercase tracking-wide text-white">Panel Administrador</h2>
+                            <p class="text-xs text-gray-400">Selecciona un módulo para abrir su vista de administración.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 slide-up" style="animation-delay: 0.05s">
+                    <button type="button" onclick="navTo('admin-user-form')" class="glass-card rounded-2xl p-5 text-left border border-white/5 hover:border-blue-500/50 active:scale-95 transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-blue-500/10 p-3 rounded-xl"><i data-lucide="user-plus" class="w-6 h-6 text-blue-400"></i></span>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i>
+                        </div>
+                        <h3 class="font-black text-white uppercase text-base">Usuarios</h3>
+                        <p class="text-xs text-gray-400 mt-1">Crear o actualizar cuentas del sistema.</p>
+                    </button>
+
+                    <button type="button" onclick="navTo('admin-views-control')" class="glass-card rounded-2xl p-5 text-left border border-white/5 hover:border-green-500/50 active:scale-95 transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-green-500/10 p-3 rounded-xl"><i data-lucide="sliders-horizontal" class="w-6 h-6 text-green-400"></i></span>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i>
+                        </div>
+                        <h3 class="font-black text-white uppercase text-base">Control de Vistas</h3>
+                        <p class="text-xs text-gray-400 mt-1">Activar o apagar módulos de la aplicación.</p>
+                    </button>
+
+                    <button type="button" onclick="navTo('admin-user-list')" class="glass-card rounded-2xl p-5 text-left border border-white/5 hover:border-purple-500/50 active:scale-95 transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-purple-500/10 p-3 rounded-xl"><i data-lucide="users" class="w-6 h-6 text-purple-400"></i></span>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i>
+                        </div>
+                        <h3 class="font-black text-white uppercase text-base">Directorio</h3>
+                        <p class="text-xs text-gray-400 mt-1">Ver, editar o suspender usuarios.</p>
+                    </button>
+                </div>
+            </section>
+
+            <!-- VISTA: ADMIN / FORMULARIO USUARIOS -->
+            <section id="view-admin-user-form" class="view-section hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Usuarios</h3>
+                        <p class="text-xs text-gray-500 mt-1">Formulario administrativo</p>
+                    </div>
+                    <button onclick="navTo('users')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase"><i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Panel</button>
+                </div>
+
                 <div class="glass-card p-6 rounded-[2rem] shadow-2xl mb-8 slide-up">
-                    <div class="flex items-center gap-3 mb-6"><div class="bg-blue-500/10 p-2 rounded-lg"><i data-lucide="user-plus" class="w-6 h-6 text-blue-400"></i></div><h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Registrar / Actualizar Usuario</h3></div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-blue-500/10 p-2 rounded-lg"><i data-lucide="user-plus" class="w-6 h-6 text-blue-400"></i></div>
+                        <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Registrar / Actualizar Usuario</h3>
+                    </div>
                     <form id="user-form" class="space-y-5">
                         <input type="hidden" id="user-id">
                         <div class="grid grid-cols-1 gap-5">
@@ -450,8 +806,55 @@
                         <button type="button" id="btn-cancel-user" onclick="resetUserForm()" class="hidden w-full text-gray-500 text-xs font-bold uppercase mt-2 transition active:scale-95">Cancelar Edición</button>
                     </form>
                 </div>
-                <div class="glass-card rounded-[1.5rem] overflow-hidden slide-up" style="animation-delay: 0.2s">
-                    <div class="p-5 border-b border-white/5"><h3 class="text-sm font-bold text-white uppercase tracking-tight">Directorio de Personal</h3></div>
+            </section>
+
+            <!-- VISTA: ADMIN / CONTROL DE VISTAS -->
+            <section id="view-admin-views-control" class="view-section hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Control de Vistas</h3>
+                        <p class="text-xs text-gray-500 mt-1">Activa o apaga módulos públicos</p>
+                    </div>
+                    <button onclick="navTo('users')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase"><i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Panel</button>
+                </div>
+
+                <div class="glass-card p-6 rounded-[2rem] shadow-2xl mb-8 slide-up">
+                    <div class="flex items-center justify-between gap-4 mb-5">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-green-500/10 p-2 rounded-lg"><i data-lucide="sliders-horizontal" class="w-6 h-6 text-green-400"></i></div>
+                            <div>
+                                <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Panel de módulos</h3>
+                                <p class="text-xs text-gray-400 mt-1">Los cambios afectan el menú y el acceso de los usuarios.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="toggle-all-views" type="button" onclick="toggleAllPublicViewsButton()" class="w-full bg-red-600 hover:bg-red-700 text-white rounded-2xl p-4 mb-4 flex items-center justify-center gap-2 font-black uppercase text-xs tracking-widest transition active:scale-95">
+                        Gestionar todas las vistas
+                    </button>
+
+                    <div id="app-view-switches" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                </div>
+            </section>
+
+            <!-- VISTA: ADMIN / DIRECTORIO USUARIOS -->
+            <section id="view-admin-user-list" class="view-section hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Directorio del Sistema</h3>
+                        <p class="text-xs text-gray-500 mt-1">Usuarios registrados</p>
+                    </div>
+                    <button onclick="navTo('users')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase"><i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Panel</button>
+                </div>
+
+                <div class="glass-card rounded-[1.5rem] overflow-hidden slide-up">
+                    <div class="p-5 border-b border-white/5 flex items-center justify-between gap-3">
+                        <div>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-tight">Personal</h3>
+                            <p class="text-[11px] text-gray-500 mt-1">Edita roles o estados de acceso</p>
+                        </div>
+                        <button type="button" onclick="resetUserForm(); navTo('admin-user-form')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-xs font-bold uppercase transition active:scale-95">Nuevo</button>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-white/5 text-[10px] uppercase font-bold text-gray-400"><tr><th class="px-5 py-4">Usuario</th><th class="px-5 py-4">Rol</th><th class="px-5 py-4 text-right">Acción</th></tr></thead>
@@ -463,11 +866,18 @@
 
             <!-- VISTA: TIENDA OFICIAL -->
             <section id="view-store" class="view-section hidden fade-in">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Tienda 507</h3>
-                    <div class="flex gap-2">
-                        <button id="btn-view-orders" onclick="navTo('store-orders')" class="hidden bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 shadow-lg flex items-center gap-1 text-xs font-semibold uppercase tracking-wider"><i data-lucide="list-ordered" class="w-4 h-4 pointer-events-none"></i> Gestión</button>
-                        <button id="btn-create-store" onclick="navTo('store-form')" class="hidden bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 shadow-lg flex items-center gap-1 text-xs font-semibold uppercase tracking-wider"><i data-lucide="plus" class="w-4 h-4 pointer-events-none"></i> Crear</button>
+                <div class="mb-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="bg-red-500/10 p-3 rounded-2xl border border-red-500/20"><i data-lucide="shopping-bag" class="w-6 h-6 text-red-500"></i></div>
+                        <div>
+                            <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Tienda 507</h3>
+                            <p class="text-xs text-gray-400">Artículos oficiales y pedidos en una sola vista.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button id="btn-create-store" onclick="navTo('store-form')" class="hidden store-action-card bg-red-600/15 hover:bg-red-600/25 border-red-500/30 text-red-100"><i data-lucide="plus-circle" class="w-4 h-4 pointer-events-none text-red-400"></i> Agregar Artículo</button>
+                        <button id="btn-view-orders" onclick="navTo('store-orders')" class="hidden store-action-card bg-purple-600/15 hover:bg-purple-600/25 border-purple-500/30 text-purple-100"><i data-lucide="list-ordered" class="w-4 h-4 pointer-events-none text-purple-400"></i> Ver Pedidos</button>
+                        <button id="btn-my-orders-from-store" onclick="navTo('my-orders')" class="store-action-card bg-green-600/15 hover:bg-green-600/25 border-green-500/30 text-green-100"><i data-lucide="package" class="w-4 h-4 pointer-events-none text-green-400"></i> Ver Mis Pedidos</button>
                     </div>
                 </div>
                 <div id="store-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4"></div>
@@ -589,13 +999,11 @@
                         </iframe>
                     </div>
 
-                    <div id="live-open-box" class="hidden relative z-10 mt-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 text-sm text-yellow-100">
-                        <p class="text-xs leading-relaxed mb-2">
-                            Si YouTube muestra Error 153, abre el live directo. Ese error suele aparecer cuando la app se abre como archivo local o sin dominio válido.
-                        </p>
-                        <a id="live-open-link" href="#" target="_blank" rel="noopener" class="inline-flex items-center justify-center w-full bg-red-600 hover:bg-red-700 text-white rounded-xl py-2.5 font-bold transition active:scale-95">
-                            ▶ Mirar el video en YouTube
-                        </a>
+                    <div class="relative z-10 mt-3 flex justify-end">
+                        <button type="button" onclick="openLiveFullscreen()" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition active:scale-95">
+                            <i data-lucide="maximize" class="w-4 h-4 pointer-events-none"></i>
+                            Pantalla completa
+                        </button>
                     </div>
 
                     <div id="live-admin-panel" class="hidden glass-card rounded-xl p-4 mt-4 relative z-10">
@@ -616,10 +1024,6 @@
                             class="input-dark w-full mb-2 px-4 py-3 rounded-xl text-sm"
                             placeholder="Pega aquí el enlace de YouTube o Twitch">
 
-                        <p class="text-[11px] text-gray-400 mb-3 leading-relaxed">
-                            Aquí debes colocar la URL del live. Ejemplo: https://www.youtube.com/watch?v=XXXX o https://www.twitch.tv/canal. Para evitar Error 153 de YouTube, publica la app en un dominio HTTPS, no la abras como archivo local.
-                        </p>
-
                         <button
                             onclick="publishLive()"
                             class="w-full bg-green-600 hover:bg-green-700 rounded-xl py-3 font-bold mb-2 transition active:scale-95">
@@ -638,14 +1042,16 @@
 
         <nav id="bottom-nav" class="glass fixed bottom-0 w-full z-40 rounded-t-3xl border-t border-gray-800 flex justify-around items-center h-16 hidden px-1">
             <button onclick="navTo('home')" class="nav-btn flex flex-col items-center p-1 text-red-500 transition-all duration-200 active:scale-90 w-14" id="nav-home"><i data-lucide="home" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Inicio</span></button>
-            <button onclick="navTo('live-stream')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-live-stream"><i data-lucide="radio" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Live</span></button>
             <button onclick="navTo('members')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-members"><i data-lucide="users" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Miembros</span></button>
+            <button onclick="navTo('live-stream')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-live-stream">
+                <div class="relative pointer-events-none"><i data-lucide="radio" class="w-5 h-5 mb-1"></i><div id="live-notification" class="hidden absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full p-[2px] shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse"><i data-lucide="bell" class="w-2 h-2 fill-current"></i></div></div>
+                <span class="text-[8px] font-bold pointer-events-none">Live</span>
+            </button>
             <button onclick="navTo('events')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-events">
                 <div class="relative pointer-events-none"><i data-lucide="calendar" class="w-5 h-5 mb-1"></i><div id="event-notification" class="hidden absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full p-[2px] shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse"><i data-lucide="bell" class="w-2 h-2 fill-current"></i></div></div>
                 <span class="text-[8px] font-bold pointer-events-none">Eventos</span>
             </button>
-            <button onclick="navTo('store')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-store" style="display:none !important;"><i data-lucide="shopping-bag" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Tienda</span></button>
-            <button onclick="navTo('my-orders')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-my-orders" style="display:none !important;"><i data-lucide="package" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Pedidos</span></button>
+            <button onclick="navTo('store')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-store"><i data-lucide="shopping-bag" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Tienda</span></button>
             <button onclick="navTo('birthdays')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-birthdays">
                 <div class="relative pointer-events-none"><i data-lucide="gift" class="w-5 h-5 mb-1"></i><div id="birthday-notification" class="hidden absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full p-[2px] shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse"><i data-lucide="bell" class="w-2 h-2 fill-current"></i></div></div>
                 <span class="text-[8px] font-bold pointer-events-none">Cumples</span>
@@ -708,6 +1114,17 @@
         
         let currentUser = JSON.parse(localStorage.getItem('emzoom_user')) || null;
         let streamConfig = null;
+        const DEFAULT_APP_VIEW_SETTINGS = {
+            home: true,
+            liveStream: true,
+            members: true,
+            events: true,
+            birthdays: true,
+            store: true,
+            myOrders: true,
+            users: true
+        };
+        let appViewSettings = { ...DEFAULT_APP_VIEW_SETTINGS };
         let isLoginMode = true;
 
         let lastBackPressTime = 0;
@@ -845,11 +1262,13 @@
                     
                     if (!document.getElementById('view-members').classList.contains('hidden')) renderMembers();
                     if (!document.getElementById('view-events').classList.contains('hidden')) renderEvents();
-                    if (!document.getElementById('view-users').classList.contains('hidden')) renderUsers();
+                    if (!document.getElementById('view-admin-user-list')?.classList.contains('hidden')) renderUsers();
                     if (!document.getElementById('view-birthdays').classList.contains('hidden')) renderBirthdays();
                     if (!document.getElementById('view-store').classList.contains('hidden')) renderStore();
                     if (!document.getElementById('view-store-orders').classList.contains('hidden')) renderStoreOrders();
                     if (!document.getElementById('view-my-orders').classList.contains('hidden')) renderMyOrders();
+                if (!document.getElementById('view-admin-views-control')?.classList.contains('hidden')) renderAppViewSettingsPanel();
+                    if (!document.getElementById('view-admin-views-control')?.classList.contains('hidden')) renderAppViewSettingsPanel();
                     return;
                 }
 
@@ -894,7 +1313,7 @@
                 if (!document.getElementById('view-members').classList.contains('hidden')) renderMembers();
                 if (!document.getElementById('view-events').classList.contains('hidden')) renderEvents();
                 if (!document.getElementById('view-birthdays').classList.contains('hidden')) renderBirthdays();
-                if (!document.getElementById('view-users').classList.contains('hidden')) renderUsers();
+                if (!document.getElementById('view-admin-user-list')?.classList.contains('hidden')) renderUsers();
                 if (!document.getElementById('view-store').classList.contains('hidden')) renderStore();
                 if (!document.getElementById('view-store-orders').classList.contains('hidden')) renderStoreOrders();
                 if (!document.getElementById('view-my-orders').classList.contains('hidden')) renderMyOrders();
@@ -903,37 +1322,235 @@
             }
         }
 
+
+        const APP_VIEW_LABELS = [
+            { key: 'home', route: 'home', nav: 'nav-home', label: 'Inicio', icon: 'home' },
+            { key: 'members', route: 'members', nav: 'nav-members', label: 'Miembros', icon: 'users' },
+            { key: 'liveStream', route: 'live-stream', nav: 'nav-live-stream', label: 'Live Stream', icon: 'radio' },
+            { key: 'events', route: 'events', nav: 'nav-events', label: 'Eventos', icon: 'calendar' },
+            { key: 'store', route: 'store', nav: 'nav-store', label: 'Tienda', icon: 'shopping-bag' },
+            { key: 'myOrders', route: 'my-orders', nav: 'nav-my-orders', label: 'Mis Pedidos', icon: 'package' },
+            { key: 'birthdays', route: 'birthdays', nav: 'nav-birthdays', label: 'Cumpleaños', icon: 'gift' },
+            { key: 'users', route: 'users', nav: 'nav-users', label: 'Sistema', icon: 'settings' }
+        ];
+
+        const ROUTE_VIEW_KEY = {
+            'home': 'home',
+            'live-stream': 'liveStream',
+            'members': 'TEAM RSTYLE',
+            'register': 'members',
+            'events': 'events',
+            'event-form': 'events',
+            'event-details': 'events',
+            'birthdays': 'birthdays',
+            'store': 'store',
+            'store-form': 'store',
+            'store-orders': 'store',
+            'my-orders': 'myOrders',
+            'users': 'users',
+            'admin-user-form': 'users',
+            'admin-views-control': 'users',
+            'admin-user-list': 'users'
+        };
+
+        function normalizeAppViewSettings(settings) {
+            return { ...DEFAULT_APP_VIEW_SETTINGS, ...(settings || {}) };
+        }
+
+        async function loadAppViewSettings() {
+            appViewSettings = normalizeAppViewSettings(JSON.parse(localStorage.getItem('emzoom_app_view_settings') || '{}'));
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('app_config')
+                    .select('view_settings')
+                    .eq('id', 1)
+                    .single();
+
+                if (!error && data && data.view_settings) {
+                    appViewSettings = normalizeAppViewSettings(data.view_settings);
+                    localStorage.setItem('emzoom_app_view_settings', JSON.stringify(appViewSettings));
+                }
+            } catch (err) {
+                console.warn('No se pudo cargar app_config. Usando configuración local.', err);
+            }
+
+            applyAppViewSettingsToUI();
+            renderAppViewSettingsPanel();
+            refreshLiveNotification();
+        }
+
+        async function saveAppViewSettings() {
+            appViewSettings = normalizeAppViewSettings(appViewSettings);
+            localStorage.setItem('emzoom_app_view_settings', JSON.stringify(appViewSettings));
+            applyAppViewSettingsToUI();
+            renderAppViewSettingsPanel();
+
+            try {
+                const { error } = await supabaseClient
+                    .from('app_config')
+                    .upsert({
+                        id: 1,
+                        view_settings: appViewSettings,
+                        updated_at: new Date().toISOString()
+                    });
+
+                if (error) {
+                    console.warn('No se pudo guardar en app_config. Agrega la tabla en Supabase.', error);
+                    showToast('Guardado local', 'La configuración se guardó en este dispositivo. Crea app_config en Supabase para compartirla.', 'error');
+                    return;
+                }
+
+                showToast('Configuración guardada', 'Las vistas fueron actualizadas');
+            } catch (err) {
+                console.warn('No se pudo guardar app_config.', err);
+                showToast('Guardado local', 'La configuración se guardó en este dispositivo.', 'error');
+            }
+        }
+
+        function isAppViewEnabled(view) {
+            if (!view || view === 'login') return true;
+            const key = ROUTE_VIEW_KEY[view];
+            if (!key) return true;
+            return appViewSettings[key] !== false;
+        }
+
+        function getFirstEnabledView() {
+            const preferred = currentUser && currentUser.rol === 'Proveedor'
+                ? ['store', 'my-orders', 'live-stream', 'home']
+                : ['home', 'members', 'live-stream', 'events', 'store', 'birthdays', 'my-orders'];
+            return preferred.find(view => isAppViewEnabled(view)) || ((currentUser && currentUser.rol === 'Admin') ? 'users' : 'login');
+        }
+
+        function setNavVisibility(id, visible) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (visible) {
+                el.classList.remove('hidden');
+                el.style.display = '';
+            } else {
+                el.classList.add('hidden');
+                el.style.display = 'none';
+            }
+        }
+
+        function applyAppViewSettingsToUI() {
+            const isAdmin = currentUser && currentUser.rol === 'Admin';
+            const isProveedor = currentUser && currentUser.rol === 'Proveedor';
+
+            setNavVisibility('nav-home', appViewSettings.home !== false && !isProveedor);
+            setNavVisibility('nav-live-stream', appViewSettings.liveStream !== false && !isProveedor);
+            setNavVisibility('nav-members', appViewSettings.members !== false && !isProveedor);
+            setNavVisibility('nav-events', appViewSettings.events !== false && !isProveedor);
+            setNavVisibility('nav-birthdays', appViewSettings.birthdays !== false && !isProveedor);
+            setNavVisibility('nav-store', appViewSettings.store !== false && !!currentUser);
+            setNavVisibility('nav-my-orders', false);
+            setNavVisibility('nav-users', appViewSettings.users !== false && isAdmin);
+
+            const banner = document.getElementById('store-banner-container');
+            if (banner) banner.style.display = appViewSettings.store !== false ? '' : 'none';
+
+            const btnMyOrdersFromStore = document.getElementById('btn-my-orders-from-store');
+            if (btnMyOrdersFromStore) {
+                if (appViewSettings.myOrders !== false && !!currentUser && !isProveedor) btnMyOrdersFromStore.classList.remove('hidden');
+                else btnMyOrdersFromStore.classList.add('hidden');
+            }
+        }
+
+        function toggleAppView(key, checked) {
+            appViewSettings[key] = checked;
+            saveAppViewSettings();
+        }
+
+        function toggleAllPublicViews(checked) {
+            Object.keys(DEFAULT_APP_VIEW_SETTINGS).forEach(key => {
+                if (key !== 'users') appViewSettings[key] = checked;
+            });
+            saveAppViewSettings();
+        }
+
+        function toggleAllPublicViewsButton() {
+            const publicKeys = Object.keys(DEFAULT_APP_VIEW_SETTINGS).filter(key => key !== 'users');
+            const allActive = publicKeys.every(key => appViewSettings[key] !== false);
+            toggleAllPublicViews(!allActive);
+        }
+
+        function renderAppViewSettingsPanel() {
+            const container = document.getElementById('app-view-switches');
+            if (!container) return;
+
+            const switchItems = APP_VIEW_LABELS.map(item => {
+                const isOn = appViewSettings[item.key] !== false;
+                const nextState = !isOn;
+                return `
+                    <button type="button" onclick="toggleAppView('${item.key}', ${nextState})" class="bg-black/30 border ${isOn ? 'border-green-500/30' : 'border-white/10'} rounded-2xl p-4 flex items-center justify-between gap-4 active:scale-[0.99] transition text-left">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-white/5 p-2 rounded-xl"><i data-lucide="${item.icon}" class="w-4 h-4 ${isOn ? 'text-green-400' : 'text-gray-500'}"></i></div>
+                            <div>
+                                <h4 class="text-sm font-black text-white uppercase tracking-wide">${item.label}</h4>
+                                <p class="text-[10px] ${isOn ? 'text-green-400' : 'text-gray-500'}">${isOn ? 'Activa' : 'Apagada'}</p>
+                            </div>
+                        </div>
+                        <span class="w-12 h-7 rounded-full p-1 flex items-center ${isOn ? 'bg-green-600 justify-end' : 'bg-gray-700 justify-start'} transition-all shrink-0">
+                            <span class="w-5 h-5 bg-white rounded-full shadow"></span>
+                        </span>
+                    </button>`;
+            }).join('');
+
+            container.innerHTML = switchItems;
+
+            const toggleAll = document.getElementById('toggle-all-views');
+            if (toggleAll) {
+                const publicKeys = Object.keys(DEFAULT_APP_VIEW_SETTINGS).filter(key => key !== 'users');
+                const allActive = publicKeys.every(key => appViewSettings[key] !== false);
+                toggleAll.className = `w-full ${allActive ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white rounded-2xl p-4 mb-4 flex items-center justify-center gap-2 font-black uppercase text-xs tracking-widest transition active:scale-95`;
+                toggleAll.innerHTML = allActive
+                    ? '<i data-lucide="power" class="w-4 h-4"></i> Apagar vistas públicas'
+                    : '<i data-lucide="power" class="w-4 h-4"></i> Activar vistas públicas';
+            }
+
+            lucide.createIcons();
+        }
+
+        function showAdminCard(cardId, silent = false) {
+            document.querySelectorAll('.admin-card-view').forEach(card => card.classList.add('hidden'));
+            const activeCard = document.getElementById(cardId);
+            if (activeCard) activeCard.classList.remove('hidden');
+
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('border-red-500/40', 'ring-1', 'ring-red-500/30'));
+            const tabMap = {
+                'admin-users-card': 'admin-tab-users',
+                'admin-views-card': 'admin-tab-views',
+                'admin-user-list-card': 'admin-tab-list'
+            };
+            const activeTab = document.getElementById(tabMap[cardId]);
+            if (activeTab) activeTab.classList.add('border-red-500/40', 'ring-1', 'ring-red-500/30');
+
+            if (!silent) window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         function updateUIPermissions() {
             const isAdmin = currentUser && currentUser.rol === 'Admin';
             const isProveedor = currentUser && currentUser.rol === 'Proveedor';
-            const isUser = currentUser && currentUser.rol === 'Usuario';
             const canManageStore = isAdmin || isProveedor;
             
             const adminCard = document.getElementById('admin-home-card');
             if (adminCard) { if (isAdmin) adminCard.classList.remove('hidden'); else adminCard.classList.add('hidden'); }
+
             const livePanel = document.getElementById('live-admin-panel');
             if (livePanel) {
-                if (currentUser && currentUser.rol === 'Admin') livePanel.classList.remove('hidden');
+                if (isAdmin) livePanel.classList.remove('hidden');
                 else livePanel.classList.add('hidden');
             }
-
-            const navUsers = document.getElementById('nav-users');
-            if (navUsers) { if (isAdmin) navUsers.classList.remove('hidden'); else navUsers.classList.add('hidden'); }
 
             const btnCreateEvent = document.getElementById('btn-create-event');
             if (btnCreateEvent) { if (isAdmin) btnCreateEvent.classList.remove('hidden'); else btnCreateEvent.classList.add('hidden'); }
             
             const btnCreateStore = document.getElementById('btn-create-store');
             const btnViewOrders = document.getElementById('btn-view-orders');
-            const navMyOrders = document.getElementById('nav-my-orders');
-
-            if (navMyOrders) {
-                if (currentUser && !isProveedor) navMyOrders.classList.remove('hidden');
-                else navMyOrders.classList.add('hidden');
-            }
 
             if (btnCreateStore && btnViewOrders) {
-                if (canManageStore) {
+                if (canManageStore && appViewSettings.store !== false) {
                     btnCreateStore.classList.remove('hidden');
                     btnViewOrders.classList.remove('hidden');
                 } else {
@@ -942,20 +1559,8 @@
                 }
             }
 
-            // Ocultar botones inferiores de navegación si es proveedor
-            const navHome = document.getElementById('nav-home');
-            const navMembers = document.getElementById('nav-members');
-            const navEvents = document.getElementById('nav-events');
-            
-            if (isProveedor) {
-                if(navHome) navHome.classList.add('hidden');
-                if(navMembers) navMembers.classList.add('hidden');
-                if(navEvents) navEvents.classList.add('hidden');
-            } else {
-                if(navHome) navHome.classList.remove('hidden');
-                if(navMembers) navMembers.classList.remove('hidden');
-                if(navEvents) navEvents.classList.remove('hidden');
-            }
+            applyAppViewSettingsToUI();
+            renderAppViewSettingsPanel();
         }
 
         function updateEventNotification() {
@@ -964,6 +1569,7 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0); 
             const activeEvents = events.filter(ev => {
+                if (typeof isEventFinished === 'function' && isEventFinished(ev)) return false;
                 const eventDate = new Date(ev.fecha);
                 eventDate.setHours(0, 0, 0, 0);
                 return eventDate >= today;
@@ -1293,26 +1899,51 @@
         }
 
         function startStoreBannerRotation() {
+            const bannerContainer = document.getElementById('store-banner-container');
             const bannerImg = document.getElementById('store-banner-img');
+            const bannerTitle = document.getElementById('store-banner-title');
+            const bannerSubtitle = document.getElementById('store-banner-subtitle');
             if (!bannerImg) return;
 
-            const storeImages = storeItems.filter(item => item.imagen).map(item => item.imagen);
-            if (storeImages.length === 0) return; 
+            if (bannerContainer) {
+                bannerContainer.style.display = appViewSettings.store !== false ? '' : 'none';
+            }
+
+            if (appViewSettings.store === false) return;
+
+            const bannerItems = storeItems.filter(item => item && item.imagen);
+            if (bannerItems.length === 0) {
+                if (bannerTitle) bannerTitle.innerHTML = 'Tienda<br><span class="text-red-500">Oficial</span>';
+                if (bannerSubtitle) bannerSubtitle.innerText = 'Adquiere tu mercancía del club';
+                return;
+            }
 
             if (storeBannerInterval) clearInterval(storeBannerInterval);
-            
-            bannerImg.src = storeImages[0];
-            currentStoreImgIndex = 0;
 
-            if (storeImages.length > 1) {
+            const applyBannerItem = (index) => {
+                const item = bannerItems[index];
+                bannerImg.src = item.imagen;
+                bannerImg.style.opacity = '0.45';
+                if (bannerTitle) bannerTitle.innerText = item.nombre || 'Artículo oficial';
+                if (bannerSubtitle) {
+                    const price = item.precio !== undefined && item.precio !== null && item.precio !== ''
+                        ? `Disponible por $${parseFloat(item.precio).toFixed(2)}`
+                        : 'Disponible en la tienda oficial';
+                    bannerSubtitle.innerText = price;
+                }
+            };
+
+            currentStoreImgIndex = 0;
+            applyBannerItem(currentStoreImgIndex);
+
+            if (bannerItems.length > 1) {
                 storeBannerInterval = setInterval(() => {
-                    bannerImg.style.opacity = '0'; 
+                    bannerImg.style.opacity = '0';
                     setTimeout(() => {
-                        currentStoreImgIndex = (currentStoreImgIndex + 1) % storeImages.length;
-                        bannerImg.src = storeImages[currentStoreImgIndex];
-                        bannerImg.style.opacity = '0.4'; 
-                    }, 700); 
-                }, 4000); 
+                        currentStoreImgIndex = (currentStoreImgIndex + 1) % bannerItems.length;
+                        applyBannerItem(currentStoreImgIndex);
+                    }, 700);
+                }, 4000);
             }
         }
 
@@ -1446,6 +2077,8 @@
             flatpickr("#fecha_nac", { locale: "es", dateFormat: "Y-m-d", altInput: true, altFormat: "d \\de F \\de Y", maxDate: "today", disableMobile: "true" });
             flatpickr("#ev-fecha", { locale: "es", enableTime: true, dateFormat: "Y-m-d H:i", altInput: true, altFormat: "d \\de F \\de Y - h:i K", time_24hr: false, disableMobile: "true" });
 
+            await loadAppViewSettings();
+
             if (currentUser) { 
                 await loadData(); 
             }
@@ -1461,7 +2094,7 @@
                     if (currentUser) {
                         document.getElementById('bottom-nav').classList.remove('hidden');
                         if (currentUser.rol === 'Proveedor') navTo('store');
-                        else navTo('birthdays');
+                        else navTo('home');
                     } else {
                         navTo('login');
                     }
@@ -1471,8 +2104,15 @@
         });
 
         function navTo(view, isBackNavigation = false) {
-            if (view === 'users' && (!currentUser || currentUser.rol === 'Usuario' || currentUser.rol === 'Proveedor')) {
+            if (['users','admin-user-form','admin-views-control','admin-user-list'].includes(view) && (!currentUser || currentUser.rol === 'Usuario' || currentUser.rol === 'Proveedor')) {
                 showToast('Acceso Denegado', 'No tienes permisos de administrador.');
+                return;
+            }
+
+            if (!isAppViewEnabled(view) && !(currentUser && currentUser.rol === 'Admin')) {
+                showToast('Vista desactivada', 'Esta vista está desactivada por el administrador.', 'error');
+                const fallbackView = getFirstEnabledView();
+                if (fallbackView && fallbackView !== view) navTo(fallbackView, true);
                 return;
             }
 
@@ -1485,7 +2125,8 @@
                 btn.classList.add('text-gray-500');
             });
             
-            const activeBtn = document.getElementById(`nav-${view}`);
+            const activeNavView = ['store-form', 'store-orders', 'my-orders'].includes(view) ? 'store' : view;
+            const activeBtn = document.getElementById(`nav-${activeNavView}`);
             if (activeBtn) {
                 activeBtn.classList.remove('text-gray-500');
                 activeBtn.classList.add('text-red-500');
@@ -1506,7 +2147,7 @@
                 'login': 'Autenticación',
                 'home': 'Inicio',
                 'register': editMode ? 'Editar Auto' : 'Registrar Auto',
-                'members': 'Directorio 507',
+                'members': 'TEAM RSTYLE',
                 'events': 'Eventos Oficiales',
                 'event-details': 'Reporte de Evento',
                 'birthdays': 'Cumpleaños',
@@ -1516,14 +2157,25 @@
                 'store-form': editStoreMode ? 'Editar Artículo' : 'Crear Artículo',
                 'store-orders': 'Gestión de Pedidos',
                 'my-orders': 'Mis Pedidos',
-                'live-stream': 'Live Stream'
+                'live-stream': 'Live Stream',
+                'admin-user-form': 'Usuarios',
+                'admin-views-control': 'Control de Vistas',
+                'admin-user-list': 'Directorio del Sistema'
             };
-            if(titles[view]) document.getElementById('header-title').innerText = titles[view];
+            if(titles[view]) {
+                const headerTitleEl = document.getElementById('header-title');
+                if (headerTitleEl) {
+                    headerTitleEl.innerText = titles[view];
+                    if (view === 'members') headerTitleEl.classList.add('header-racing-title');
+                    else headerTitleEl.classList.remove('header-racing-title');
+                }
+            }
 
             if (view === 'events') renderEvents();
             if (view === 'members') renderMembers();
             if (view === 'birthdays') renderBirthdays();
-            if (view === 'users') renderUsers();
+            if (view === 'admin-user-list') renderUsers();
+            if (view === 'admin-views-control') renderAppViewSettingsPanel();
             if (view === 'store') renderStore();
             if (view === 'store-orders') renderStoreOrders();
             if (view === 'my-orders') renderMyOrders();
@@ -1611,28 +2263,44 @@
         }
 
         function updateLiveOpenButton(url) {
-            const box = document.getElementById('live-open-box');
-            const link = document.getElementById('live-open-link');
-            if (!box || !link) return;
+            // Mensaje/botón externo desactivado por solicitud del usuario.
+            return;
+        }
 
-            if (!url) {
-                box.classList.add('hidden');
-                link.href = '#';
+
+        function updateLiveNotification(isActive) {
+            const notif = document.getElementById('live-notification');
+            if (!notif) return;
+            if (isActive) notif.classList.remove('hidden');
+            else notif.classList.add('hidden');
+        }
+
+        async function refreshLiveNotification() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('stream_config')
+                    .select('is_active,url')
+                    .eq('id', 1)
+                    .single();
+                if (error) {
+                    updateLiveNotification(false);
+                    return;
+                }
+                updateLiveNotification(!!(data && data.is_active && data.url));
+            } catch (err) {
+                updateLiveNotification(false);
+            }
+        }
+
+        function openLiveFullscreen() {
+            const player = document.getElementById('live-player');
+            if (!player || !player.src) {
+                showToast('Live no disponible', 'No hay transmisión activa', 'error');
                 return;
             }
-
-            link.href = url;
-            const platform = detectLivePlatform(url);
-            if (platform === 'YouTube') {
-                link.innerText = '▶ Mirar el video en YouTube';
-                box.classList.remove('hidden');
-            } else if (platform === 'Twitch') {
-                link.innerText = '▶ Abrir live en Twitch';
-                box.classList.remove('hidden');
-            } else {
-                link.innerText = '▶ Abrir live';
-                box.classList.remove('hidden');
-            }
+            const request = player.requestFullscreen || player.webkitRequestFullscreen || player.mozRequestFullScreen || player.msRequestFullscreen;
+            if (request) request.call(player);
+            else showToast('Aviso', 'Tu navegador no permite pantalla completa desde aquí', 'error');
         }
 
         function loadLiveStream() {
@@ -1678,6 +2346,7 @@
                 if (status) status.innerHTML = '<span class="text-gray-400">⚫ Offline</span>';
                 if (platform) platform.innerText = 'No detectado';
                 if (player) player.src = '';
+                updateLiveNotification(false);
                 updateLiveOpenButton('');
                 return;
             }
@@ -1693,10 +2362,12 @@
                 if (player) player.src = '';
                 if (status) status.innerHTML = '<span class="text-gray-400">⚫ Offline</span>';
                 if (platform) platform.innerText = 'No detectado';
+                updateLiveNotification(false);
                 return;
             }
 
             if (status) status.innerHTML = '<span class="text-red-500 animate-pulse">🔴 EN VIVO</span>';
+            updateLiveNotification(true);
             if (platform) platform.innerText = detectLivePlatform(data.url);
 
             loadLiveStream();
@@ -1735,6 +2406,7 @@
             }
 
             showToast('Éxito', 'Live publicado');
+            updateLiveNotification(true);
             await loadStreamConfig();
         }
 
@@ -1759,6 +2431,7 @@
             }
 
             showToast('Live Finalizado', 'La transmisión fue cerrada');
+            updateLiveNotification(false);
             await loadStreamConfig();
         }
 
@@ -2158,7 +2831,7 @@
                 }
                 
                 const eventsAttended = asistenciasTotales.filter(a => normalizeStr(a.usuario_nombre) === normalizeStr(member.nombre)).length;
-                const attendanceHtml = `<div class="flex items-center gap-2"><i data-lucide="flag" class="w-4 h-4 text-gray-500"></i> <span><span class="text-green-400 font-bold text-[15px] animate-pulse drop-shadow-[0_0_8px_rgba(74,222,128,0.8)]">${eventsAttended}</span> MEET EMZOOM RSTYLE 507 TEAM</span></div>`;
+                const attendanceHtml = `<div class="flex items-center gap-2"><i data-lucide="flag" class="w-4 h-4 text-gray-500"></i> <span class="meet-racing-line"><span class="meet-race-count"><span>${eventsAttended}</span></span><span class="meet-race-text">MEET EMZOOM RSTYLE 507 TEAM</span></span></div>`;
                 
                 const profileImgStr = member.foto_perfil 
                     ? `<img src="${member.foto_perfil}" class="w-20 h-20 rounded-full object-cover border-4 border-[#151515] ring-2 shadow-2xl cursor-pointer transition-transform hover:scale-105 active:scale-95" style="--tw-ring-color: ${ringColor};" onclick="openGallery('${member.foto_perfil}', null, 'Perfil de ${member.nombre.replace(/'/g, "\\'")}', 0)">` 
@@ -2367,23 +3040,88 @@
             });
         }
 
+        function getFinishedEventIds() {
+            try {
+                return JSON.parse(localStorage.getItem('emzoom_finished_events') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveFinishedEventId(eventId) {
+            const ids = getFinishedEventIds();
+            if (!ids.includes(eventId)) {
+                ids.push(eventId);
+                localStorage.setItem('emzoom_finished_events', JSON.stringify(ids));
+            }
+        }
+
+        function isEventFinished(ev) {
+            if (!ev) return false;
+            const ids = getFinishedEventIds();
+            return ev.finalizado === true ||
+                   ev.is_finished === true ||
+                   ev.estado === 'Finalizado' ||
+                   ids.includes(ev.id);
+        }
+
+        async function confirmFinishEvent(id) {
+            if (!currentUser || currentUser.rol !== 'Admin') {
+                showToast('Acceso denegado', 'Solo administradores', 'error');
+                return;
+            }
+
+            const ev = events.find(e => e.id === id);
+            const eventName = ev ? ev.nombre : 'este evento';
+
+            customConfirm('Finalizar Evento', `¿Deseas finalizar "${eventName}"? El evento desaparecerá de la vista de eventos activos.`, async () => {
+                saveFinishedEventId(id);
+
+                const idx = events.findIndex(e => e.id === id);
+                if (idx !== -1) {
+                    events[idx] = { ...events[idx], finalizado: true };
+                }
+
+                updateLocalCache();
+                renderEvents();
+                updateEventNotification();
+                showToast('Evento finalizado', 'El evento fue ocultado de la vista');
+
+                const { error } = await supabaseClient
+                    .from('eventos')
+                    .update({ finalizado: true })
+                    .eq('id', id);
+
+                if (error) {
+                    console.error('No se pudo guardar finalizado=true en Supabase. Agrega la columna finalizado a la tabla eventos.', error);
+                    showToast('Aviso', 'Se ocultó en este dispositivo. Agrega la columna finalizado en Supabase para ocultarlo a todos.', 'error');
+                }
+            }, 'Finalizar');
+        }
+
         function renderEvents() {
             const listContainer = document.getElementById('events-list');
             const emptyState = document.getElementById('empty-events-state');
             listContainer.innerHTML = '';
 
-            if (events.length === 0) { emptyState.classList.remove('hidden'); return; }
+            const activeEvents = events.filter(ev => !isEventFinished(ev));
+
+            if (activeEvents.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
             emptyState.classList.add('hidden');
 
             const canEditEvent = currentUser && currentUser.rol === 'Admin';
 
-            events.forEach((ev, index) => {
+            activeEvents.forEach((ev, index) => {
                 const fechaObj = new Date(ev.fecha);
                 const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit', hour12: true };
                 const fechaStr = fechaObj.toLocaleString('es-PA', opcionesFecha);
                 
+                const safeEventName = (ev.nombre || 'Evento').replace(/'/g, "\\'");
                 const imgStr = ev.imagen 
-                    ? `<img src="${ev.imagen}" class="w-full h-48 object-cover cursor-pointer active:scale-95 transition-transform" onclick="openGallery('${ev.imagen}', null, '${ev.nombre.replace(/'/g, "\\'")}', 0)">` 
+                    ? `<img src="${ev.imagen}" class="w-full h-48 object-cover cursor-pointer active:scale-95 transition-transform" onclick="openGallery('${ev.imagen}', null, '${safeEventName}', 0)">` 
                     : `<div class="w-full h-40 bg-gray-800 flex flex-col items-center justify-center"><i data-lucide="map" class="text-gray-600 w-12 h-12 mb-2"></i><span class="text-gray-500 text-xs font-bold uppercase tracking-wider">Ruta Oficial</span></div>`;
                 
                 let rsvpStatus = null;
@@ -2398,9 +3136,16 @@
                 card.style.animationDelay = `${index * 0.05}s`;
                 
                 const editButtonsHtml = canEditEvent ? `
-                    <div class="flex gap-2 mb-4">
-                        <button onclick="editEvent('${ev.id}')" class="p-2 bg-gray-800 rounded-xl text-blue-400 hover:bg-gray-700 transition-all active:scale-90"><i data-lucide="edit-2" class="w-4 h-4 pointer-events-none"></i></button>
-                        <button onclick="confirmDeleteEvent('${ev.id}')" class="p-2 bg-gray-800 rounded-xl text-red-500 hover:bg-gray-700 transition-all active:scale-90"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+                        <button onclick="editEvent('${ev.id}')" class="py-2.5 px-3 bg-gray-800 rounded-xl text-blue-400 hover:bg-gray-700 transition-all active:scale-90 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider">
+                            <i data-lucide="edit-2" class="w-4 h-4 pointer-events-none"></i> Editar
+                        </button>
+                        <button onclick="confirmFinishEvent('${ev.id}')" class="py-2.5 px-3 bg-green-700 hover:bg-green-800 rounded-xl text-white transition-all active:scale-90 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider">
+                            <i data-lucide="flag-checkered" class="w-4 h-4 pointer-events-none"></i> Finalizar Evento
+                        </button>
+                        <button onclick="confirmDeleteEvent('${ev.id}')" class="py-2.5 px-3 bg-gray-800 rounded-xl text-red-500 hover:bg-gray-700 transition-all active:scale-90 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider">
+                            <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i> Eliminar
+                        </button>
                     </div>` : '';
 
                 let rsvpHtml = '';
@@ -2421,8 +3166,8 @@
                         </div>
                         <div class="flex justify-between items-start mb-2 pr-16">
                             <div class="flex flex-wrap items-center gap-3">
-                                <h3 class="font-black text-xl uppercase tracking-wide text-white leading-tight">${ev.nombre}</h3>
-                                ${canEditEvent ? `<button onclick="viewEventDetails('${ev.id}', '${ev.nombre.replace(/'/g, "\\'")}')" class="bg-gray-800 border border-gray-600 hover:bg-gray-700 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"><i data-lucide="users" class="w-3 h-3 text-blue-400 pointer-events-none"></i> Ver Asistencia</button>` : ''}
+                                <h3 class="event-racing-title font-black text-xl uppercase leading-tight">${ev.nombre}</h3>
+                                ${canEditEvent ? `<button onclick="viewEventDetails('${ev.id}', '${safeEventName}')" class="bg-gray-800 border border-gray-600 hover:bg-gray-700 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"><i data-lucide="users" class="w-3 h-3 text-blue-400 pointer-events-none"></i> Ver Asistencia</button>` : ''}
                             </div>
                         </div>
                         ${editButtonsHtml}
@@ -2614,6 +3359,7 @@
 
         function editUser(id) {
             const u = users.find(x => x.id === id); if(!u) return;
+            navTo('admin-user-form');
             document.getElementById('user-id').value = u.id; document.getElementById('user-nombre').value = u.nombre_completo; document.getElementById('user-email').value = u.email; document.getElementById('sys-user-pass').value = u.password; document.getElementById('user-rol').value = u.rol;
             document.getElementById('btn-cancel-user').classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -3066,7 +3812,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof navTo === 'function') {
         setTimeout(() => {
             try {
-                navTo('birthdays');
+                navTo('home');
             } catch(e) {}
         }, 300);
     }
@@ -3090,7 +3836,26 @@ create table if not exists stream_config (
 insert into stream_config(id, titulo, url, is_active)
 values(1, 'Live Stream', '', false)
 on conflict (id) do nothing;
+
+-- Para que el botón "Finalizar Evento" desaparezca el evento para todos los usuarios:
+alter table eventos
+add column if not exists finalizado boolean default false;
+
 -->
 
+
+    <!--
+    SQL recomendado para que el panel de vistas funcione para todos los usuarios:
+
+    create table if not exists app_config (
+        id bigint primary key,
+        view_settings jsonb default '{}'::jsonb,
+        updated_at timestamptz default now()
+    );
+
+    insert into app_config(id, view_settings)
+    values(1, '{"home":true,"liveStream":true,"members":true,"events":true,"birthdays":true,"store":true,"myOrders":true,"users":true}'::jsonb)
+    on conflict (id) do nothing;
+    -->
 </body>
 </html>
