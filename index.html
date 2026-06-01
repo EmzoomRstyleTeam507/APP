@@ -560,40 +560,85 @@
                 <div id="empty-birthdays-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in"><div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700"><i data-lucide="gift" class="w-8 h-8 text-gray-600"></i></div><h4 class="text-lg font-bold text-gray-300">Sin cumpleaños</h4><p class="text-sm text-gray-500 mt-2 px-6">No hay fechas registradas. ¡Sé el primero en actualizar tu perfil!</p></div>
             </section>
 
-        
-<!-- VISTA: CUMPLEAÑOS -->
-<section id="view-birthdays" class="view-section fade-in">
-    <div class="glass-card p-6 rounded-2xl">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="p-3 bg-pink-500/20 rounded-xl">
-                <i data-lucide="cake" class="w-6 h-6 text-pink-400"></i>
-            </div>
-            <div>
-                <h2 class="text-xl font-black uppercase tracking-wide text-white">Cumpleaños</h2>
-                <p class="text-sm text-gray-400">Miembros que celebran este mes</p>
-            </div>
-        </div>
+            <!-- VISTA: LIVE STREAM -->
+<section id="view-live-stream" class="view-section hidden fade-in">
+                <div class="glass-card rounded-2xl p-5 slide-up overflow-hidden relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-red-600/10 to-transparent pointer-events-none"></div>
 
-        <div class="space-y-4">
-            <div class="bg-[#111] border border-white/10 rounded-xl p-4 flex items-center justify-between">
-                <div>
-                    <h3 class="font-bold text-white">No hay cumpleaños registrados</h3>
-                    <p class="text-xs text-gray-400 mt-1">
-                        Agrega fechas de nacimiento en el registro de miembros.
-                    </p>
-                </div>
-                <div class="bg-pink-500/10 p-3 rounded-full">
-                    <i data-lucide="gift" class="w-5 h-5 text-pink-400"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+                    <div class="relative z-10 flex items-start justify-between gap-3 mb-4">
+                        <div>
+                            <h2 id="live-title" class="text-xl font-black uppercase tracking-wide text-white">Live Stream</h2>
+                            <p id="live-status" class="text-sm font-bold mt-1"><span class="text-gray-400">⚫ Offline</span></p>
+                            <p class="text-[11px] text-gray-500 mt-1">Plataforma: <span id="live-platform">No detectado</span></p>
+                        </div>
+                        <div class="bg-red-500/10 p-3 rounded-xl border border-red-500/20">
+                            <i data-lucide="radio" class="w-6 h-6 text-red-500"></i>
+                        </div>
+                    </div>
 
+                    <input id="live-url" type="hidden">
+
+                    <div class="relative z-10 bg-black/60 border border-white/10 rounded-2xl overflow-hidden">
+                        <iframe
+                            id="live-player"
+                            class="w-full aspect-video bg-black"
+                            title="Live Stream"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+
+                    <div id="live-open-box" class="hidden relative z-10 mt-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 text-sm text-yellow-100">
+                        <p class="text-xs leading-relaxed mb-2">
+                            Si YouTube muestra Error 153, abre el live directo. Ese error suele aparecer cuando la app se abre como archivo local o sin dominio válido.
+                        </p>
+                        <a id="live-open-link" href="#" target="_blank" rel="noopener" class="inline-flex items-center justify-center w-full bg-red-600 hover:bg-red-700 text-white rounded-xl py-2.5 font-bold transition active:scale-95">
+                            ▶ Mirar el video en YouTube
+                        </a>
+                    </div>
+
+                    <div id="live-admin-panel" class="hidden glass-card rounded-xl p-4 mt-4 relative z-10">
+                        <h3 class="font-bold mb-3 flex items-center gap-2">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-green-500"></i>
+                            Panel Administrador
+                        </h3>
+
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 ml-1">Título del Live</label>
+                        <input
+                            id="live-title-input"
+                            class="input-dark w-full mb-3 px-4 py-3 rounded-xl text-sm"
+                            placeholder="Ej. Reunión del Team 507">
+
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 ml-1">URL del Live</label>
+                        <input
+                            id="live-url-admin"
+                            class="input-dark w-full mb-2 px-4 py-3 rounded-xl text-sm"
+                            placeholder="Pega aquí el enlace de YouTube o Twitch">
+
+                        <p class="text-[11px] text-gray-400 mb-3 leading-relaxed">
+                            Aquí debes colocar la URL del live. Ejemplo: https://www.youtube.com/watch?v=XXXX o https://www.twitch.tv/canal. Para evitar Error 153 de YouTube, publica la app en un dominio HTTPS, no la abras como archivo local.
+                        </p>
+
+                        <button
+                            onclick="publishLive()"
+                            class="w-full bg-green-600 hover:bg-green-700 rounded-xl py-3 font-bold mb-2 transition active:scale-95">
+                            🔴 Publicar Live
+                        </button>
+
+                        <button
+                            onclick="stopLive()"
+                            class="w-full bg-gray-700 hover:bg-gray-800 rounded-xl py-3 font-bold transition active:scale-95">
+                            ⛔ Finalizar Live
+                        </button>
+                    </div>
+                </div>
+            </section>
 </main>
 
         <nav id="bottom-nav" class="glass fixed bottom-0 w-full z-40 rounded-t-3xl border-t border-gray-800 flex justify-around items-center h-16 hidden px-1">
             <button onclick="navTo('home')" class="nav-btn flex flex-col items-center p-1 text-red-500 transition-all duration-200 active:scale-90 w-14" id="nav-home"><i data-lucide="home" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Inicio</span></button>
+            <button onclick="navTo('live-stream')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-live-stream"><i data-lucide="radio" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Live</span></button>
             <button onclick="navTo('members')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-members"><i data-lucide="users" class="w-5 h-5 mb-1 pointer-events-none"></i><span class="text-[8px] font-bold pointer-events-none">Miembros</span></button>
             <button onclick="navTo('events')" class="nav-btn flex flex-col items-center p-1 text-gray-500 transition-all duration-200 active:scale-90 w-14" id="nav-events">
                 <div class="relative pointer-events-none"><i data-lucide="calendar" class="w-5 h-5 mb-1"></i><div id="event-notification" class="hidden absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full p-[2px] shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse"><i data-lucide="bell" class="w-2 h-2 fill-current"></i></div></div>
@@ -662,6 +707,7 @@
         let storeBannerInterval = null, currentStoreImgIndex = 0;
         
         let currentUser = JSON.parse(localStorage.getItem('emzoom_user')) || null;
+        let streamConfig = null;
         let isLoginMode = true;
 
         let lastBackPressTime = 0;
@@ -865,6 +911,11 @@
             
             const adminCard = document.getElementById('admin-home-card');
             if (adminCard) { if (isAdmin) adminCard.classList.remove('hidden'); else adminCard.classList.add('hidden'); }
+            const livePanel = document.getElementById('live-admin-panel');
+            if (livePanel) {
+                if (currentUser && currentUser.rol === 'Admin') livePanel.classList.remove('hidden');
+                else livePanel.classList.add('hidden');
+            }
 
             const navUsers = document.getElementById('nav-users');
             if (navUsers) { if (isAdmin) navUsers.classList.remove('hidden'); else navUsers.classList.add('hidden'); }
@@ -1464,7 +1515,8 @@
                 'store': 'Tienda Oficial',
                 'store-form': editStoreMode ? 'Editar Artículo' : 'Crear Artículo',
                 'store-orders': 'Gestión de Pedidos',
-                'my-orders': 'Mis Pedidos'
+                'my-orders': 'Mis Pedidos',
+                'live-stream': 'Live Stream'
             };
             if(titles[view]) document.getElementById('header-title').innerText = titles[view];
 
@@ -1475,11 +1527,242 @@
             if (view === 'store') renderStore();
             if (view === 'store-orders') renderStoreOrders();
             if (view === 'my-orders') renderMyOrders();
+            if (view === 'live-stream') loadStreamConfig();
 
             window.scrollTo(0, 0);
         }
 
-        // ==========================================
+        function getYouTubeVideoId(url) {
+            try {
+                const parsed = new URL(url);
+                const host = parsed.hostname.replace('www.', '').replace('m.', '');
+
+                if (host === 'youtu.be') {
+                    return parsed.pathname.split('/').filter(Boolean)[0] || '';
+                }
+
+                if (host.includes('youtube.com')) {
+                    const fromQuery = parsed.searchParams.get('v');
+                    if (fromQuery) return fromQuery;
+
+                    const parts = parsed.pathname.split('/').filter(Boolean);
+                    const knownPaths = ['embed', 'live', 'shorts'];
+                    for (const key of knownPaths) {
+                        const idx = parts.indexOf(key);
+                        if (idx !== -1 && parts[idx + 1]) return parts[idx + 1];
+                    }
+                }
+            } catch (e) {
+                const clean = (url || '').trim();
+                const shortMatch = clean.match(/youtu\.be\/([a-zA-Z0-9_-]{6,})/);
+                if (shortMatch) return shortMatch[1];
+                const watchMatch = clean.match(/[?&]v=([a-zA-Z0-9_-]{6,})/);
+                if (watchMatch) return watchMatch[1];
+                const pathMatch = clean.match(/youtube\.com\/(?:embed|live|shorts)\/([a-zA-Z0-9_-]{6,})/);
+                if (pathMatch) return pathMatch[1];
+            }
+
+            return '';
+        }
+
+        function getTwitchChannel(url) {
+            try {
+                const parsed = new URL(url);
+                const parts = parsed.pathname.split('/').filter(Boolean);
+                return parts[0] || '';
+            } catch (e) {
+                const clean = (url || '').replace(/\/$/, '');
+                return clean.split('/').pop() || '';
+            }
+        }
+
+        function detectLivePlatform(url) {
+            const lower = (url || '').toLowerCase();
+            if (lower.includes('youtube.com') || lower.includes('youtu.be')) return 'YouTube';
+            if (lower.includes('twitch.tv')) return 'Twitch';
+            return 'Personalizado';
+        }
+
+        function getSafeOriginParam() {
+            const origin = window.location.origin;
+            if (!origin || origin === 'null' || origin.startsWith('file://')) return '';
+            return '&origin=' + encodeURIComponent(origin);
+        }
+
+        function buildLiveEmbedUrl(url) {
+            if (!url) return '';
+
+            const platform = detectLivePlatform(url);
+
+            if (platform === 'YouTube') {
+                const id = getYouTubeVideoId(url);
+                if (!id) return url;
+                return `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&modestbranding=1&playsinline=1${getSafeOriginParam()}`;
+            }
+
+            if (platform === 'Twitch') {
+                const channel = getTwitchChannel(url);
+                const host = window.location.hostname;
+                const parent = host && host !== 'localhost' ? host : 'localhost';
+                return channel ? `https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${encodeURIComponent(parent)}&autoplay=true` : url;
+            }
+
+            return url;
+        }
+
+        function updateLiveOpenButton(url) {
+            const box = document.getElementById('live-open-box');
+            const link = document.getElementById('live-open-link');
+            if (!box || !link) return;
+
+            if (!url) {
+                box.classList.add('hidden');
+                link.href = '#';
+                return;
+            }
+
+            link.href = url;
+            const platform = detectLivePlatform(url);
+            if (platform === 'YouTube') {
+                link.innerText = '▶ Mirar el video en YouTube';
+                box.classList.remove('hidden');
+            } else if (platform === 'Twitch') {
+                link.innerText = '▶ Abrir live en Twitch';
+                box.classList.remove('hidden');
+            } else {
+                link.innerText = '▶ Abrir live';
+                box.classList.remove('hidden');
+            }
+        }
+
+        function loadLiveStream() {
+            const liveUrlInput = document.getElementById('live-url');
+            const player = document.getElementById('live-player');
+            const platform = document.getElementById('live-platform');
+            const url = liveUrlInput ? liveUrlInput.value.trim() : '';
+
+            if (!player) return;
+
+            player.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+            player.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+
+            if (!url) {
+                player.src = '';
+                updateLiveOpenButton('');
+                if (platform) platform.innerText = 'No detectado';
+                return;
+            }
+
+            player.src = buildLiveEmbedUrl(url);
+            updateLiveOpenButton(url);
+            if (platform) platform.innerText = detectLivePlatform(url);
+        }
+
+        async function loadStreamConfig() {
+            const player = document.getElementById('live-player');
+            const title = document.getElementById('live-title');
+            const status = document.getElementById('live-status');
+            const platform = document.getElementById('live-platform');
+            const liveUrl = document.getElementById('live-url');
+            const adminUrl = document.getElementById('live-url-admin');
+            const adminTitle = document.getElementById('live-title-input');
+
+            const { data, error } = await supabaseClient
+                .from('stream_config')
+                .select('*')
+                .eq('id', 1)
+                .single();
+
+            if (error || !data) {
+                console.error(error);
+                if (status) status.innerHTML = '<span class="text-gray-400">⚫ Offline</span>';
+                if (platform) platform.innerText = 'No detectado';
+                if (player) player.src = '';
+                updateLiveOpenButton('');
+                return;
+            }
+
+            streamConfig = data;
+
+            if (title) title.innerText = data.titulo || 'Live Stream';
+            if (adminTitle) adminTitle.value = data.titulo || '';
+            if (liveUrl) liveUrl.value = data.url || '';
+            if (adminUrl) adminUrl.value = data.url || '';
+
+            if (!data.is_active || !data.url) {
+                if (player) player.src = '';
+                if (status) status.innerHTML = '<span class="text-gray-400">⚫ Offline</span>';
+                if (platform) platform.innerText = 'No detectado';
+                return;
+            }
+
+            if (status) status.innerHTML = '<span class="text-red-500 animate-pulse">🔴 EN VIVO</span>';
+            if (platform) platform.innerText = detectLivePlatform(data.url);
+
+            loadLiveStream();
+        }
+
+        async function publishLive() {
+            if (!currentUser || currentUser.rol !== 'Admin') {
+                showToast('Acceso denegado', 'Solo administradores', 'error');
+                return;
+            }
+
+            const titulo = (document.getElementById('live-title-input')?.value || '').trim() || 'Live Stream';
+            const urlInput = document.getElementById('live-url-admin') || document.getElementById('live-url');
+            const url = (urlInput?.value || '').trim();
+
+            if (!url) {
+                showToast('Error', 'Pega la URL del live', 'error');
+                if (urlInput) urlInput.focus();
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('stream_config')
+                .upsert({
+                    id: 1,
+                    titulo,
+                    url,
+                    is_active: true,
+                    updated_at: new Date().toISOString()
+                });
+
+            if (error) {
+                console.error(error);
+                showToast('Error', 'No se pudo publicar el live', 'error');
+                return;
+            }
+
+            showToast('Éxito', 'Live publicado');
+            await loadStreamConfig();
+        }
+
+        async function stopLive() {
+            if (!currentUser || currentUser.rol !== 'Admin') {
+                showToast('Acceso denegado', 'Solo administradores', 'error');
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('stream_config')
+                .update({
+                    is_active: false,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', 1);
+
+            if (error) {
+                console.error(error);
+                showToast('Error', 'No se pudo finalizar el live', 'error');
+                return;
+            }
+
+            showToast('Live Finalizado', 'La transmisión fue cerrada');
+            await loadStreamConfig();
+        }
+
+// ==========================================
         // AUTENTICACIÓN
         // ==========================================
         function togglePass(id) {
@@ -2789,6 +3072,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
+
+
+<!--
+SUPABASE - TABLA NECESARIA PARA LIVE STREAM
+Ejecuta esto una sola vez en Supabase > SQL Editor:
+
+create table if not exists stream_config (
+    id bigint primary key,
+    titulo text,
+    url text,
+    is_active boolean default false,
+    updated_at timestamptz default now()
+);
+
+insert into stream_config(id, titulo, url, is_active)
+values(1, 'Live Stream', '', false)
+on conflict (id) do nothing;
+-->
 
 </body>
 </html>
