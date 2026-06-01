@@ -1,3 +1,4 @@
+<!-- VERSION_CORREGIDA_HISTORIAL_EVENTOS_ENTREGAS_V2 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -167,6 +168,112 @@
         }
         .store-action-card:active { transform: scale(.97); }
 
+
+        /* ===== AJUSTE CELULAR: TIENDA Y PEDIDOS ===== */
+        .store-compact-list { align-items: stretch; }
+        .store-item-card { min-width: 0; }
+        .store-item-img { height: 8.75rem; }
+        .store-item-desc {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .orders-mobile-card {
+            background: linear-gradient(145deg, rgba(28,28,28,.98), rgba(8,8,8,1));
+            border: 1px solid rgba(255,255,255,.08);
+            border-top: 1px solid rgba(168,85,247,.25);
+            border-radius: 1rem;
+            padding: .85rem;
+            box-shadow: 0 10px 18px rgba(0,0,0,.28);
+        }
+        .manual-meet-card {
+            border: 1px solid rgba(34,197,94,.25);
+            box-shadow: 0 0 18px rgba(34,197,94,.08);
+        }
+        @media (max-width: 640px) {
+            main { padding-left: .75rem; padding-right: .75rem; padding-top: 1rem; }
+            #view-store .store-action-card { padding: .62rem .45rem; border-radius: .85rem; font-size: .58rem; letter-spacing: .045em; gap: .28rem; }
+            #view-store .store-action-card svg { width: .9rem; height: .9rem; }
+            #store-list { gap: .7rem; }
+            .store-item-card { border-radius: 1rem; }
+            .store-item-img { height: 7.3rem; }
+            .store-item-body { padding: .68rem !important; }
+            .store-item-title { font-size: .72rem !important; line-height: 1.05rem !important; }
+            .store-item-price { font-size: .68rem !important; padding: .18rem .45rem !important; }
+            .store-item-desc { font-size: .63rem !important; margin-bottom: .55rem !important; min-height: 2.3rem; }
+            .store-qty-input { width: 2.8rem !important; padding-top: .28rem !important; padding-bottom: .28rem !important; font-size: .72rem !important; }
+            .store-buy-btn { padding-top: .48rem !important; padding-bottom: .48rem !important; font-size: .68rem !important; border-radius: .7rem !important; }
+            .store-edit-btn { padding-top: .45rem !important; padding-bottom: .45rem !important; font-size: .62rem !important; }
+            #view-store-orders .orders-page-head, #view-my-orders .orders-page-head { align-items: flex-start; gap: .75rem; margin-bottom: 1rem; }
+            #view-store-orders h3, #view-my-orders h3 { font-size: .95rem; line-height: 1.15rem; }
+            .my-order-card { padding: .75rem !important; border-radius: 1rem !important; }
+            .my-order-img { width: 3rem !important; height: 3rem !important; }
+        }
+
+
+
+
+
+        /* ===== PANEL ADMIN: ASISTENCIA MANUAL + OPTIMIZACIÓN MIEMBROS ===== */
+        .admin-manual-meet-panel {
+            border: 1px solid rgba(34,197,94,.28);
+            box-shadow: 0 0 18px rgba(34,197,94,.10), 0 10px 24px rgba(0,0,0,.30);
+        }
+        .member-card {
+            content-visibility: auto;
+            contain-intrinsic-size: 560px;
+            contain: layout paint style;
+        }
+        .member-main-img { height: 9rem; }
+        .member-profile-img { width: 5rem; height: 5rem; }
+        .member-load-sentinel {
+            background: rgba(0,0,0,.35);
+            border: 1px dashed rgba(255,255,255,.12);
+            border-radius: 1rem;
+            padding: .75rem;
+            text-align: center;
+            color: #9ca3af;
+            font-size: .72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+        @media (min-width: 641px) {
+            .member-main-img { height: 9rem; }
+        }
+        @media (max-width: 640px) {
+            #view-members .glass { padding: .62rem !important; margin-bottom: .75rem !important; }
+            #view-members .member-card {
+                padding: .9rem !important;
+                border-radius: 1rem !important;
+                margin-bottom: .75rem !important;
+                box-shadow: 0 8px 18px rgba(0,0,0,.25) !important;
+                animation: none !important;
+                transform: none !important;
+            }
+            #view-members .member-main-img { height: 7.6rem !important; border-radius: .85rem !important; }
+            #view-members .member-profile-img { width: 3.9rem !important; height: 3.9rem !important; border-width: 3px !important; }
+            #view-members .member-data-box { padding: 2.35rem .75rem .75rem !important; border-radius: .85rem !important; }
+            #view-members .member-title { font-size: .88rem !important; line-height: 1.05rem !important; }
+            #view-members .member-alias { font-size: .72rem !important; }
+            #view-members .member-name { font-size: .92rem !important; }
+            #view-members .member-info-line { font-size: .74rem !important; }
+            /* Mantener optimizada la vista, pero conservar el efecto racing del contador MEET */
+            #view-members .meet-race-count {
+                animation: meetBoost 1.25s ease-in-out infinite !important;
+                will-change: transform, filter;
+            }
+            #view-members .meet-race-count::before {
+                animation: raceSweep 1.15s linear infinite !important;
+                will-change: left;
+            }
+            #view-members .meet-race-text { font-size: .65rem !important; line-height: .9rem; }
+            #view-members .meet-racing-line { gap: .25rem; flex-wrap: wrap; }
+            #view-members a,
+            #view-members button,
+            #view-members img { transition-duration: .08s !important; }
+        }
 
 
         /* Efecto racing profesional para títulos de eventos */
@@ -399,6 +506,91 @@
         @keyframes racingUnderline {
             0%, 100% { opacity: 0.55; transform: scaleX(0.72); }
             50% { opacity: 1; transform: scaleX(1); }
+        }
+
+
+        /* ===== CORRECCIÓN CELULAR: ANIMACIÓN VISIBLE DEL CONTADOR MEET =====
+           En móviles algunos navegadores no repintan bien la animación dentro de content-visibility/contain.
+           Se usa animación por transform 3D y se evita el recorte agresivo de la tarjeta en celular. */
+        #view-members .meet-racing-line {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: .3rem !important;
+            min-width: 0 !important;
+            overflow: visible !important;
+        }
+        #view-members .meet-race-count {
+            display: inline-flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            isolation: isolate;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0,0,0) skewX(-14deg);
+            transform: translate3d(0,0,0) skewX(-14deg);
+            -webkit-animation: meetBoostPhone 1.05s ease-in-out infinite !important;
+            animation: meetBoostPhone 1.05s ease-in-out infinite !important;
+            will-change: transform, box-shadow;
+        }
+        #view-members .meet-race-count::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            left: -75% !important;
+            width: 70% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.92), rgba(134,239,172,.85), transparent) !important;
+            -webkit-transform: translate3d(0,0,0) skewX(-10deg);
+            transform: translate3d(0,0,0) skewX(-10deg);
+            -webkit-animation: raceSweepPhone .95s linear infinite !important;
+            animation: raceSweepPhone .95s linear infinite !important;
+            will-change: transform, opacity;
+            pointer-events: none;
+            z-index: 0;
+        }
+        #view-members .meet-race-count > span {
+            position: relative !important;
+            z-index: 2 !important;
+            -webkit-transform: skewX(14deg);
+            transform: skewX(14deg);
+        }
+        @-webkit-keyframes meetBoostPhone {
+            0%, 100% { -webkit-transform: translate3d(0,0,0) skewX(-14deg) scale(1); box-shadow: 0 0 10px rgba(34,197,94,.42), inset 0 0 10px rgba(34,197,94,.18); }
+            50% { -webkit-transform: translate3d(2px,0,0) skewX(-14deg) scale(1.045); box-shadow: 0 0 18px rgba(34,197,94,.80), inset 0 0 14px rgba(134,239,172,.25); }
+        }
+        @keyframes meetBoostPhone {
+            0%, 100% { transform: translate3d(0,0,0) skewX(-14deg) scale(1); box-shadow: 0 0 10px rgba(34,197,94,.42), inset 0 0 10px rgba(34,197,94,.18); }
+            50% { transform: translate3d(2px,0,0) skewX(-14deg) scale(1.045); box-shadow: 0 0 18px rgba(34,197,94,.80), inset 0 0 14px rgba(134,239,172,.25); }
+        }
+        @-webkit-keyframes raceSweepPhone {
+            0% { opacity: 0; -webkit-transform: translate3d(0,0,0) skewX(-10deg); }
+            18% { opacity: 1; }
+            100% { opacity: 0; -webkit-transform: translate3d(330%,0,0) skewX(-10deg); }
+        }
+        @keyframes raceSweepPhone {
+            0% { opacity: 0; transform: translate3d(0,0,0) skewX(-10deg); }
+            18% { opacity: 1; }
+            100% { opacity: 0; transform: translate3d(330%,0,0) skewX(-10deg); }
+        }
+        @media (max-width: 640px) {
+            #view-members .member-card {
+                content-visibility: visible !important;
+                contain: layout !important;
+            }
+            #view-members .meet-race-count {
+                min-width: 1.95rem !important;
+                height: 1.45rem !important;
+                padding: 0 .5rem !important;
+                font-size: .78rem !important;
+                overflow: hidden !important;
+                border-color: rgba(134,239,172,.85) !important;
+            }
+            #view-members .meet-race-text {
+                font-size: .68rem !important;
+                line-height: .95rem !important;
+                color: #e5e7eb !important;
+            }
         }
 
     </style>
@@ -662,13 +854,29 @@
 
             <!-- VISTA: EVENTOS (LISTA) -->
             <section id="view-events" class="view-section hidden fade-in">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex justify-between items-center gap-3 mb-6">
                     <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200"><span class="racing-team-title">TEAM RSTYLE</span></h3>
-                    <button id="btn-create-event" onclick="navTo('event-form')" class="hidden bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 shadow-lg flex items-center gap-1 text-sm font-semibold"><i data-lucide="plus" class="w-4 h-4"></i> Crear</button>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <button id="btn-event-history" onclick="navTo('event-history')" class="hidden bg-gray-800 hover:bg-gray-700 border border-white/10 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 shadow-lg flex items-center gap-1 text-xs font-bold uppercase"><i data-lucide="archive" class="w-4 h-4 pointer-events-none text-yellow-400"></i> Historial</button>
+                        <button id="btn-create-event" onclick="navTo('event-form')" class="hidden bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 shadow-lg flex items-center gap-1 text-sm font-semibold"><i data-lucide="plus" class="w-4 h-4"></i> Crear</button>
+                    </div>
                 </div>
 
                 <div id="events-list" class="space-y-6 pb-4"></div>
                 <div id="empty-events-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in"><div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700"><i data-lucide="flag" class="w-8 h-8 text-gray-600"></i></div><h4 class="text-lg font-bold text-gray-300">No hay eventos</h4><p class="text-sm text-gray-500 mt-2">Próximamente nuevas rutas.</p></div>
+            </section>
+
+            <!-- VISTA: HISTORIAL DE EVENTOS FINALIZADOS -->
+            <section id="view-event-history" class="view-section hidden fade-in">
+                <div class="flex justify-between items-center gap-3 mb-6">
+                    <div class="min-w-0">
+                        <h3 class="text-lg font-black uppercase tracking-wide text-gray-200 leading-tight">Historial de Eventos</h3>
+                        <p class="text-[11px] text-gray-500 mt-1">Eventos finalizados, listos para consultar o reactivar.</p>
+                    </div>
+                    <button onclick="navTo('events')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase flex-shrink-0"><i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Volver</button>
+                </div>
+                <div id="event-history-list" class="space-y-4 pb-4"></div>
+                <div id="empty-event-history-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in"><div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700"><i data-lucide="archive" class="w-8 h-8 text-gray-600"></i></div><h4 class="text-lg font-bold text-gray-300">Sin historial</h4><p class="text-sm text-gray-500 mt-2 px-6">Cuando finalices un evento, aparecerá aquí para poder volver a activarlo.</p></div>
             </section>
 
             <!-- VISTA: DETALLES DE ASISTENCIA DEL EVENTO -->
@@ -678,6 +886,24 @@
                     <button onclick="navTo('events')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold flex-shrink-0"><i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Volver</button>
                 </div>
                 
+                <div id="manual-attendance-card" class="glass-card manual-meet-card p-4 rounded-2xl mb-4 slide-up">
+                    <div class="flex items-start gap-3 mb-3">
+                        <div class="bg-green-500/10 border border-green-500/20 p-2 rounded-xl"><i data-lucide="user-check" class="w-5 h-5 text-green-400"></i></div>
+                        <div class="min-w-0">
+                            <h4 class="font-black text-sm text-white uppercase tracking-wide">Agregar Asistencia Manual</h4>
+                            <p class="text-[10px] text-gray-400 leading-relaxed">Para quien asistió al evento pero no logró registrarse. Al guardarlo contará como <span class="text-green-400 font-bold">MEET EMZOOM RSTYLE 507 TEAM</span>.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2">
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-gray-500 pointer-events-none"></i>
+                            <input id="manual-attendance-name" list="manual-attendance-members" class="input-dark w-full pl-9 pr-3 py-2.5 rounded-xl text-xs" placeholder="Buscar miembro registrado...">
+                            <datalist id="manual-attendance-members"></datalist>
+                        </div>
+                        <button type="button" onclick="addManualAttendance()" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_12px_rgba(34,197,94,0.25)]"><i data-lucide="flag" class="w-4 h-4 pointer-events-none"></i> Sumar Meet</button>
+                    </div>
+                </div>
+
                 <div class="glass-card p-5 rounded-2xl mb-6 slide-up">
                     <div class="flex justify-between items-center mb-6">
                         <h4 class="font-black text-sm text-white uppercase tracking-wide">Lista de Asistencia</h4>
@@ -774,6 +1000,33 @@
                         <p class="text-xs text-gray-400 mt-1">Ver, editar o suspender usuarios.</p>
                     </button>
                 </div>
+
+
+                <div id="admin-manual-meet-panel" class="glass-card admin-manual-meet-panel manual-meet-card p-4 rounded-2xl mb-6 slide-up" style="animation-delay: 0.1s">
+                    <div class="flex items-start gap-3 mb-3">
+                        <div class="bg-green-500/10 border border-green-500/20 p-2 rounded-xl"><i data-lucide="user-check" class="w-5 h-5 text-green-400"></i></div>
+                        <div class="min-w-0">
+                            <h4 class="font-black text-sm text-white uppercase tracking-wide">Agregar Asistencia Manual</h4>
+                            <p class="text-[10px] text-gray-400 leading-relaxed">Para quien asistió al evento pero no logró registrarse. Al guardarlo contará como <span class="text-green-400 font-bold">MEET EMZOOM RSTYLE 507 TEAM</span>.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2">
+                        <div class="relative">
+                            <i data-lucide="flag" class="absolute left-3 top-3 w-4 h-4 text-gray-500 pointer-events-none"></i>
+                            <select id="admin-manual-event" class="input-dark w-full pl-9 pr-8 py-2.5 rounded-xl text-xs appearance-none">
+                                <option value="">Seleccionar evento...</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-3 w-4 h-4 text-gray-500 pointer-events-none"></i>
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-gray-500 pointer-events-none"></i>
+                            <input id="admin-manual-attendance-name" list="admin-manual-attendance-members" class="input-dark w-full pl-9 pr-3 py-2.5 rounded-xl text-xs" placeholder="Buscar miembro registrado...">
+                            <datalist id="admin-manual-attendance-members"></datalist>
+                        </div>
+                        <button type="button" onclick="addAdminManualAttendance()" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_12px_rgba(34,197,94,0.25)]"><i data-lucide="flag" class="w-4 h-4 pointer-events-none"></i> Sumar Meet</button>
+                    </div>
+                </div>
+
             </section>
 
             <!-- VISTA: ADMIN / FORMULARIO USUARIOS -->
@@ -866,31 +1119,31 @@
 
             <!-- VISTA: TIENDA OFICIAL -->
             <section id="view-store" class="view-section hidden fade-in">
-                <div class="mb-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="bg-red-500/10 p-3 rounded-2xl border border-red-500/20"><i data-lucide="shopping-bag" class="w-6 h-6 text-red-500"></i></div>
-                        <div>
-                            <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Tienda 507</h3>
-                            <p class="text-xs text-gray-400">Artículos oficiales y pedidos en una sola vista.</p>
+                <div class="mb-4">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <div class="bg-red-500/10 p-2.5 rounded-xl border border-red-500/20"><i data-lucide="shopping-bag" class="w-5 h-5 text-red-500"></i></div>
+                        <div class="min-w-0">
+                            <h3 class="text-base md:text-lg font-black uppercase tracking-wide text-gray-200 leading-tight">Tienda 507</h3>
+                            <p class="text-[10px] md:text-xs text-gray-400 leading-snug">Artículos oficiales, pedidos y compras en formato compacto.</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <button id="btn-create-store" onclick="navTo('store-form')" class="hidden store-action-card bg-red-600/15 hover:bg-red-600/25 border-red-500/30 text-red-100"><i data-lucide="plus-circle" class="w-4 h-4 pointer-events-none text-red-400"></i> Agregar Artículo</button>
-                        <button id="btn-view-orders" onclick="navTo('store-orders')" class="hidden store-action-card bg-purple-600/15 hover:bg-purple-600/25 border-purple-500/30 text-purple-100"><i data-lucide="list-ordered" class="w-4 h-4 pointer-events-none text-purple-400"></i> Ver Pedidos</button>
-                        <button id="btn-my-orders-from-store" onclick="navTo('my-orders')" class="store-action-card bg-green-600/15 hover:bg-green-600/25 border-green-500/30 text-green-100"><i data-lucide="package" class="w-4 h-4 pointer-events-none text-green-400"></i> Ver Mis Pedidos</button>
+                    <div class="flex flex-wrap gap-2">
+                        <button id="btn-create-store" onclick="navTo('store-form')" class="hidden store-action-card flex-1 min-w-[6.5rem] bg-red-600/15 hover:bg-red-600/25 border-red-500/30 text-red-100"><i data-lucide="plus-circle" class="w-4 h-4 pointer-events-none text-red-400"></i> Agregar</button>
+                        <button id="btn-view-orders" onclick="navTo('store-orders')" class="hidden store-action-card flex-1 min-w-[6.5rem] bg-purple-600/15 hover:bg-purple-600/25 border-purple-500/30 text-purple-100"><i data-lucide="list-ordered" class="w-4 h-4 pointer-events-none text-purple-400"></i> Pedidos</button>
+                        <button id="btn-my-orders-from-store" onclick="navTo('my-orders')" class="store-action-card flex-1 min-w-[6.5rem] bg-green-600/15 hover:bg-green-600/25 border-green-500/30 text-green-100"><i data-lucide="package" class="w-4 h-4 pointer-events-none text-green-400"></i> Mis Pedidos</button>
                     </div>
                 </div>
-                <div id="store-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4"></div>
+                <div id="store-list" class="store-compact-list grid grid-cols-2 md:grid-cols-3 gap-3 pb-4"></div>
                 <div id="empty-store-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in"><div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700"><i data-lucide="shopping-bag" class="w-8 h-8 text-gray-600"></i></div><h4 class="text-lg font-bold text-gray-300">Tienda Vacía</h4><p class="text-sm text-gray-500 mt-2">Aún no hay artículos a la venta.</p></div>
             </section>
 
             <!-- VISTA: MIS PEDIDOS -->
             <section id="view-my-orders" class="view-section hidden fade-in">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Mis Pedidos</h3>
+                <div class="orders-page-head flex justify-between items-center mb-4">
+                    <h3 class="text-base md:text-lg font-bold uppercase tracking-wide text-gray-200">Mis Pedidos</h3>
                     <button onclick="navTo('home')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase"><i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Inicio</button>
                 </div>
-                <div id="my-orders-list" class="space-y-4 pb-4"></div>
+                <div id="my-orders-list" class="space-y-3 pb-4"></div>
                 <div id="empty-my-orders-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in">
                     <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700"><i data-lucide="package-x" class="w-8 h-8 text-gray-600"></i></div>
                     <h4 class="text-lg font-bold text-gray-300">Sin Pedidos</h4>
@@ -900,14 +1153,19 @@
 
             <!-- VISTA: GESTIÓN DE PEDIDOS -->
             <section id="view-store-orders" class="view-section hidden fade-in">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold uppercase tracking-wide text-gray-200">Gestión de Pedidos</h3>
-                    <div class="flex gap-2">
+                <div class="orders-page-head flex justify-between items-center gap-3 mb-4">
+                    <div class="min-w-0">
+                        <h3 class="text-base md:text-lg font-bold uppercase tracking-wide text-gray-200 leading-tight">Gestión de Pedidos</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Solo pedidos pendientes o programados.</p>
+                    </div>
+                    <div class="flex flex-wrap justify-end gap-2 flex-shrink-0">
+                        <button onclick="navTo('store-delivered-orders')" class="bg-yellow-600/20 hover:bg-yellow-600/30 border border-yellow-500/40 text-yellow-100 px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase"><i data-lucide="archive" class="w-4 h-4 pointer-events-none text-yellow-400"></i> Historial</button>
                         <button onclick="exportOrdersToExcel()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase shadow-[0_0_10px_rgba(34,197,94,0.3)]"><i data-lucide="download" class="w-4 h-4 pointer-events-none"></i> XLSX</button>
                         <button onclick="navTo('store')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase"><i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Volver</button>
                     </div>
                 </div>
-                <div class="glass-card rounded-[1.5rem] overflow-hidden slide-up">
+                <div id="store-orders-cards" class="md:hidden space-y-3 pb-4"></div>
+                <div class="hidden md:block glass-card rounded-[1.5rem] overflow-hidden slide-up">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-white/5 text-[10px] uppercase font-bold text-gray-400">
@@ -923,6 +1181,22 @@
                         </table>
                     </div>
                 </div>
+            </section>
+
+            <!-- VISTA: HISTORIAL DE ENTREGAS -->
+            <section id="view-store-delivered-orders" class="view-section hidden fade-in">
+                <div class="orders-page-head flex justify-between items-center gap-3 mb-4">
+                    <div class="min-w-0">
+                        <h3 class="text-base md:text-lg font-bold uppercase tracking-wide text-gray-200 leading-tight">Historial de Entregas</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Pedidos marcados como entregados.</p>
+                    </div>
+                    <div class="flex flex-wrap justify-end gap-2 flex-shrink-0">
+                        <button onclick="exportDeliveredOrdersToExcel()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase shadow-[0_0_10px_rgba(34,197,94,0.3)]"><i data-lucide="download" class="w-4 h-4 pointer-events-none"></i> XLSX</button>
+                        <button onclick="navTo('store-orders')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase"><i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Pedidos</button>
+                    </div>
+                </div>
+                <div id="store-delivered-orders-cards" class="space-y-3 pb-4"></div>
+                <div id="empty-store-delivered-orders-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in"><div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700"><i data-lucide="package-check" class="w-8 h-8 text-gray-600"></i></div><h4 class="text-lg font-bold text-gray-300">Sin entregas</h4><p class="text-sm text-gray-500 mt-2 px-6">Cuando marques un pedido como entregado, se moverá automáticamente a este historial.</p></div>
             </section>
 
             <!-- VISTA: FORMULARIO DE TIENDA -->
@@ -1262,10 +1536,12 @@
                     
                     if (!document.getElementById('view-members').classList.contains('hidden')) renderMembers();
                     if (!document.getElementById('view-events').classList.contains('hidden')) renderEvents();
+                    if (!document.getElementById('view-event-history')?.classList.contains('hidden')) renderEventHistory();
                     if (!document.getElementById('view-admin-user-list')?.classList.contains('hidden')) renderUsers();
                     if (!document.getElementById('view-birthdays').classList.contains('hidden')) renderBirthdays();
                     if (!document.getElementById('view-store').classList.contains('hidden')) renderStore();
                     if (!document.getElementById('view-store-orders').classList.contains('hidden')) renderStoreOrders();
+                    if (!document.getElementById('view-store-delivered-orders')?.classList.contains('hidden')) renderDeliveredOrdersHistory();
                     if (!document.getElementById('view-my-orders').classList.contains('hidden')) renderMyOrders();
                 if (!document.getElementById('view-admin-views-control')?.classList.contains('hidden')) renderAppViewSettingsPanel();
                     if (!document.getElementById('view-admin-views-control')?.classList.contains('hidden')) renderAppViewSettingsPanel();
@@ -1312,10 +1588,12 @@
                 
                 if (!document.getElementById('view-members').classList.contains('hidden')) renderMembers();
                 if (!document.getElementById('view-events').classList.contains('hidden')) renderEvents();
+                if (!document.getElementById('view-event-history')?.classList.contains('hidden')) renderEventHistory();
                 if (!document.getElementById('view-birthdays').classList.contains('hidden')) renderBirthdays();
                 if (!document.getElementById('view-admin-user-list')?.classList.contains('hidden')) renderUsers();
                 if (!document.getElementById('view-store').classList.contains('hidden')) renderStore();
                 if (!document.getElementById('view-store-orders').classList.contains('hidden')) renderStoreOrders();
+                if (!document.getElementById('view-store-delivered-orders')?.classList.contains('hidden')) renderDeliveredOrdersHistory();
                 if (!document.getElementById('view-my-orders').classList.contains('hidden')) renderMyOrders();
             } catch (err) {
                 console.error("Error cargando datos:", err);
@@ -1340,12 +1618,14 @@
             'members': 'TEAM RSTYLE',
             'register': 'members',
             'events': 'events',
+            'event-history': 'events',
             'event-form': 'events',
             'event-details': 'events',
             'birthdays': 'birthdays',
             'store': 'store',
             'store-form': 'store',
             'store-orders': 'store',
+            'store-delivered-orders': 'store',
             'my-orders': 'myOrders',
             'users': 'users',
             'admin-user-form': 'users',
@@ -1545,6 +1825,8 @@
 
             const btnCreateEvent = document.getElementById('btn-create-event');
             if (btnCreateEvent) { if (isAdmin) btnCreateEvent.classList.remove('hidden'); else btnCreateEvent.classList.add('hidden'); }
+            const btnEventHistory = document.getElementById('btn-event-history');
+            if (btnEventHistory) { if (isAdmin) btnEventHistory.classList.remove('hidden'); else btnEventHistory.classList.add('hidden'); }
             
             const btnCreateStore = document.getElementById('btn-create-store');
             const btnViewOrders = document.getElementById('btn-view-orders');
@@ -2125,7 +2407,7 @@
                 btn.classList.add('text-gray-500');
             });
             
-            const activeNavView = ['store-form', 'store-orders', 'my-orders'].includes(view) ? 'store' : view;
+            const activeNavView = ['store-form', 'store-orders', 'store-delivered-orders', 'my-orders'].includes(view) ? 'store' : (['event-form', 'event-details', 'event-history'].includes(view) ? 'events' : view);
             const activeBtn = document.getElementById(`nav-${activeNavView}`);
             if (activeBtn) {
                 activeBtn.classList.remove('text-gray-500');
@@ -2149,6 +2431,7 @@
                 'register': editMode ? 'Editar Auto' : 'Registrar Auto',
                 'members': 'TEAM RSTYLE',
                 'events': 'Eventos Oficiales',
+                'event-history': 'Historial de Eventos',
                 'event-details': 'Reporte de Evento',
                 'birthdays': 'Cumpleaños',
                 'event-form': editEventMode ? 'Editar Evento' : 'Crear Evento',
@@ -2156,6 +2439,7 @@
                 'store': 'Tienda Oficial',
                 'store-form': editStoreMode ? 'Editar Artículo' : 'Crear Artículo',
                 'store-orders': 'Gestión de Pedidos',
+                'store-delivered-orders': 'Historial de Entregas',
                 'my-orders': 'Mis Pedidos',
                 'live-stream': 'Live Stream',
                 'admin-user-form': 'Usuarios',
@@ -2172,12 +2456,15 @@
             }
 
             if (view === 'events') renderEvents();
+            if (view === 'event-history') renderEventHistory();
             if (view === 'members') renderMembers();
             if (view === 'birthdays') renderBirthdays();
+            if (view === 'users') populateAdminManualMeetPanel();
             if (view === 'admin-user-list') renderUsers();
             if (view === 'admin-views-control') renderAppViewSettingsPanel();
             if (view === 'store') renderStore();
             if (view === 'store-orders') renderStoreOrders();
+            if (view === 'store-delivered-orders') renderDeliveredOrdersHistory();
             if (view === 'my-orders') renderMyOrders();
             if (view === 'live-stream') loadStreamConfig();
 
@@ -2776,105 +3063,170 @@
             });
         }
 
-        function renderMembers(dataToRender = members) {
+        let membersRenderObserver = null;
+        let currentMembersToDisplay = [];
+        let currentMembersRenderIndex = 0;
+        let filterMembersTimer = null;
+
+        function isMembersMobileMode() {
+            return window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+        }
+
+        function getMembersBatchSize() {
+            return isMembersMobileMode() ? 10 : 9999;
+        }
+
+        function createMemberCard(member, index, myId, isAdmin) {
+            const isMobile = isMembersMobileMode();
+            const modelFullNames = { 'GB': 'GAC Emzoom GB', 'GL': 'GAC Emzoom GL', 'GT': 'GAC Emzoom GT', 'R-Style': 'GAC Emzoom R-Style' };
+            const fullModelName = modelFullNames[member.modelo] || member.modelo || 'GAC Emzoom';
+            const imgContainerClass = member.foto2 ? 'grid grid-cols-2 gap-2 md:gap-3' : 'w-full';
+            const lazyAttr = isMobile ? 'loading="lazy" decoding="async" fetchpriority="low"' : 'decoding="async"';
+
+            const safeName = String(member.nombre || '').replace(/'/g, "\\'");
+            const img1Str = member.foto1 ? `<img src="${member.foto1}" ${lazyAttr} class="member-main-img w-full object-cover rounded-xl cursor-pointer active:scale-95 transition-transform duration-150" onclick="openGallery('${member.foto1}', '${member.foto2 || ''}', '${fullModelName}', 0)">` : `<div class="member-main-img w-full bg-gray-800 rounded-xl flex items-center justify-center"><i data-lucide="image-off" class="text-gray-600"></i></div>`;
+            const img2Str = member.foto2 ? `<img src="${member.foto2}" ${lazyAttr} class="member-main-img w-full object-cover rounded-xl cursor-pointer active:scale-95 transition-transform duration-150" onclick="openGallery('${member.foto1 || ''}', '${member.foto2}', '${fullModelName}', 1)">` : '';
+            
+            let socialsHtml = '<div class="flex items-center gap-3 min-h-[1.5rem]">';
+            if (member.instagram) socialsHtml += `<a href="${member.instagram}" target="_blank" class="flex items-center gap-1.5 text-xs font-semibold text-pink-400 hover:text-pink-300 transition-colors active:scale-95"><i data-lucide="instagram" class="w-4 h-4"></i> Instagram</a>`;
+            if (member.tiktok) socialsHtml += `<a href="${member.tiktok}" target="_blank" class="flex items-center gap-1.5 text-xs font-semibold text-gray-300 hover:text-white transition-colors active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a5.64 5.64 0 0 1-1.04-.1z"/></svg> TikTok</a>`;
+            socialsHtml += '</div>';
+
+            const carColors = { 'Ivory White': '#F4F4F5', 'Graphene Grey': '#4B5563', 'Elegant Black': '#525252', 'Superstar Silver': '#D1D5DB', 'Salt Lake Blue': '#3b82f6', 'Moonlight Grey': '#9CA3AF', 'Galaxy Lilac': '#8B5CF6' };
+            const ringColor = carColors[member.color] || '#eab308';
+            
+            const card = document.createElement('div');
+            card.className = `glass-card member-card ${isMobile ? 'p-4 rounded-2xl mb-3' : 'p-5 rounded-2xl slide-up mb-4'} border-l-4`;
+            if (!isMobile) card.style.animationDelay = `${Math.min(index, 8) * 0.025}s`;
+            card.style.borderLeftColor = ringColor;
+            
+            let editButtonsHtml = '';
+            if (isAdmin || myId === member.id) {
+                editButtonsHtml = '<div class="flex items-center gap-2 flex-shrink-0">';
+                editButtonsHtml += `<button onclick="editMember('${member.id}')" class="bg-gray-800 border border-gray-600 hover:bg-gray-700 text-white px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"><i data-lucide="edit-2" class="w-3 h-3 text-blue-400 pointer-events-none"></i> Editar</button>`;
+                editButtonsHtml += `<button onclick="confirmDelete('${member.id}')" class="p-1.5 bg-gray-800 rounded-md text-red-500 hover:bg-gray-700 transition-all active:scale-90 border border-gray-600"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>`;
+                editButtonsHtml += '</div>';
+            }
+
+            let birthdayHtml = '';
+            if (member.fecha_nac) {
+                const bDate = new Date(member.fecha_nac + 'T00:00:00');
+                if (!isNaN(bDate.getTime())) {
+                    const bDay = bDate.getDate();
+                    const bMonth = bDate.toLocaleString('es-ES', {month: 'long'});
+                    birthdayHtml = `<div class="member-info-line flex items-center gap-2"><i data-lucide="gift" class="w-4 h-4 text-pink-500"></i> <span class="capitalize">${bDay} de ${bMonth}</span></div>`;
+                }
+            }
+            
+            const normalizedMemberName = normalizeStr(member.nombre);
+            const eventsAttended = asistenciasTotales.filter(a => normalizeStr(a.usuario_nombre) === normalizedMemberName).length;
+            const attendanceHtml = `<div class="member-info-line flex items-center gap-2"><i data-lucide="flag" class="w-4 h-4 text-gray-500"></i> <span class="meet-racing-line"><span class="meet-race-count"><span>${eventsAttended}</span></span><span class="meet-race-text">MEET EMZOOM RSTYLE 507 TEAM</span></span></div>`;
+            
+            const profileImgStr = member.foto_perfil 
+                ? `<img src="${member.foto_perfil}" ${lazyAttr} class="member-profile-img rounded-full object-cover border-4 border-[#151515] ring-2 shadow-xl cursor-pointer active:scale-95" style="--tw-ring-color: ${ringColor};" onclick="openGallery('${member.foto_perfil}', null, 'Perfil de ${safeName}', 0)">` 
+                : `<div class="member-profile-img bg-gray-800 rounded-full flex items-center justify-center border-4 border-[#151515] ring-2 shadow-xl" style="--tw-ring-color: ${ringColor};"><i data-lucide="user" class="text-gray-500 w-7 h-7"></i></div>`;
+
+            const likesCount = likesMiembros.filter(l => l.miembro_id === member.id).length;
+            const hasLiked = currentUser ? likesMiembros.some(l => l.miembro_id === member.id && l.usuario_id === currentUser.id) : false;
+            const canLike = currentUser && myId !== member.id;
+            
+            const actionsHtml = `
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/10 gap-2">
+                    ${socialsHtml}
+                    <button ${canLike ? `onclick="toggleLike('${member.id}')"` : 'disabled'} id="btn-like-${member.id}" class="flex items-center gap-1.5 transition-all active:scale-90 ${hasLiked ? 'text-red-500' : 'text-gray-400'} ${canLike ? 'hover:text-red-400 cursor-pointer' : 'cursor-default opacity-80'}">
+                        <i data-lucide="heart" id="icon-like-${member.id}" class="w-5 h-5 ${hasLiked ? 'fill-current' : ''}"></i>
+                        <span id="count-like-${member.id}" class="font-bold text-sm">${likesCount}</span>
+                    </button>
+                </div>
+            `;
+
+            card.innerHTML = `
+                <div class="flex justify-between items-start gap-3 mb-3">
+                    <div class="min-w-0">
+                        <h3 class="member-title font-black text-lg uppercase tracking-wide flex items-center gap-2 truncate">${fullModelName}</h3>
+                        <div class="member-alias inline-flex items-center gap-2 text-red-400 text-sm font-semibold mt-1 origin-left cursor-default"><i data-lucide="car" class="w-4 h-4"></i> "${member.apodo || 'Sin apodo'}"</div>
+                    </div>
+                    ${editButtonsHtml}
+                </div>
+                <div class="relative mb-7 mt-2">
+                    <div class="${imgContainerClass}">${img1Str}${img2Str}</div>
+                    <div class="absolute -bottom-7 left-4 z-10">${profileImgStr}</div>
+                </div>
+                <div class="member-data-box space-y-1 text-sm text-gray-300 bg-black/30 p-4 pt-9 rounded-xl border border-white/5 relative">
+                    <div class="mb-2 pl-1"><span class="member-name font-black text-white text-lg tracking-wider uppercase drop-shadow-md">${member.nombre || 'Sin nombre'}</span></div>
+                    ${birthdayHtml}
+                    <div class="member-info-line flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-gray-500"></i> ${member.provincia || 'Sin provincia'}</div>
+                    <div class="member-info-line flex items-center gap-2"><i data-lucide="palette" class="w-4 h-4 text-gray-500"></i> ${member.color || 'Sin color'}</div>
+                    ${attendanceHtml}
+                    ${actionsHtml}
+                </div>
+            `;
+            return card;
+        }
+
+        function appendMembersBatch() {
             const listContainer = document.getElementById('members-list');
-            const emptyState = document.getElementById('empty-state');
-            listContainer.innerHTML = '';
+            if (!listContainer) return;
+            const oldSentinel = document.getElementById('members-load-sentinel');
+            if (oldSentinel) oldSentinel.remove();
 
             const myId = getMyMemberId();
             const isAdmin = currentUser && currentUser.rol === 'Admin';
-            const membersToDisplay = dataToRender;
+            const start = currentMembersRenderIndex;
+            const end = Math.min(start + getMembersBatchSize(), currentMembersToDisplay.length);
+            const fragment = document.createDocumentFragment();
 
-            if (membersToDisplay.length === 0) { emptyState.classList.remove('hidden'); return; }
-            emptyState.classList.add('hidden');
+            for (let i = start; i < end; i++) {
+                fragment.appendChild(createMemberCard(currentMembersToDisplay[i], i, myId, isAdmin));
+            }
 
-            membersToDisplay.forEach((member, index) => {
-                const modelFullNames = { 'GB': 'GAC Emzoom GB', 'GL': 'GAC Emzoom GL', 'GT': 'GAC Emzoom GT', 'R-Style': 'GAC Emzoom R-Style' };
-                const fullModelName = modelFullNames[member.modelo] || member.modelo;
-                const imgContainerClass = member.foto2 ? 'grid grid-cols-2 gap-3' : 'w-full';
+            listContainer.appendChild(fragment);
+            currentMembersRenderIndex = end;
 
-                const img1Str = member.foto1 ? `<img src="${member.foto1}" class="w-full h-36 object-cover rounded-xl cursor-pointer active:scale-95 transition-transform duration-200" onclick="openGallery('${member.foto1}', '${member.foto2 || ''}', '${fullModelName}', 0)">` : `<div class="w-full h-36 bg-gray-800 rounded-xl flex items-center justify-center"><i data-lucide="image-off" class="text-gray-600"></i></div>`;
-                const img2Str = member.foto2 ? `<img src="${member.foto2}" class="w-full h-36 object-cover rounded-xl cursor-pointer active:scale-95 transition-transform duration-200" onclick="openGallery('${member.foto1 || ''}', '${member.foto2}', '${fullModelName}', 1)">` : '';
-                
-                let socialsHtml = '';
-                if (member.instagram || member.tiktok) {
-                    socialsHtml = `<div class="flex items-center gap-4">`;
-                    if (member.instagram) { socialsHtml += `<a href="${member.instagram}" target="_blank" class="flex items-center gap-1.5 text-xs font-semibold text-pink-400 hover:text-pink-300 transition-colors active:scale-95"><i data-lucide="instagram" class="w-4 h-4"></i> Instagram</a>`; }
-                    if (member.tiktok) { socialsHtml += `<a href="${member.tiktok}" target="_blank" class="flex items-center gap-1.5 text-xs font-semibold text-gray-300 hover:text-white transition-colors active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a5.64 5.64 0 0 1-1.04-.1z"/></svg> TikTok</a>`; }
-                    socialsHtml += `</div>`;
+            if (currentMembersRenderIndex < currentMembersToDisplay.length) {
+                const sentinel = document.createElement('div');
+                sentinel.id = 'members-load-sentinel';
+                sentinel.className = 'member-load-sentinel';
+                sentinel.innerHTML = '<i data-lucide="loader" class="w-4 h-4 inline-block mr-2 animate-spin"></i> Cargando más miembros...';
+                listContainer.appendChild(sentinel);
+
+                if (membersRenderObserver) membersRenderObserver.disconnect();
+                if ('IntersectionObserver' in window && isMembersMobileMode()) {
+                    membersRenderObserver = new IntersectionObserver((entries) => {
+                        if (entries.some(entry => entry.isIntersecting)) appendMembersBatch();
+                    }, { rootMargin: '350px 0px' });
+                    membersRenderObserver.observe(sentinel);
+                } else {
+                    sentinel.innerHTML = '<button type="button" onclick="appendMembersBatch()" class="w-full bg-gray-800 hover:bg-gray-700 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-widest">Ver más miembros</button>';
                 }
+            } else if (membersRenderObserver) {
+                membersRenderObserver.disconnect();
+                membersRenderObserver = null;
+            }
 
-                const carColors = { 'Ivory White': '#F4F4F5', 'Graphene Grey': '#4B5563', 'Elegant Black': '#525252', 'Superstar Silver': '#D1D5DB', 'Salt Lake Blue': '#3b82f6', 'Moonlight Grey': '#9CA3AF', 'Galaxy Lilac': '#8B5CF6' };
-                const ringColor = carColors[member.color] || '#eab308';
-                
-                const card = document.createElement('div');
-                card.className = `glass-card p-5 rounded-2xl slide-up mb-4 border-l-4`;
-                card.style.animationDelay = `${index * 0.05}s`;
-                card.style.borderLeftColor = ringColor;
-                
-                let editButtonsHtml = '';
-                if (isAdmin || myId === member.id) {
-                    editButtonsHtml = '<div class="flex items-center gap-2">';
-                    editButtonsHtml += `<button onclick="editMember('${member.id}')" class="bg-gray-800 border border-gray-600 hover:bg-gray-700 text-white px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"><i data-lucide="edit-2" class="w-3 h-3 text-blue-400 pointer-events-none"></i> Editar</button>`;
-                    editButtonsHtml += `<button onclick="confirmDelete('${member.id}')" class="p-1.5 bg-gray-800 rounded-md text-red-500 hover:bg-gray-700 transition-all active:scale-90 border border-gray-600"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>`;
-                    editButtonsHtml += '</div>';
-                }
-
-                let birthdayHtml = '';
-                if (member.fecha_nac) {
-                    const bDate = new Date(member.fecha_nac + 'T00:00:00');
-                    if (!isNaN(bDate.getTime())) {
-                        const bDay = bDate.getDate();
-                        const bMonth = bDate.toLocaleString('es-ES', {month: 'long'});
-                        birthdayHtml = `<div class="flex items-center gap-2"><i data-lucide="gift" class="w-4 h-4 text-pink-500"></i> <span class="capitalize">${bDay} de ${bMonth}</span></div>`;
-                    }
-                }
-                
-                const eventsAttended = asistenciasTotales.filter(a => normalizeStr(a.usuario_nombre) === normalizeStr(member.nombre)).length;
-                const attendanceHtml = `<div class="flex items-center gap-2"><i data-lucide="flag" class="w-4 h-4 text-gray-500"></i> <span class="meet-racing-line"><span class="meet-race-count"><span>${eventsAttended}</span></span><span class="meet-race-text">MEET EMZOOM RSTYLE 507 TEAM</span></span></div>`;
-                
-                const profileImgStr = member.foto_perfil 
-                    ? `<img src="${member.foto_perfil}" class="w-20 h-20 rounded-full object-cover border-4 border-[#151515] ring-2 shadow-2xl cursor-pointer transition-transform hover:scale-105 active:scale-95" style="--tw-ring-color: ${ringColor};" onclick="openGallery('${member.foto_perfil}', null, 'Perfil de ${member.nombre.replace(/'/g, "\\'")}', 0)">` 
-                    : `<div class="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center border-4 border-[#151515] ring-2 shadow-2xl" style="--tw-ring-color: ${ringColor};"><i data-lucide="user" class="text-gray-500 w-8 h-8"></i></div>`;
-
-                const likesCount = likesMiembros.filter(l => l.miembro_id === member.id).length;
-                const hasLiked = currentUser ? likesMiembros.some(l => l.miembro_id === member.id && l.usuario_id === currentUser.id) : false;
-                const canLike = currentUser && myId !== member.id;
-                
-                const actionsHtml = `
-                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
-                        ${socialsHtml}
-                        <button ${canLike ? `onclick="toggleLike('${member.id}')"` : 'disabled'} id="btn-like-${member.id}" class="flex items-center gap-1.5 transition-all active:scale-90 ${hasLiked ? 'text-red-500' : 'text-gray-400'} ${canLike ? 'hover:text-red-400 cursor-pointer' : 'cursor-default opacity-80'}">
-                            <i data-lucide="heart" id="icon-like-${member.id}" class="w-5 h-5 ${hasLiked ? 'fill-current' : ''}"></i>
-                            <span id="count-like-${member.id}" class="font-bold text-sm">${likesCount}</span>
-                        </button>
-                    </div>
-                `;
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h3 class="font-black text-lg uppercase tracking-wide flex items-center gap-2">${fullModelName}</h3>
-                            <div class="inline-flex items-center gap-2 text-red-400 text-sm font-semibold mt-1 transition-transform duration-300 hover:scale-110 origin-left cursor-default"><i data-lucide="car" class="w-4 h-4"></i> "${member.apodo}"</div>
-                        </div>
-                        ${editButtonsHtml}
-                    </div>
-                    <div class="relative mb-8 mt-2">
-                        <div class="${imgContainerClass}">${img1Str}${img2Str}</div>
-                        <div class="absolute -bottom-8 left-4 z-10">${profileImgStr}</div>
-                    </div>
-                    <div class="space-y-1 text-sm text-gray-300 bg-black/30 p-4 pt-10 rounded-xl border border-white/5 relative">
-                        <div class="mb-3 pl-1"><span class="font-black text-white text-lg tracking-wider uppercase drop-shadow-md">${member.nombre}</span></div>
-                        ${birthdayHtml}
-                        <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-gray-500"></i> ${member.provincia}</div>
-                        <div class="flex items-center gap-2"><i data-lucide="palette" class="w-4 h-4 text-gray-500"></i> ${member.color}</div>
-                        ${attendanceHtml}
-                        ${actionsHtml}
-                    </div>
-                `;
-                listContainer.appendChild(card);
-            });
             lucide.createIcons();
+        }
+
+        function renderMembers(dataToRender = members) {
+            const listContainer = document.getElementById('members-list');
+            const emptyState = document.getElementById('empty-state');
+            if (!listContainer || !emptyState) return;
+
+            if (membersRenderObserver) {
+                membersRenderObserver.disconnect();
+                membersRenderObserver = null;
+            }
+
+            listContainer.innerHTML = '';
+            currentMembersToDisplay = Array.isArray(dataToRender) ? dataToRender : [];
+            currentMembersRenderIndex = 0;
+
+            if (currentMembersToDisplay.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+            requestAnimationFrame(appendMembersBatch);
         }
 
         async function toggleLike(miembroId) {
@@ -2905,9 +3257,9 @@
             }
         }
 
-        function filterMembers() {
-            const searchTerm = normalizeStr(document.getElementById('search-input').value);
-            const provFilter = document.getElementById('filter-provincia').value;
+        function applyMemberFilters() {
+            const searchTerm = normalizeStr(document.getElementById('search-input')?.value || '');
+            const provFilter = document.getElementById('filter-provincia')?.value || 'all';
 
             const filtered = members.filter(m => {
                 const matchesSearch = normalizeStr(m.nombre).includes(searchTerm) || normalizeStr(m.modelo).includes(searchTerm) || normalizeStr(m.apodo).includes(searchTerm);
@@ -2915,6 +3267,11 @@
                 return matchesSearch && matchesProv;
             });
             renderMembers(filtered);
+        }
+
+        function filterMembers() {
+            clearTimeout(filterMembersTimer);
+            filterMembersTimer = setTimeout(applyMemberFilters, 120);
         }
 
         // ==========================================
@@ -3056,6 +3413,11 @@
             }
         }
 
+        function removeFinishedEventId(eventId) {
+            const ids = getFinishedEventIds().filter(id => id !== eventId);
+            localStorage.setItem('emzoom_finished_events', JSON.stringify(ids));
+        }
+
         function isEventFinished(ev) {
             if (!ev) return false;
             const ids = getFinishedEventIds();
@@ -3097,6 +3459,104 @@
                     showToast('Aviso', 'Se ocultó en este dispositivo. Agrega la columna finalizado en Supabase para ocultarlo a todos.', 'error');
                 }
             }, 'Finalizar');
+        }
+
+        async function confirmReactivateEvent(id) {
+            if (!currentUser || currentUser.rol !== 'Admin') {
+                showToast('Acceso denegado', 'Solo administradores', 'error');
+                return;
+            }
+
+            const ev = events.find(e => e.id === id);
+            const eventName = ev ? ev.nombre : 'este evento';
+
+            customConfirm('Reactivar Evento', `¿Deseas volver a activar "${eventName}"? El evento regresará a la vista principal.`, async () => {
+                removeFinishedEventId(id);
+                const idx = events.findIndex(e => e.id === id);
+                if (idx !== -1) {
+                    events[idx] = { ...events[idx], finalizado: false };
+                    if (events[idx].estado === 'Finalizado') events[idx].estado = 'Activo';
+                    if (events[idx].is_finished === true) events[idx].is_finished = false;
+                }
+
+                updateLocalCache();
+                renderEventHistory();
+                renderEvents();
+                updateEventNotification();
+                showToast('Evento reactivado', 'El evento volvió a la vista principal');
+
+                const { error } = await supabaseClient
+                    .from('eventos')
+                    .update({ finalizado: false })
+                    .eq('id', id);
+
+                if (error) {
+                    console.error('No se pudo guardar finalizado=false en Supabase. Agrega la columna finalizado a la tabla eventos.', error);
+                    showToast('Aviso', 'Se reactivó en este dispositivo. Agrega la columna finalizado en Supabase para sincronizarlo a todos.', 'error');
+                }
+            }, 'Reactivar');
+        }
+
+        function renderEventHistory() {
+            const listContainer = document.getElementById('event-history-list');
+            const emptyState = document.getElementById('empty-event-history-state');
+            if (!listContainer || !emptyState) return;
+
+            listContainer.innerHTML = '';
+
+            if (!currentUser || currentUser.rol !== 'Admin') {
+                emptyState.classList.remove('hidden');
+                emptyState.querySelector('h4').textContent = 'Acceso restringido';
+                emptyState.querySelector('p').textContent = 'Solo los administradores pueden ver y reactivar eventos finalizados.';
+                return;
+            }
+
+            emptyState.querySelector('h4').textContent = 'Sin historial';
+            emptyState.querySelector('p').textContent = 'Cuando finalices un evento, aparecerá aquí para poder volver a activarlo.';
+
+            const finishedEvents = events
+                .filter(ev => isEventFinished(ev))
+                .sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
+
+            if (finishedEvents.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            finishedEvents.forEach((ev, index) => {
+                const fechaObj = ev.fecha ? new Date(ev.fecha) : null;
+                const fechaStr = fechaObj && !Number.isNaN(fechaObj.getTime())
+                    ? fechaObj.toLocaleString('es-PA', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', hour12: true })
+                    : 'Fecha no registrada';
+                const safeEventName = (ev.nombre || 'Evento').replace(/'/g, "\\'");
+
+                const card = document.createElement('div');
+                card.className = 'glass-card rounded-2xl p-3 md:p-4 border border-yellow-500/20 slide-up';
+                card.style.animationDelay = `${index * 0.04}s`;
+                card.innerHTML = `
+                    <div class="flex gap-3 items-start">
+                        <div class="w-20 h-20 rounded-xl overflow-hidden bg-gray-800 border border-white/10 flex-shrink-0">
+                            ${ev.imagen ? `<img src="${ev.imagen}" loading="lazy" class="w-full h-full object-cover" onclick="openGallery('${ev.imagen}', null, '${safeEventName}', 0)">` : `<div class="w-full h-full flex items-center justify-center"><i data-lucide="flag" class="w-7 h-7 text-gray-600"></i></div>`}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0">
+                                    <h4 class="text-white font-black uppercase tracking-wide leading-tight truncate">${ev.nombre || 'Evento sin nombre'}</h4>
+                                    <p class="text-[10px] text-gray-400 mt-1 capitalize"><i data-lucide="clock" class="w-3 h-3 inline mb-0.5 text-yellow-400"></i> ${fechaStr}</p>
+                                    <p class="text-[10px] text-gray-400 mt-1 truncate"><i data-lucide="map-pin" class="w-3 h-3 inline mb-0.5 text-red-400"></i> ${ev.punto || 'Punto no registrado'}</p>
+                                </div>
+                                <span class="bg-yellow-500/15 border border-yellow-500/30 text-yellow-300 text-[8px] font-black uppercase px-2 py-1 rounded-md flex-shrink-0">Finalizado</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 mt-3">
+                                <button onclick="viewEventDetails('${ev.id}', '${safeEventName}')" class="bg-gray-800 hover:bg-gray-700 border border-white/10 text-white py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 active:scale-95"><i data-lucide="users" class="w-3.5 h-3.5 text-blue-400 pointer-events-none"></i> Reporte</button>
+                                <button onclick="confirmReactivateEvent('${ev.id}')" class="bg-green-600 hover:bg-green-500 text-white py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 active:scale-95 shadow-[0_0_12px_rgba(34,197,94,0.25)]"><i data-lucide="refresh-cw" class="w-3.5 h-3.5 pointer-events-none"></i> Reactivar</button>
+                            </div>
+                        </div>
+                    </div>`;
+                listContainer.appendChild(card);
+            });
+            lucide.createIcons();
         }
 
         function renderEvents() {
@@ -3167,7 +3627,7 @@
                         <div class="flex justify-between items-start mb-2 pr-16">
                             <div class="flex flex-wrap items-center gap-3">
                                 <h3 class="event-racing-title font-black text-xl uppercase leading-tight">${ev.nombre}</h3>
-                                ${canEditEvent ? `<button onclick="viewEventDetails('${ev.id}', '${safeEventName}')" class="bg-gray-800 border border-gray-600 hover:bg-gray-700 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"><i data-lucide="users" class="w-3 h-3 text-blue-400 pointer-events-none"></i> Ver Asistencia</button>` : ''}
+                                ${canEditEvent ? `<button onclick="viewEventDetails('${ev.id}', '${safeEventName}')" class="bg-gray-800 border border-gray-600 hover:bg-gray-700 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5"><i data-lucide="users" class="w-3 h-3 text-blue-400 pointer-events-none"></i> Asistencia / Agregar</button>` : ''}
                             </div>
                         </div>
                         ${editButtonsHtml}
@@ -3200,11 +3660,14 @@
 
         let currentEventDetails = [];
         let currentEventName = '';
+        let currentEventId = '';
 
         async function viewEventDetails(eventId, eventName) {
+            currentEventId = eventId;
             currentEventName = eventName;
             document.getElementById('detail-event-name').innerText = eventName;
             navTo('event-details');
+            populateManualAttendanceMembers();
             
             const listYes = document.getElementById('list-yes');
             const listNo = document.getElementById('list-no');
@@ -3254,6 +3717,175 @@
             lucide.createIcons();
         }
 
+        function escapeOptionValue(value) {
+            return String(value || '').replace(/"/g, '&quot;');
+        }
+
+        function populateAdminManualMeetPanel() {
+            const eventSelect = document.getElementById('admin-manual-event');
+            const datalist = document.getElementById('admin-manual-attendance-members');
+            if (!eventSelect || !datalist) return;
+
+            const sortedEvents = [...events].sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
+            eventSelect.innerHTML = '<option value="">Seleccionar evento...</option>' + sortedEvents.map(ev => {
+                const eventDate = ev.fecha ? new Date(ev.fecha + 'T00:00:00') : null;
+                const dateLabel = eventDate && !isNaN(eventDate.getTime()) ? eventDate.toLocaleDateString('es-PA', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Sin fecha';
+                const status = ev.finalizado ? ' • Finalizado' : '';
+                return `<option value="${ev.id}">${escapeOptionValue(ev.nombre)} • ${dateLabel}${status}</option>`;
+            }).join('');
+
+            const names = [...members]
+                .filter(m => m && m.nombre)
+                .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es'));
+            datalist.innerHTML = names.map(m => `<option value="${escapeOptionValue(m.nombre)}">${m.modelo || 'Sin modelo'} • ${m.provincia || 'Sin provincia'}</option>`).join('');
+        }
+
+        async function refreshVerifiedAttendanceCache() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('asistencias_eventos')
+                    .select('usuario_nombre')
+                    .eq('asistencia_verificada', true);
+                if (!error) {
+                    asistenciasTotales = data || [];
+                    updateLocalCache();
+                }
+            } catch (err) {
+                console.warn('No se pudo refrescar el conteo de asistencias verificadas.', err);
+            }
+        }
+
+        async function addAdminManualAttendance() {
+            if (!currentUser || currentUser.rol !== 'Admin') {
+                showToast('Acceso denegado', 'Solo administradores pueden sumar asistencia manual.', 'error');
+                return;
+            }
+
+            const eventSelect = document.getElementById('admin-manual-event');
+            const input = document.getElementById('admin-manual-attendance-name');
+            const selectedEventId = eventSelect?.value || '';
+            const selectedName = (input?.value || '').trim();
+
+            if (!selectedEventId) {
+                showToast('Dato requerido', 'Selecciona el evento donde quieres sumar el MEET.', 'error');
+                return;
+            }
+            if (!selectedName) {
+                showToast('Dato requerido', 'Escribe o selecciona el nombre del miembro.', 'error');
+                return;
+            }
+
+            const selectedEvent = events.find(ev => String(ev.id) === String(selectedEventId));
+            const member = members.find(m => normalizeStr(m.nombre) === normalizeStr(selectedName));
+            if (!member) {
+                showToast('Miembro no encontrado', 'Selecciona un miembro registrado para que el MEET pueda contarse en su perfil.', 'error');
+                return;
+            }
+
+            showToast('Procesando...', 'Sumando asistencia manual al MEET');
+
+            try {
+                const { data: eventRecords, error: searchError } = await supabaseClient
+                    .from('asistencias_eventos')
+                    .select('*')
+                    .eq('evento_id', selectedEventId);
+                if (searchError) throw searchError;
+
+                const existing = (eventRecords || []).find(r =>
+                    normalizeStr(r.usuario_nombre) === normalizeStr(member.nombre) ||
+                    (r.usuario_id && String(r.usuario_id) === String(member.id))
+                );
+
+                if (existing) {
+                    const { error } = await supabaseClient
+                        .from('asistencias_eventos')
+                        .update({ estado: 'yes', asistencia_verificada: true, usuario_id: member.id, usuario_nombre: member.nombre })
+                        .eq('id', existing.id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('asistencias_eventos').insert([{
+                        evento_id: selectedEventId,
+                        usuario_id: member.id,
+                        usuario_nombre: member.nombre,
+                        estado: 'yes',
+                        asistencia_verificada: true
+                    }]);
+                    if (error) throw error;
+                }
+
+                await refreshVerifiedAttendanceCache();
+                if (input) input.value = '';
+                showToast('MEET sumado ✅', `${member.nombre} ahora cuenta en ${selectedEvent?.nombre || 'MEET EMZOOM RSTYLE 507 TEAM'}`);
+                if (!document.getElementById('view-members')?.classList.contains('hidden')) renderMembers();
+            } catch (error) {
+                console.error(error);
+                showToast('Error', 'No se pudo agregar la asistencia manual desde el panel administrador.', 'error');
+            }
+        }
+
+        function populateManualAttendanceMembers() {
+            const datalist = document.getElementById('manual-attendance-members');
+            if (!datalist) return;
+            const names = [...members]
+                .filter(m => m && m.nombre)
+                .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es'));
+            datalist.innerHTML = names.map(m => `<option value="${String(m.nombre).replace(/"/g, '&quot;')}">${m.modelo || 'Sin modelo'} • ${m.provincia || 'Sin provincia'}</option>`).join('');
+        }
+
+        async function addManualAttendance() {
+            if (!currentUser || currentUser.rol !== 'Admin') {
+                showToast('Acceso denegado', 'Solo administradores pueden sumar asistencia manual.', 'error');
+                return;
+            }
+            if (!currentEventId) {
+                showToast('Error', 'Abre primero el detalle de un evento.', 'error');
+                return;
+            }
+
+            const input = document.getElementById('manual-attendance-name');
+            const selectedName = (input?.value || '').trim();
+            if (!selectedName) {
+                showToast('Dato requerido', 'Escribe o selecciona el nombre del miembro.', 'error');
+                return;
+            }
+
+            const member = members.find(m => normalizeStr(m.nombre) === normalizeStr(selectedName));
+            if (!member) {
+                showToast('Miembro no encontrado', 'Selecciona un miembro registrado para que el MEET pueda contarse en su perfil.', 'error');
+                return;
+            }
+
+            const existing = currentEventDetails.find(r => normalizeStr(r.usuario_nombre) === normalizeStr(member.nombre));
+            showToast('Procesando...', 'Sumando asistencia manual al MEET');
+
+            try {
+                if (existing) {
+                    const { error } = await supabaseClient
+                        .from('asistencias_eventos')
+                        .update({ estado: 'yes', asistencia_verificada: true, usuario_id: member.id, usuario_nombre: member.nombre })
+                        .eq('id', existing.id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('asistencias_eventos').insert([{
+                        evento_id: currentEventId,
+                        usuario_id: member.id,
+                        usuario_nombre: member.nombre,
+                        estado: 'yes',
+                        asistencia_verificada: true
+                    }]);
+                    if (error) throw error;
+                }
+
+                await refreshVerifiedAttendanceCache();
+                if (input) input.value = '';
+                showToast('MEET sumado ✅', `${member.nombre} ahora cuenta en MEET EMZOOM RSTYLE 507 TEAM`);
+                await viewEventDetails(currentEventId, currentEventName);
+            } catch (error) {
+                console.error(error);
+                showToast('Error', 'No se pudo agregar la asistencia manual.', 'error');
+            }
+        }
+
         async function verifyAttendance(recordId, isVerified, eventId) {
             try {
                 const { error } = await supabaseClient.from('asistencias_eventos').update({ asistencia_verificada: isVerified }).eq('id', recordId);
@@ -3261,10 +3893,11 @@
                 showToast('Verificación', isVerified ? 'Asistencia validada ✅' : 'Asistencia denegada ❌');
                 const rIdx = currentEventDetails.findIndex(r => r.id === recordId);
                 if (rIdx !== -1) {
+                    const wasVerified = currentEventDetails[rIdx].asistencia_verificada === true;
                     currentEventDetails[rIdx].asistencia_verificada = isVerified;
                     const name = currentEventDetails[rIdx].usuario_nombre;
-                    if (isVerified) { asistenciasTotales.push({ usuario_nombre: name }); } 
-                    else {
+                    if (isVerified && !wasVerified) { asistenciasTotales.push({ usuario_nombre: name }); } 
+                    else if (!isVerified && wasVerified) {
                         const tIdx = asistenciasTotales.findIndex(a => normalizeStr(a.usuario_nombre) === normalizeStr(name));
                         if (tIdx !== -1) asistenciasTotales.splice(tIdx, 1);
                     }
@@ -3397,15 +4030,16 @@
             if (itemsToDisplay.length === 0) { emptyState.classList.remove('hidden'); }
             else { emptyState.classList.add('hidden'); }
             
-            itemsToDisplay.forEach(item => {
+            itemsToDisplay.forEach((item, index) => {
+                const safeName = (item.nombre || 'Artículo').replace(/'/g, "\\'");
                 const imgStr = item.imagen 
-                    ? `<img src="${item.imagen}" class="w-full h-48 object-cover cursor-pointer transition-transform hover:scale-105" onclick="openGallery('${item.imagen}', null, '${item.nombre.replace(/'/g, "\\'")}', 0)">` 
-                    : `<div class="w-full h-48 bg-gray-800 flex items-center justify-center"><i data-lucide="image" class="w-10 h-10 text-gray-600"></i></div>`;
+                    ? `<img src="${item.imagen}" class="store-item-img w-full object-cover cursor-pointer transition-transform hover:scale-105" onclick="openGallery('${item.imagen}', null, '${safeName}', 0)">` 
+                    : `<div class="store-item-img w-full bg-gray-800 flex items-center justify-center"><i data-lucide="image" class="w-8 h-8 text-gray-600"></i></div>`;
                     
                 const editBtns = (isAdmin || (isProveedor && item.proveedor_id === currentUser.id)) ? `
-                    <div class="flex gap-2 mt-4 pt-4 border-t border-white/10">
-                        <button onclick="editStoreItem('${item.id}')" class="flex-1 bg-gray-800 text-blue-400 hover:text-blue-300 py-2 rounded-lg transition active:scale-95 flex justify-center items-center gap-1 text-xs font-bold"><i data-lucide="edit-2" class="w-3 h-3 pointer-events-none"></i> Editar</button>
-                        <button onclick="confirmDeleteStoreItem('${item.id}')" class="flex-1 bg-gray-800 text-red-500 hover:text-red-400 py-2 rounded-lg transition active:scale-95 flex justify-center items-center gap-1 text-xs font-bold"><i data-lucide="trash-2" class="w-3 h-3 pointer-events-none"></i> Eliminar</button>
+                    <div class="grid grid-cols-2 gap-1.5 mt-2 pt-2 border-t border-white/10">
+                        <button onclick="editStoreItem('${item.id}')" class="store-edit-btn bg-gray-800 text-blue-400 hover:text-blue-300 py-1.5 rounded-lg transition active:scale-95 flex justify-center items-center gap-1 text-[10px] font-bold"><i data-lucide="edit-2" class="w-3 h-3 pointer-events-none"></i> Editar</button>
+                        <button onclick="confirmDeleteStoreItem('${item.id}')" class="store-edit-btn bg-gray-800 text-red-500 hover:text-red-400 py-1.5 rounded-lg transition active:scale-95 flex justify-center items-center gap-1 text-[10px] font-bold"><i data-lucide="trash-2" class="w-3 h-3 pointer-events-none"></i> Eliminar</button>
                     </div>` : '';
 
                 // Ocultar botón de comprar si es el proveedor que lo subió
@@ -3414,24 +4048,25 @@
                 let buyHtml = '';
                 if (!isOwner) {
                     buyHtml = `
-                        <div class="flex items-center gap-2 mb-3">
-                            <label class="text-xs font-bold text-gray-400 uppercase">Cant.</label>
-                            <input type="number" id="qty-${item.id}" value="1" min="1" class="input-dark w-16 px-2 py-1.5 rounded-lg text-sm text-center font-bold">
+                        <div class="flex items-center gap-1.5 mb-2">
+                            <span class="text-[9px] font-black text-gray-500 uppercase">Cant.</span>
+                            <input type="number" id="qty-${item.id}" value="1" min="1" class="store-qty-input input-dark w-14 px-2 py-1 rounded-lg text-xs text-center font-bold">
                         </div>
-                        <button onclick="placeOrder('${item.id}', '${item.nombre.replace(/'/g, "\\'")}', '${item.imagen || ''}', ${item.precio})" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2.5 rounded-xl transition active:scale-95 flex justify-center items-center gap-2 text-sm shadow-[0_0_10px_rgba(22,163,74,0.3)] border border-green-500"><i data-lucide="shopping-cart" class="w-4 h-4 pointer-events-none"></i> Hacer Pedido</button>
+                        <button onclick="placeOrder('${item.id}', '${safeName}', '${item.imagen || ''}', ${item.precio})" class="store-buy-btn w-full bg-green-600 hover:bg-green-500 text-white font-black py-2 rounded-lg transition active:scale-95 flex justify-center items-center gap-1.5 text-[11px] shadow-[0_0_10px_rgba(22,163,74,0.3)] border border-green-500"><i data-lucide="shopping-cart" class="w-3.5 h-3.5 pointer-events-none"></i> Pedir</button>
                     `;
                 }
 
                 const card = document.createElement('div');
-                card.className = `glass-card rounded-2xl overflow-hidden shadow-lg border border-gray-800 flex flex-col slide-up`;
+                card.className = `store-item-card glass-card rounded-2xl overflow-hidden shadow-lg border border-gray-800 flex flex-col slide-up`;
+                card.style.animationDelay = `${index * 0.035}s`;
                 card.innerHTML = `
                     <div class="relative overflow-hidden">
                         ${imgStr}
-                        <div class="absolute top-2 right-2 bg-green-600 text-white font-black text-sm px-3 py-1 rounded-full shadow-lg border border-green-400">$${parseFloat(item.precio).toFixed(2)}</div>
+                        <div class="store-item-price absolute top-2 right-2 bg-green-600 text-white font-black text-xs px-2 py-0.5 rounded-full shadow-lg border border-green-400">$${parseFloat(item.precio).toFixed(2)}</div>
                     </div>
-                    <div class="p-4 flex flex-col flex-1">
-                        <h3 class="text-white font-bold text-base uppercase tracking-wide leading-tight mb-1">${item.nombre}</h3>
-                        <p class="text-gray-400 text-xs mb-4 flex-1 whitespace-pre-wrap">${item.descripcion || 'Sin descripción'}</p>
+                    <div class="store-item-body p-3 flex flex-col flex-1">
+                        <h3 class="store-item-title text-white font-black text-[13px] uppercase tracking-wide leading-tight mb-1">${item.nombre}</h3>
+                        <p class="store-item-desc text-gray-400 text-[11px] mb-3 flex-1 whitespace-pre-wrap">${item.descripcion || 'Sin descripción'}</p>
                         ${buyHtml}
                         ${editBtns}
                     </div>
@@ -3468,14 +4103,14 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = `glass-card p-4 rounded-xl flex flex-col gap-3 slide-up`;
+                card.className = `my-order-card glass-card p-3 rounded-xl flex flex-col gap-2.5 slide-up`;
                 card.style.animationDelay = `${index * 0.05}s`;
                 card.innerHTML = `
                     <div class="flex items-center gap-4">
                         ${o.articulo_imagen ? `<img src="${o.articulo_imagen}" class="w-16 h-16 rounded-lg object-cover border border-gray-700" onclick="openGallery('${o.articulo_imagen}', null, '${o.articulo_nombre.replace(/'/g, "\\'")}', 0)">` : `<div class="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center border border-gray-700"><i data-lucide="image" class="w-6 h-6 text-gray-500"></i></div>`}
                         <div class="flex-1">
-                            <h4 class="text-white font-bold text-sm leading-tight">${o.articulo_nombre} <span class="text-gray-500 font-normal text-xs ml-1">x${o.cantidad || 1}</span></h4>
-                            <p class="text-[11px] text-gray-400 mt-1">Total: <span class="text-green-400 font-bold">$${parseFloat(o.precio_total || 0).toFixed(2)}</span> • Pedido el ${dateStr}</p>
+                            <h4 class="text-white font-bold text-[13px] leading-tight">${o.articulo_nombre} <span class="text-gray-500 font-normal text-[11px] ml-1">x${o.cantidad || 1}</span></h4>
+                            <p class="text-[10px] text-gray-400 mt-1">Total: <span class="text-green-400 font-bold">$${parseFloat(o.precio_total || 0).toFixed(2)}</span> • ${dateStr}</p>
                         </div>
                         <div class="text-right flex-shrink-0">
                             <span class="px-2 py-1.5 rounded-md text-[9px] font-black uppercase tracking-wider inline-block text-center border ${stateColor}">${isScheduled ? 'Programado' : o.estado}</span>
@@ -3547,41 +4182,68 @@
             }, 'Cancelar Pedido');
         }
 
-        function renderStoreOrders() {
-            const body = document.getElementById('store-orders-body');
-            body.innerHTML = '';
-            
-            let ordersToDisplay = storeOrders;
+        function isOrderDelivered(order) {
+            return String(order?.estado || '').trim().toLowerCase() === 'entregado';
+        }
 
-            // Filtro para que el proveedor solo vea pedidos de sus artículos
+        function getManageableStoreOrders(showDelivered = false) {
+            let ordersToDisplay = Array.isArray(storeOrders) ? [...storeOrders] : [];
+
             if (currentUser && currentUser.rol === 'Proveedor') {
                 const myItemIds = storeItems.filter(i => i.proveedor_id === currentUser.id).map(i => i.id);
-                ordersToDisplay = storeOrders.filter(o => myItemIds.includes(o.articulo_id));
+                ordersToDisplay = ordersToDisplay.filter(o => myItemIds.includes(o.articulo_id));
             }
 
-            if (ordersToDisplay.length === 0) { body.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-500 uppercase text-xs font-bold tracking-widest">Sin pedidos recientes</td></tr>'; return; }
+            return ordersToDisplay.filter(o => showDelivered ? isOrderDelivered(o) : !isOrderDelivered(o));
+        }
 
-            ordersToDisplay.forEach(o => {
-                const isDelivered = o.estado === 'Entregado';
-                const isScheduled = o.fecha_entrega && !isDelivered;
-                const stateColor = isDelivered ? 'text-green-400 bg-green-500/20 border border-green-500/30' : (isScheduled ? 'text-blue-400 bg-blue-500/20 border border-blue-500/30' : 'text-yellow-400 bg-yellow-500/20 border border-yellow-500/30');
-                
-                let btnHtml = '';
-                if (isDelivered) {
-                    btnHtml = `<i data-lucide="check-circle" class="w-5 h-5 text-green-500 mx-auto"></i>`;
-                } else if (isScheduled) {
-                    btnHtml = `<span class="block text-blue-400 font-bold text-[9px] mb-1.5 uppercase tracking-widest">Para: ${o.fecha_entrega}</span>
-                               <button onclick="markOrderDelivered('${o.id}')" class="w-full bg-green-600 hover:bg-green-500 text-white px-2 py-1.5 rounded-lg text-[10px] uppercase font-bold transition active:scale-95 shadow-[0_0_10px_rgba(34,197,94,0.4)] border border-green-400">Entregado</button>`;
-                } else {
-                    btnHtml = `<input type="date" id="date-${o.id}" class="input-dark w-full px-2 py-1.5 text-[10px] rounded-md mb-1.5 text-center">
-                               <button onclick="setDeliveryDate('${o.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white px-2 py-1.5 rounded-lg text-[10px] uppercase font-bold transition active:scale-95 shadow-[0_0_10px_rgba(37,99,235,0.4)] border border-blue-400">Fijar Fecha</button>`;
+        function formatOrderDateTime(dateValue) {
+            if (!dateValue) return 'N/A';
+            const date = new Date(dateValue);
+            if (Number.isNaN(date.getTime())) return String(dateValue);
+            return date.toLocaleDateString('es-ES', {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+        }
+
+        function buildOrderThumb(o, safeArticle, size = 'w-12 h-12') {
+            return o.articulo_imagen
+                ? `<img src="${o.articulo_imagen}" loading="lazy" class="${size} object-cover rounded-lg border border-gray-700 flex-shrink-0 cursor-pointer" onclick="openGallery('${o.articulo_imagen}', null, '${safeArticle}', 0)">`
+                : `<div class="${size} bg-gray-800 rounded-lg border border-gray-700 flex items-center justify-center flex-shrink-0"><i data-lucide="image" class="w-5 h-5 text-gray-500"></i></div>`;
+        }
+
+        function renderStoreOrders() {
+            const body = document.getElementById('store-orders-body');
+            const cardsContainer = document.getElementById('store-orders-cards');
+            body.innerHTML = '';
+            if (cardsContainer) cardsContainer.innerHTML = '';
+
+            const ordersToDisplay = getManageableStoreOrders(false);
+
+            if (ordersToDisplay.length === 0) {
+                body.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-500 uppercase text-xs font-bold tracking-widest">Sin pedidos pendientes</td></tr>';
+                if (cardsContainer) cardsContainer.innerHTML = '<div class="orders-mobile-card text-center text-gray-500 uppercase text-[11px] font-black tracking-widest py-8">Sin pedidos pendientes</div>';
+                lucide.createIcons();
+                return;
+            }
+
+            const buildAction = (o, target) => {
+                const isScheduled = !!o.fecha_entrega;
+                const inputId = `date-${o.id}-${target}`;
+                if (isScheduled) {
+                    return `<div class="text-blue-400 font-bold text-[10px] mb-2 uppercase tracking-widest text-center">Para: ${o.fecha_entrega}</div>
+                            <button onclick="markOrderDelivered('${o.id}')" class="w-full bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-[10px] uppercase font-bold transition active:scale-95 shadow-[0_0_10px_rgba(34,197,94,0.4)] border border-green-400">Entregado</button>`;
                 }
+                return `<input type="date" id="${inputId}" class="input-dark w-full px-2 py-2 text-[10px] rounded-md mb-2 text-center">
+                        <button onclick="setDeliveryDate('${o.id}', '${target}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white px-2 py-2 rounded-lg text-[10px] uppercase font-bold transition active:scale-95 shadow-[0_0_10px_rgba(37,99,235,0.4)] border border-blue-400">Fijar Fecha</button>`;
+            };
 
-                const dateStr = new Date(o.created_at).toLocaleDateString('es-ES', {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+            ordersToDisplay.forEach((o, index) => {
+                const isScheduled = !!o.fecha_entrega;
+                const stateColor = isScheduled ? 'text-blue-400 bg-blue-500/20 border border-blue-500/30' : 'text-yellow-400 bg-yellow-500/20 border border-yellow-500/30';
+                const stateLabel = isScheduled ? 'Programado' : (o.estado || 'Pendiente');
+                const dateStr = formatOrderDateTime(o.created_at);
+                const safeArticle = (o.articulo_nombre || 'Artículo').replace(/'/g, "\\'");
 
-                const imgThumb = o.articulo_imagen 
-                    ? `<img src="${o.articulo_imagen}" class="w-10 h-10 object-cover rounded-md border border-gray-700 shadow-sm mt-1 cursor-pointer" onclick="openGallery('${o.articulo_imagen}', null, '${o.articulo_nombre.replace(/'/g, "\\'")}', 0)">`
-                    : `<div class="w-10 h-10 bg-gray-800 rounded-md border border-gray-700 flex items-center justify-center mt-1"><i data-lucide="image" class="w-4 h-4 text-gray-500"></i></div>`;
+                const imgThumb = buildOrderThumb(o, safeArticle, 'w-10 h-10');
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -3599,29 +4261,122 @@
                         ${o.cantidad || 1}
                         <span class="block text-[10px] text-green-400 mt-1 font-bold">$${parseFloat(o.precio_total || 0).toFixed(2)}</span>
                     </td>
-                    <td class="px-4 py-4 align-top text-center"><span class="px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider inline-block ${stateColor}">${isScheduled ? 'Programado' : o.estado}</span></td>
-                    <td class="px-4 py-4 text-right align-top min-w-[100px]">${btnHtml}</td>
+                    <td class="px-4 py-4 align-top text-center"><span class="px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider inline-block ${stateColor}">${stateLabel}</span></td>
+                    <td class="px-4 py-4 text-right align-top min-w-[110px]">${buildAction(o, 'table')}</td>
                 `;
                 body.appendChild(row);
+
+                if (cardsContainer) {
+                    const mobileCard = document.createElement('div');
+                    mobileCard.className = 'orders-mobile-card slide-up';
+                    mobileCard.style.animationDelay = `${index * 0.035}s`;
+                    mobileCard.innerHTML = `
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div class="min-w-0">
+                                <h4 class="text-white font-black text-sm leading-tight truncate">${o.usuario_nombre}</h4>
+                                <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-400">
+                                    <span><i data-lucide="phone" class="w-3 h-3 inline mb-0.5 text-gray-500"></i> ${o.usuario_celular || 'N/A'}</span>
+                                    <span><i data-lucide="map-pin" class="w-3 h-3 inline mb-0.5 text-gray-500"></i> ${o.usuario_provincia || 'N/A'}</span>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider inline-block ${stateColor}">${stateLabel}</span>
+                        </div>
+                        <div class="flex items-center gap-3 rounded-xl bg-black/25 border border-white/5 p-2 mb-3">
+                            ${buildOrderThumb(o, safeArticle, 'w-12 h-12')}
+                            <div class="min-w-0 flex-1">
+                                <p class="text-white text-[12px] font-bold leading-tight truncate">${o.articulo_nombre}</p>
+                                <p class="text-[10px] text-gray-400 mt-1">Cant. <span class="text-white font-black">${o.cantidad || 1}</span> • Total <span class="text-green-400 font-black">$${parseFloat(o.precio_total || 0).toFixed(2)}</span></p>
+                                <p class="text-[9px] text-gray-500 mt-0.5">${dateStr}</p>
+                            </div>
+                        </div>
+                        ${buildAction(o, 'mobile')}
+                    `;
+                    cardsContainer.appendChild(mobileCard);
+                }
+            });
+            lucide.createIcons();
+        }
+
+        function renderDeliveredOrdersHistory() {
+            const cardsContainer = document.getElementById('store-delivered-orders-cards');
+            const emptyState = document.getElementById('empty-store-delivered-orders-state');
+            if (!cardsContainer || !emptyState) return;
+
+            cardsContainer.innerHTML = '';
+            const deliveredOrders = getManageableStoreOrders(true)
+                .sort((a, b) => new Date(b.fecha_entrega || b.created_at || 0) - new Date(a.fecha_entrega || a.created_at || 0));
+
+            if (deliveredOrders.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            deliveredOrders.forEach((o, index) => {
+                const safeArticle = (o.articulo_nombre || 'Artículo').replace(/'/g, "\\'");
+                const createdDate = formatOrderDateTime(o.created_at);
+                const deliveredDate = o.fecha_entrega ? formatOrderDateTime(o.fecha_entrega) : 'Entrega registrada';
+                const card = document.createElement('div');
+                card.className = 'orders-mobile-card slide-up border-green-500/20';
+                card.style.animationDelay = `${index * 0.035}s`;
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3 mb-3">
+                        <div class="min-w-0">
+                            <h4 class="text-white font-black text-sm leading-tight truncate">${o.usuario_nombre}</h4>
+                            <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-400">
+                                <span><i data-lucide="phone" class="w-3 h-3 inline mb-0.5 text-gray-500"></i> ${o.usuario_celular || 'N/A'}</span>
+                                <span><i data-lucide="map-pin" class="w-3 h-3 inline mb-0.5 text-gray-500"></i> ${o.usuario_provincia || 'N/A'}</span>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider inline-flex items-center gap-1 text-green-400 bg-green-500/20 border border-green-500/30"><i data-lucide="check-circle" class="w-3 h-3"></i> Entregado</span>
+                    </div>
+                    <div class="flex items-center gap-3 rounded-xl bg-black/25 border border-white/5 p-2 mb-3">
+                        ${buildOrderThumb(o, safeArticle, 'w-12 h-12')}
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white text-[12px] font-bold leading-tight truncate">${o.articulo_nombre}</p>
+                            <p class="text-[10px] text-gray-400 mt-1">Cant. <span class="text-white font-black">${o.cantidad || 1}</span> • Total <span class="text-green-400 font-black">$${parseFloat(o.precio_total || 0).toFixed(2)}</span></p>
+                            <p class="text-[9px] text-gray-500 mt-0.5">Pedido: ${createdDate}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-center">
+                        <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-2">
+                            <p class="text-[8px] text-green-300 font-black uppercase tracking-widest">Entrega</p>
+                            <p class="text-[10px] text-white font-bold mt-0.5">${deliveredDate}</p>
+                        </div>
+                        <div class="bg-black/25 border border-white/5 rounded-xl p-2">
+                            <p class="text-[8px] text-gray-400 font-black uppercase tracking-widest">Estado</p>
+                            <p class="text-[10px] text-green-400 font-black mt-0.5">Completado</p>
+                        </div>
+                    </div>`;
+                cardsContainer.appendChild(card);
             });
             lucide.createIcons();
         }
 
         async function markOrderDelivered(orderId) {
-            customConfirm('Completar Pedido', '¿Marcar este pedido como Entregado?', async () => {
-                const { error } = await supabaseClient.from('pedidos_tienda').update({ estado: 'Entregado' }).eq('id', orderId);
+            const currentOrder = storeOrders.find(o => o.id === orderId);
+            const deliveryDate = currentOrder && currentOrder.fecha_entrega ? currentOrder.fecha_entrega : new Date().toISOString().slice(0, 10);
+
+            customConfirm('Completar Pedido', '¿Marcar este pedido como Entregado? Al completarlo se moverá al historial de entregas.', async () => {
+                const { error } = await supabaseClient.from('pedidos_tienda').update({ estado: 'Entregado', fecha_entrega: deliveryDate }).eq('id', orderId);
                 if (error) { showToast('Error', 'No se pudo actualizar', 'error'); } 
                 else {
-                    showToast('Actualizado', 'Pedido marcado como Entregado');
+                    showToast('Actualizado', 'Pedido enviado al historial de entregas');
                     const idx = storeOrders.findIndex(o => o.id === orderId);
-                    if(idx !== -1) storeOrders[idx].estado = 'Entregado';
-                    updateLocalCache(); renderStoreOrders();
+                    if(idx !== -1) {
+                        storeOrders[idx].estado = 'Entregado';
+                        storeOrders[idx].fecha_entrega = deliveryDate;
+                    }
+                    updateLocalCache();
+                    renderStoreOrders();
+                    renderDeliveredOrdersHistory();
                 }
             }, 'Marcar Entregado');
         }
 
-        async function setDeliveryDate(orderId) {
-            const dateInput = document.getElementById(`date-${orderId}`).value;
+        async function setDeliveryDate(orderId, target = 'table') {
+            const dateEl = document.getElementById(`date-${orderId}-${target}`) || document.getElementById(`date-${orderId}`);
+            const dateInput = dateEl ? dateEl.value : '';
             if (!dateInput) {
                 showToast('Aviso', 'Selecciona una fecha primero', 'error');
                 return;
@@ -3644,22 +4399,9 @@
             }, 'Programar');
         }
 
-        function exportOrdersToExcel() {
-            let ordersToExport = storeOrders;
-
-            // Filtro para exportación del proveedor
-            if (currentUser && currentUser.rol === 'Proveedor') {
-                const myItemIds = storeItems.filter(i => i.proveedor_id === currentUser.id).map(i => i.id);
-                ordersToExport = storeOrders.filter(o => myItemIds.includes(o.articulo_id));
-            }
-
-            if (!ordersToExport || ordersToExport.length === 0) { 
-                showToast('Aviso', 'No hay pedidos para exportar.', 'error'); 
-                return; 
-            }
-
-            const dataToExport = ordersToExport.map(o => ({
-                'Fecha de Pedido': new Date(o.created_at).toLocaleString('es-ES'),
+        function buildOrdersExportData(orders) {
+            return orders.map(o => ({
+                'Fecha de Pedido': o.created_at ? new Date(o.created_at).toLocaleString('es-ES') : 'N/A',
                 'Cliente': o.usuario_nombre,
                 'Celular': o.usuario_celular || 'N/A',
                 'Provincia': o.usuario_provincia || 'N/A',
@@ -3667,15 +4409,40 @@
                 'Cantidad': o.cantidad || 1,
                 'Total (USD)': `$${parseFloat(o.precio_total || 0).toFixed(2)}`,
                 'Estado': o.estado,
-                'Fecha Programada': o.fecha_entrega || 'N/A'
+                'Fecha Programada / Entrega': o.fecha_entrega || 'N/A'
             }));
+        }
 
-            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+        function exportOrdersToExcel() {
+            const ordersToExport = getManageableStoreOrders(false);
+
+            if (!ordersToExport || ordersToExport.length === 0) { 
+                showToast('Aviso', 'No hay pedidos pendientes para exportar.', 'error'); 
+                return; 
+            }
+
+            const worksheet = XLSX.utils.json_to_sheet(buildOrdersExportData(ordersToExport));
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Pedidos");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Pedidos Pendientes");
             
             const dateStr = new Date().toISOString().slice(0, 10);
-            XLSX.writeFile(workbook, `Reporte_Pedidos_Tienda_${dateStr}.xlsx`);
+            XLSX.writeFile(workbook, `Reporte_Pedidos_Pendientes_${dateStr}.xlsx`);
+        }
+
+        function exportDeliveredOrdersToExcel() {
+            const ordersToExport = getManageableStoreOrders(true);
+
+            if (!ordersToExport || ordersToExport.length === 0) {
+                showToast('Aviso', 'No hay entregas para exportar.', 'error');
+                return;
+            }
+
+            const worksheet = XLSX.utils.json_to_sheet(buildOrdersExportData(ordersToExport));
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Historial Entregas");
+
+            const dateStr = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(workbook, `Historial_Entregas_Tienda_${dateStr}.xlsx`);
         }
 
         document.getElementById('store-form').addEventListener('submit', async function(e) {
