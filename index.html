@@ -685,6 +685,55 @@
         }
 
 
+        /* ===== OPTIMIZACIÓN LIVE: FPS + TECLADO ===== */
+        #view-live-stream,
+        #view-live-stream #live-stage,
+        #view-live-stream #live-card,
+        #view-live-stream #live-chat-panel,
+        #view-live-stream #live-chat-messages {
+            contain: layout paint style;
+        }
+        #view-live-stream #live-card,
+        #view-live-stream #live-video-area,
+        #view-live-stream #live-chat-panel {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        #view-live-stream .live-chat-message {
+            content-visibility: auto;
+            contain: layout paint style;
+            contain-intrinsic-size: 42px;
+            will-change: auto;
+        }
+        #view-live-stream.live-chat-focused #live-card,
+        #view-live-stream.live-performance-mode #live-card {
+            animation: none !important;
+        }
+        #view-live-stream.live-chat-focused *,
+        #view-live-stream.live-performance-mode * {
+            transition-duration: .01ms !important;
+            animation-duration: .01ms !important;
+            animation-iteration-count: 1 !important;
+            scroll-behavior: auto !important;
+        }
+        #view-live-stream.live-chat-focused .backdrop-blur-md,
+        #view-live-stream.live-chat-focused .backdrop-blur-sm,
+        #view-live-stream.live-performance-mode .backdrop-blur-md,
+        #view-live-stream.live-performance-mode .backdrop-blur-sm {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        #view-live-stream.live-chat-focused .drop-shadow,
+        #view-live-stream.live-performance-mode .drop-shadow {
+            filter: none !important;
+        }
+        #view-live-stream.live-chat-focused #live-status .animate-pulse,
+        #view-live-stream.live-performance-mode #live-status .animate-pulse {
+            animation: none !important;
+        }
+
+
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
@@ -1535,6 +1584,7 @@
         let liveConfigSignature = "";
         let liveConfigPollInterval = null;
         let liveKeyboardFixReady = false;
+        let livePerformanceTimer = null;
         const LIVE_CONFIG_POLL_MS = 60000;
         const DEFAULT_APP_VIEW_SETTINGS = {
             home: true,
@@ -2773,7 +2823,36 @@
         function renderLiveChatPlaceholder(message) {
             const messages = document.getElementById('live-chat-messages');
             if (!messages) return;
-            messages.innerHTML = `<p id="live-chat-placeholder" class="text-gray-300 bg-black/35 border border-white/10 rounded-md px-2 py-1.5 backdrop-blur-sm">${message}</p>`;
+            messages.innerHTML = `<p id="live-chat-placeholder" class="text-gray-300 bg-black/35 border border-white/10 rounded-md px-2 py-1.5">${message}</p>`;
+        }
+
+        function setLivePerformanceMode(active) {
+            const section = document.getElementById('view-live-stream');
+            if (!section) return;
+
+            if (active) {
+                section.classList.add('live-performance-mode');
+                if (livePerformanceTimer) clearTimeout(livePerformanceTimer);
+                livePerformanceTimer = setTimeout(() => {
+                    const input = document.getElementById('live-chat-input');
+                    if (document.activeElement !== input) section.classList.remove('live-performance-mode');
+                }, 520);
+                return;
+            }
+
+            if (livePerformanceTimer) {
+                clearTimeout(livePerformanceTimer);
+                livePerformanceTimer = null;
+            }
+            section.classList.remove('live-performance-mode');
+        }
+
+        function trimLiveChatMessages(messages) {
+            if (!messages) return;
+            const maxMessages = 45;
+            while (messages.children.length > maxMessages) {
+                messages.removeChild(messages.firstElementChild);
+            }
         }
 
         function addLiveChatMessage(payload, isMine = false) {
@@ -2792,8 +2871,10 @@
             const time = payload && payload.hora ? new Date(payload.hora) : new Date();
             const timeText = isNaN(time.getTime()) ? '' : time.toLocaleTimeString('es-PA', { hour: '2-digit', minute: '2-digit' });
 
+            setLivePerformanceMode(true);
+
             const wrapper = document.createElement('div');
-            wrapper.className = `live-chat-message max-w-[80%] rounded-md px-2 py-1 border backdrop-blur-sm ${isMine ? 'ml-auto bg-red-600/25 border-red-400/20' : 'bg-black/30 border-white/10'}`;
+            wrapper.className = `live-chat-message max-w-[80%] rounded-md px-2 py-1 border ${isMine ? 'ml-auto bg-red-600/25 border-red-400/20' : 'bg-black/30 border-white/10'}`;
 
             const meta = document.createElement('div');
             meta.className = 'live-chat-meta flex items-center justify-between gap-2 mb-0.5';
@@ -2807,7 +2888,7 @@
             timeEl.textContent = timeText;
 
             const msgEl = document.createElement('p');
-            msgEl.className = 'text-white break-words leading-snug drop-shadow';
+            msgEl.className = 'text-white break-words leading-snug';
             msgEl.textContent = mensaje;
 
             meta.appendChild(nameEl);
@@ -2815,7 +2896,10 @@
             wrapper.appendChild(meta);
             wrapper.appendChild(msgEl);
             messages.appendChild(wrapper);
-            messages.scrollTop = messages.scrollHeight;
+            trimLiveChatMessages(messages);
+            requestAnimationFrame(() => {
+                messages.scrollTop = messages.scrollHeight;
+            });
         }
 
         function setupLiveChatChannel() {
@@ -3017,41 +3101,85 @@
             const inputBar = document.getElementById('live-chat-input-bar');
             if (!input || !section) return;
 
-            const updateKeyboardLayout = () => {
-                const focused = document.activeElement === input;
+            let layoutFrame = null;
+            let alignTimer = null;
+            let lastVisibleHeight = 0;
+            let lastKeyboardOffset = -1;
+            let lastFocused = false;
+
+            const getViewportInfo = () => {
                 const viewport = window.visualViewport;
                 const visibleHeight = viewport ? viewport.height : window.innerHeight;
                 const keyboardOffset = viewport ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop) : 0;
+                return {
+                    visibleHeight: Math.round(visibleHeight),
+                    keyboardOffset: Math.round(keyboardOffset)
+                };
+            };
 
-                section.style.setProperty('--live-visible-height', `${Math.round(visibleHeight)}px`);
-                section.style.setProperty('--live-keyboard-offset', `${Math.round(keyboardOffset)}px`);
-                section.classList.toggle('live-chat-focused', focused);
+            const alignInputToViewport = () => {
+                if (document.activeElement !== input) return;
+                const { visibleHeight } = getViewportInfo();
+                const headerOffset = 58;
+                const desiredTop = Math.max(0, section.getBoundingClientRect().top + window.scrollY - headerOffset);
 
-                if (focused) {
-                    requestAnimationFrame(() => {
-                        const headerOffset = 58;
-                        const top = section.getBoundingClientRect().top + window.scrollY - headerOffset;
-                        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+                if (Math.abs(window.scrollY - desiredTop) > 6) {
+                    window.scrollTo(0, desiredTop);
+                }
 
-                        setTimeout(() => {
-                            const barRect = (inputBar || input).getBoundingClientRect();
-                            const bottomLimit = visibleHeight - 10;
-                            if (barRect.bottom > bottomLimit) {
-                                window.scrollBy({ top: barRect.bottom - bottomLimit, behavior: 'smooth' });
-                            }
-                        }, 140);
-                    });
+                requestAnimationFrame(() => {
+                    const barRect = (inputBar || input).getBoundingClientRect();
+                    const bottomLimit = visibleHeight - 8;
+                    if (barRect.bottom > bottomLimit) {
+                        window.scrollBy(0, Math.ceil(barRect.bottom - bottomLimit + 4));
+                    }
+                });
+            };
+
+            const scheduleAlign = () => {
+                if (alignTimer) clearTimeout(alignTimer);
+                alignTimer = setTimeout(() => {
+                    requestAnimationFrame(alignInputToViewport);
+                }, 85);
+            };
+
+            const applyKeyboardLayout = () => {
+                layoutFrame = null;
+                const focused = document.activeElement === input;
+                const { visibleHeight, keyboardOffset } = getViewportInfo();
+
+                if (Math.abs(visibleHeight - lastVisibleHeight) > 3) {
+                    section.style.setProperty('--live-visible-height', `${visibleHeight}px`);
+                    lastVisibleHeight = visibleHeight;
+                }
+
+                if (Math.abs(keyboardOffset - lastKeyboardOffset) > 3) {
+                    section.style.setProperty('--live-keyboard-offset', `${keyboardOffset}px`);
+                    lastKeyboardOffset = keyboardOffset;
+                }
+
+                if (focused !== lastFocused) {
+                    section.classList.toggle('live-chat-focused', focused);
+                    if (focused) setLivePerformanceMode(true);
+                    else setLivePerformanceMode(false);
+                    lastFocused = focused;
                 }
             };
 
-            input.addEventListener('focus', updateKeyboardLayout);
+            const requestKeyboardLayout = (shouldAlign = false) => {
+                if (!layoutFrame) layoutFrame = requestAnimationFrame(applyKeyboardLayout);
+                if (shouldAlign && document.activeElement === input) scheduleAlign();
+            };
+
+            input.addEventListener('focus', () => requestKeyboardLayout(true), { passive: true });
             input.addEventListener('blur', () => {
-                setTimeout(updateKeyboardLayout, 120);
-            });
-            window.addEventListener('resize', updateKeyboardLayout);
+                if (alignTimer) clearTimeout(alignTimer);
+                setTimeout(() => requestKeyboardLayout(false), 80);
+            }, { passive: true });
+            window.addEventListener('resize', () => requestKeyboardLayout(true), { passive: true });
             if (window.visualViewport) {
-                window.visualViewport.addEventListener('resize', updateKeyboardLayout);
-                window.visualViewport.addEventListener('scroll', updateKeyboardLayout);
+                window.visualViewport.addEventListener('resize', () => requestKeyboardLayout(true), { passive: true });
+                window.visualViewport.addEventListener('scroll', () => requestKeyboardLayout(false), { passive: true });
             }
         }
 
