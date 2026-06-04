@@ -593,6 +593,72 @@
             }
         }
 
+
+        /* ===== AJUSTE LIVE: TECLADO + CHAT COMPACTO ===== */
+        #view-live-stream {
+            --live-keyboard-offset: 0px;
+            scroll-margin-top: 4.5rem;
+        }
+        #view-live-stream #live-stage { max-width: 430px; }
+        #view-live-stream #live-card { max-height: calc(100dvh - 7.2rem); }
+        #view-live-stream #live-video-area { transition: height .22s ease, min-height .22s ease, max-height .22s ease; }
+        #view-live-stream #live-chat-panel { transition: padding .22s ease, opacity .22s ease; }
+        #view-live-stream .live-chat-message {
+            border-radius: .48rem !important;
+            border-width: 1px !important;
+            padding: .32rem .5rem !important;
+            box-shadow: none !important;
+        }
+        #view-live-stream .live-chat-message .live-chat-meta { margin-bottom: .1rem !important; }
+        #view-live-stream #live-chat-input { font-size: 16px !important; }
+        #view-live-stream.live-chat-focused {
+            padding-bottom: calc(var(--live-keyboard-offset) + env(safe-area-inset-bottom));
+        }
+        #view-live-stream.live-chat-focused #live-card {
+            max-height: calc(100dvh - var(--live-keyboard-offset) - 4.8rem);
+        }
+        #view-live-stream.live-chat-focused #live-video-area {
+            height: 28dvh !important;
+            min-height: 145px !important;
+            max-height: 220px !important;
+        }
+        #view-live-stream.live-chat-focused #live-chat-panel { padding: .55rem !important; }
+        #view-live-stream.live-chat-focused #live-chat-messages {
+            height: 12dvh !important;
+            min-height: 62px !important;
+            max-height: 95px !important;
+        }
+        @media (max-width: 640px) {
+            #view-live-stream #live-card { max-height: calc(100dvh - 6.7rem); }
+            #view-live-stream #live-video-area {
+                height: 39dvh !important;
+                min-height: 215px !important;
+                max-height: 350px !important;
+            }
+            #view-live-stream #live-chat-panel { padding: .65rem !important; }
+            #view-live-stream #live-chat-messages {
+                height: 14dvh !important;
+                min-height: 72px !important;
+                max-height: 112px !important;
+            }
+            #view-live-stream .live-chat-message {
+                max-width: 78% !important;
+                padding: .3rem .48rem !important;
+            }
+            #view-live-stream .live-chat-message p { font-size: .72rem !important; }
+            #view-live-stream.live-chat-focused #live-video-area {
+                height: 25dvh !important;
+                min-height: 135px !important;
+                max-height: 195px !important;
+            }
+            #view-live-stream.live-chat-focused #live-chat-messages {
+                height: 10.5dvh !important;
+                min-height: 56px !important;
+                max-height: 82px !important;
+            }
+        }
+
+
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
@@ -1246,11 +1312,11 @@
 
             <!-- VISTA: LIVE STREAM -->
 <section id="view-live-stream" class="view-section hidden fade-in">
-                <div class="mx-auto w-full max-w-[430px] slide-up">
-                    <div class="w-full rounded-[1.5rem] overflow-hidden bg-black border border-white/10 shadow-2xl">
+                <div id="live-stage" class="mx-auto w-full max-w-[430px] slide-up">
+                    <div id="live-card" class="w-full rounded-[1.5rem] overflow-hidden bg-black border border-white/10 shadow-2xl">
                         <input id="live-url" type="hidden">
 
-                        <div class="relative w-full h-[43vh] min-h-[265px] max-h-[430px] bg-black overflow-hidden rounded-b-[1.35rem] border-b border-white/10">
+                        <div id="live-video-area" class="relative w-full h-[43vh] min-h-[265px] max-h-[430px] bg-black overflow-hidden rounded-b-[1.35rem] border-b border-white/10">
                             <iframe
                                 id="live-player"
                                 class="absolute inset-0 w-full h-full bg-black"
@@ -1435,6 +1501,10 @@
         let currentLiveEmbedUrl = "";
         let liveChatActive = false;
         let liveChatChannel = null;
+        let liveConfigSignature = "";
+        let liveConfigPollInterval = null;
+        let liveKeyboardFixReady = false;
+        const LIVE_CONFIG_POLL_MS = 60000;
         const DEFAULT_APP_VIEW_SETTINGS = {
             home: true,
             liveStream: true,
@@ -2525,7 +2595,7 @@
             if (view === 'store-orders') renderStoreOrders();
             if (view === 'store-delivered-orders') renderDeliveredOrdersHistory();
             if (view === 'my-orders') renderMyOrders();
-            if (view === 'live-stream') loadStreamConfig();
+            if (view === 'live-stream') activateLiveStreamView();
 
             window.scrollTo(0, 0);
         }
@@ -2652,7 +2722,7 @@
         function renderLiveChatPlaceholder(message) {
             const messages = document.getElementById('live-chat-messages');
             if (!messages) return;
-            messages.innerHTML = `<p id="live-chat-placeholder" class="text-gray-300 bg-black/35 border border-white/10 rounded-lg px-3 py-2 backdrop-blur-sm">${message}</p>`;
+            messages.innerHTML = `<p id="live-chat-placeholder" class="text-gray-300 bg-black/35 border border-white/10 rounded-md px-2 py-1.5 backdrop-blur-sm">${message}</p>`;
         }
 
         function addLiveChatMessage(payload, isMine = false) {
@@ -2672,10 +2742,10 @@
             const timeText = isNaN(time.getTime()) ? '' : time.toLocaleTimeString('es-PA', { hour: '2-digit', minute: '2-digit' });
 
             const wrapper = document.createElement('div');
-            wrapper.className = `live-chat-message max-w-[82%] rounded-lg px-2.5 py-1.5 border backdrop-blur-sm shadow-sm ${isMine ? 'ml-auto bg-red-600/30 border-red-400/25' : 'bg-black/35 border-white/10'}`;
+            wrapper.className = `live-chat-message max-w-[80%] rounded-md px-2 py-1 border backdrop-blur-sm ${isMine ? 'ml-auto bg-red-600/25 border-red-400/20' : 'bg-black/30 border-white/10'}`;
 
             const meta = document.createElement('div');
-            meta.className = 'flex items-center justify-between gap-2 mb-0.5';
+            meta.className = 'live-chat-meta flex items-center justify-between gap-2 mb-0.5';
 
             const nameEl = document.createElement('span');
             nameEl.className = 'font-black text-red-200 tracking-wider text-[9px]';
@@ -2841,6 +2911,104 @@
             if (platform) platform.innerText = detectLivePlatform(url);
         }
 
+
+        function getLiveConfigSignature(config) {
+            if (!config) return '';
+            return [
+                config.updated_at || '',
+                config.is_active ? '1' : '0',
+                config.url || '',
+                config.titulo || ''
+            ].join('|');
+        }
+
+        function setupLiveKeyboardFix() {
+            if (liveKeyboardFixReady) return;
+            liveKeyboardFixReady = true;
+
+            const input = document.getElementById('live-chat-input');
+            const section = document.getElementById('view-live-stream');
+            if (!input || !section) return;
+
+            const updateKeyboardLayout = () => {
+                const focused = document.activeElement === input;
+                const viewport = window.visualViewport;
+                const keyboardOffset = viewport ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop) : 0;
+
+                section.style.setProperty('--live-keyboard-offset', `${Math.round(keyboardOffset)}px`);
+                section.classList.toggle('live-chat-focused', focused);
+
+                if (focused) {
+                    requestAnimationFrame(() => {
+                        const headerOffset = 62;
+                        const top = section.getBoundingClientRect().top + window.scrollY - headerOffset;
+                        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+
+                        setTimeout(() => {
+                            const inputRect = input.getBoundingClientRect();
+                            const visibleHeight = viewport ? viewport.height : window.innerHeight;
+                            if (inputRect.bottom > visibleHeight - 14) {
+                                input.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                            }
+                        }, 80);
+                    });
+                }
+            };
+
+            input.addEventListener('focus', updateKeyboardLayout);
+            input.addEventListener('blur', () => {
+                setTimeout(updateKeyboardLayout, 120);
+            });
+            window.addEventListener('resize', updateKeyboardLayout);
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', updateKeyboardLayout);
+                window.visualViewport.addEventListener('scroll', updateKeyboardLayout);
+            }
+        }
+
+        function startLiveConfigPolling() {
+            if (liveConfigPollInterval) return;
+            liveConfigPollInterval = setInterval(checkLiveConfigChanges, LIVE_CONFIG_POLL_MS);
+        }
+
+        async function checkLiveConfigChanges() {
+            if (!supabaseClient) return;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('stream_config')
+                    .select('updated_at,is_active,url,titulo')
+                    .eq('id', 1)
+                    .single();
+
+                if (error || !data) return;
+
+                const nextSignature = getLiveConfigSignature(data);
+                if (!liveConfigSignature) {
+                    liveConfigSignature = nextSignature;
+                    return;
+                }
+
+                if (nextSignature !== liveConfigSignature) {
+                    await loadStreamConfig();
+                }
+            } catch (err) {
+                console.warn('No se pudo verificar cambios del live:', err);
+            }
+        }
+
+        async function activateLiveStreamView() {
+            setupLiveKeyboardFix();
+            startLiveConfigPolling();
+
+            if (!streamConfig) {
+                await loadStreamConfig();
+                return;
+            }
+
+            await checkLiveConfigChanges();
+        }
+
         async function loadStreamConfig() {
             const player = document.getElementById('live-player');
             const title = document.getElementById('live-title');
@@ -2868,6 +3036,7 @@
             }
 
             streamConfig = data;
+            liveConfigSignature = getLiveConfigSignature(data);
 
             if (title) title.innerText = data.titulo || 'Live Stream';
             if (adminTitle) adminTitle.value = data.titulo || '';
