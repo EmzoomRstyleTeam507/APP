@@ -1141,7 +1141,7 @@
             <section id="view-my-orders" class="view-section hidden fade-in">
                 <div class="orders-page-head flex justify-between items-center mb-4">
                     <h3 class="text-base md:text-lg font-bold uppercase tracking-wide text-gray-200">Mis Pedidos</h3>
-                    <button onclick="navTo('home')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase"><i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Inicio</button>
+                    <button type="button" onclick="goBackInApp('store')" class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1.5 rounded-lg transition-all active:scale-90 flex items-center gap-1 text-xs font-semibold uppercase"><i data-lucide="arrow-left" class="w-4 h-4 pointer-events-none"></i> Volver</button>
                 </div>
                 <div id="my-orders-list" class="space-y-3 pb-4"></div>
                 <div id="empty-my-orders-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in">
@@ -1280,6 +1280,39 @@
                         </button>
                     </div>
 
+                    <div id="live-chat-panel" class="relative z-10 mt-4 glass-card rounded-xl p-4 border border-white/10 opacity-60 transition-all">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <h3 class="font-bold flex items-center gap-2 text-sm uppercase tracking-widest text-gray-200">
+                                <i data-lucide="messages-square" class="w-4 h-4 text-red-500"></i>
+                                Chat en vivo
+                            </h3>
+                            <span id="live-chat-state" class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-gray-700 text-gray-300">Desactivado</span>
+                        </div>
+
+                        <div id="live-chat-messages" class="h-40 overflow-y-auto bg-black/35 border border-white/10 rounded-xl p-3 space-y-2 text-xs">
+                            <p id="live-chat-placeholder" class="text-gray-500 text-center py-10">El chat se activará cuando el live esté encendido.</p>
+                        </div>
+
+                        <div class="mt-3 flex gap-2">
+                            <input
+                                id="live-chat-input"
+                                type="text"
+                                disabled
+                                maxlength="180"
+                                onkeydown="if(event.key === 'Enter'){ sendLiveChatMessage(); }"
+                                class="input-dark flex-1 px-4 py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                placeholder="Chat disponible cuando el live esté encendido">
+                            <button
+                                id="live-chat-send"
+                                type="button"
+                                disabled
+                                onclick="sendLiveChatMessage()"
+                                class="bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition active:scale-95">
+                                Enviar
+                            </button>
+                        </div>
+                    </div>
+
                     <div id="live-admin-panel" class="hidden glass-card rounded-xl p-4 mt-4 relative z-10">
                         <h3 class="font-bold mb-3 flex items-center gap-2">
                             <i data-lucide="shield-check" class="w-4 h-4 text-green-500"></i>
@@ -1388,6 +1421,8 @@
         
         let currentUser = JSON.parse(localStorage.getItem('emzoom_user')) || null;
         let streamConfig = null;
+        let liveChatActive = false;
+        let liveChatChannel = null;
         const DEFAULT_APP_VIEW_SETTINGS = {
             home: true,
             liveStream: true,
@@ -1412,6 +1447,18 @@
         // ==========================================
         // HISTORY TRAP & UTILS
         // ==========================================
+        function goBackInApp(fallbackView = 'home') {
+            const currentView = viewStack[viewStack.length - 1];
+            if (currentView) viewStack.pop();
+
+            let prevView = viewStack[viewStack.length - 1];
+            if (!prevView || prevView === currentView) {
+                prevView = fallbackView || ((currentUser && currentUser.rol === 'Proveedor') ? 'store' : (currentUser ? 'home' : 'login'));
+            }
+
+            navTo(prevView, true);
+        }
+
         function popStateHandler(e) {
             history.pushState({ trapped: true }, "");
 
@@ -2579,6 +2626,158 @@
             }
         }
 
+        function getLiveChatName() {
+            return (currentUser && (currentUser.nombre || currentUser.name || currentUser.email))
+                ? (currentUser.nombre || currentUser.name || currentUser.email).toString().split('@')[0]
+                : 'Usuario';
+        }
+
+        function renderLiveChatPlaceholder(message) {
+            const messages = document.getElementById('live-chat-messages');
+            if (!messages) return;
+            messages.innerHTML = `<p id="live-chat-placeholder" class="text-gray-500 text-center py-10">${message}</p>`;
+        }
+
+        function addLiveChatMessage(payload, isMine = false) {
+            if (!liveChatActive) return;
+
+            const messages = document.getElementById('live-chat-messages');
+            if (!messages) return;
+
+            const placeholder = document.getElementById('live-chat-placeholder');
+            if (placeholder) placeholder.remove();
+
+            const nombre = payload && payload.nombre ? payload.nombre : 'Usuario';
+            const mensaje = payload && payload.mensaje ? payload.mensaje : '';
+            if (!mensaje.trim()) return;
+
+            const time = payload && payload.hora ? new Date(payload.hora) : new Date();
+            const timeText = isNaN(time.getTime()) ? '' : time.toLocaleTimeString('es-PA', { hour: '2-digit', minute: '2-digit' });
+
+            const wrapper = document.createElement('div');
+            wrapper.className = `live-chat-message rounded-xl px-3 py-2 border ${isMine ? 'bg-red-600/15 border-red-500/25' : 'bg-black/35 border-white/5'}`;
+
+            const meta = document.createElement('div');
+            meta.className = 'flex items-center justify-between gap-2 mb-1';
+
+            const nameEl = document.createElement('span');
+            nameEl.className = 'font-black text-red-300 uppercase tracking-wider text-[10px]';
+            nameEl.textContent = nombre;
+
+            const timeEl = document.createElement('span');
+            timeEl.className = 'text-[10px] text-gray-500';
+            timeEl.textContent = timeText;
+
+            const msgEl = document.createElement('p');
+            msgEl.className = 'text-gray-100 break-words leading-relaxed';
+            msgEl.textContent = mensaje;
+
+            meta.appendChild(nameEl);
+            meta.appendChild(timeEl);
+            wrapper.appendChild(meta);
+            wrapper.appendChild(msgEl);
+            messages.appendChild(wrapper);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function setupLiveChatChannel() {
+            if (liveChatChannel || !supabaseClient || typeof supabaseClient.channel !== 'function') return;
+
+            try {
+                liveChatChannel = supabaseClient
+                    .channel('emzoom-live-chat', { config: { broadcast: { self: false } } })
+                    .on('broadcast', { event: 'message' }, (event) => {
+                        addLiveChatMessage(event && event.payload ? event.payload : {});
+                    })
+                    .subscribe();
+            } catch (err) {
+                console.warn('No se pudo iniciar el canal del chat en vivo:', err);
+                liveChatChannel = null;
+            }
+        }
+
+        function closeLiveChatChannel() {
+            if (!liveChatChannel) return;
+
+            try {
+                if (supabaseClient && typeof supabaseClient.removeChannel === 'function') {
+                    supabaseClient.removeChannel(liveChatChannel);
+                }
+            } catch (err) {
+                console.warn('No se pudo cerrar el canal del chat en vivo:', err);
+            }
+
+            liveChatChannel = null;
+        }
+
+        function updateLiveChatState(isActive) {
+            liveChatActive = !!isActive;
+
+            const panel = document.getElementById('live-chat-panel');
+            const state = document.getElementById('live-chat-state');
+            const input = document.getElementById('live-chat-input');
+            const send = document.getElementById('live-chat-send');
+
+            if (panel) {
+                panel.classList.toggle('opacity-60', !liveChatActive);
+                panel.classList.toggle('border-red-500/30', liveChatActive);
+            }
+
+            if (state) {
+                state.innerText = liveChatActive ? 'Activo' : 'Desactivado';
+                state.className = liveChatActive
+                    ? 'text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-red-600/20 text-red-300 border border-red-500/30'
+                    : 'text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-gray-700 text-gray-300';
+            }
+
+            if (input) {
+                input.disabled = !liveChatActive;
+                input.placeholder = liveChatActive ? 'Escribe en el chat en vivo...' : 'Chat disponible cuando el live esté encendido';
+                if (!liveChatActive) input.value = '';
+            }
+
+            if (send) send.disabled = !liveChatActive;
+
+            if (liveChatActive) {
+                renderLiveChatPlaceholder('Chat activo. Sé el primero en escribir.');
+                setupLiveChatChannel();
+            } else {
+                renderLiveChatPlaceholder('El chat se activará cuando el live esté encendido.');
+                closeLiveChatChannel();
+            }
+        }
+
+        function sendLiveChatMessage() {
+            if (!liveChatActive) {
+                showToast('Chat desactivado', 'El chat se activa cuando el live está encendido', 'error');
+                return;
+            }
+
+            const input = document.getElementById('live-chat-input');
+            const mensaje = (input?.value || '').trim();
+            if (!mensaje) return;
+
+            const payload = {
+                nombre: getLiveChatName(),
+                mensaje,
+                hora: new Date().toISOString()
+            };
+
+            addLiveChatMessage(payload, true);
+            if (input) input.value = '';
+
+            if (liveChatChannel && typeof liveChatChannel.send === 'function') {
+                try {
+                    const result = liveChatChannel.send({ type: 'broadcast', event: 'message', payload });
+                    if (result && typeof result.catch === 'function') {
+                        result.catch((err) => console.warn('No se pudo enviar el mensaje del chat en vivo:', err));
+                    }
+                } catch (err) {
+                    console.warn('No se pudo enviar el mensaje del chat en vivo:', err);
+                }
+            }
+        }
+
         function openLiveFullscreen() {
             const player = document.getElementById('live-player');
             if (!player || !player.src) {
@@ -2634,6 +2833,7 @@
                 if (platform) platform.innerText = 'No detectado';
                 if (player) player.src = '';
                 updateLiveNotification(false);
+                updateLiveChatState(false);
                 updateLiveOpenButton('');
                 return;
             }
@@ -2650,11 +2850,13 @@
                 if (status) status.innerHTML = '<span class="text-gray-400">⚫ Offline</span>';
                 if (platform) platform.innerText = 'No detectado';
                 updateLiveNotification(false);
+                updateLiveChatState(false);
                 return;
             }
 
             if (status) status.innerHTML = '<span class="text-red-500 animate-pulse">🔴 EN VIVO</span>';
             updateLiveNotification(true);
+            updateLiveChatState(true);
             if (platform) platform.innerText = detectLivePlatform(data.url);
 
             loadLiveStream();
