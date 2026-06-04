@@ -1246,71 +1246,81 @@
 
             <!-- VISTA: LIVE STREAM -->
 <section id="view-live-stream" class="view-section hidden fade-in">
-                <div class="glass-card rounded-2xl p-5 slide-up overflow-hidden relative">
-                    <div class="absolute inset-0 bg-gradient-to-br from-red-600/10 to-transparent pointer-events-none"></div>
+                <div class="mx-auto w-full max-w-[430px] slide-up">
+                    <div class="relative w-full min-h-[calc(100vh-9rem)] rounded-[2rem] overflow-hidden bg-black border border-white/10 shadow-2xl">
+                        <input id="live-url" type="hidden">
 
-                    <div class="relative z-10 flex items-start justify-between gap-3 mb-4">
-                        <div>
-                            <h2 id="live-title" class="text-xl font-black uppercase tracking-wide text-white">Live Stream</h2>
-                            <p id="live-status" class="text-sm font-bold mt-1"><span class="text-gray-400">⚫ Offline</span></p>
-                            <p class="text-[11px] text-gray-500 mt-1">Plataforma: <span id="live-platform">No detectado</span></p>
-                        </div>
-                        <div class="bg-red-500/10 p-3 rounded-xl border border-red-500/20">
-                            <i data-lucide="radio" class="w-6 h-6 text-red-500"></i>
+                    <iframe
+                        id="live-player"
+                        class="absolute inset-0 w-full h-full bg-black"
+                        title="Live Stream"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen>
+                    </iframe>
+
+                    <div class="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/80 via-black/10 to-black/90"></div>
+                    <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,rgba(220,38,38,0.28),transparent_35%)]"></div>
+
+                    <div class="absolute top-0 left-0 right-0 z-20 p-4 pt-5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-red-600 to-yellow-500 p-[2px] shadow-[0_0_18px_rgba(220,38,38,0.65)] flex-shrink-0">
+                                    <div class="w-full h-full rounded-full bg-black flex items-center justify-center">
+                                        <i data-lucide="radio" class="w-5 h-5 text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <h2 id="live-title" class="text-base font-black uppercase tracking-wide text-white truncate">Live Stream</h2>
+                                        <span id="live-chat-state" class="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-gray-700 text-gray-300 flex-shrink-0">Desactivado</span>
+                                    </div>
+                                    <p id="live-status" class="text-xs font-bold mt-1"><span class="text-gray-300">⚫ Offline</span></p>
+                                    <p class="text-[10px] text-gray-300 mt-0.5">Plataforma: <span id="live-platform">No detectado</span></p>
+                                </div>
+                            </div>
+
+                            <button type="button" onclick="openLiveFullscreen()" class="bg-black/55 hover:bg-black/75 text-white p-3 rounded-full border border-white/10 transition active:scale-95 backdrop-blur-md">
+                                <i data-lucide="maximize" class="w-4 h-4 pointer-events-none"></i>
+                            </button>
                         </div>
                     </div>
 
-                    <input id="live-url" type="hidden">
-
-                    <div class="relative z-10 bg-black/60 border border-white/10 rounded-2xl overflow-hidden">
-                        <iframe
-                            id="live-player"
-                            class="w-full aspect-video bg-black"
-                            title="Live Stream"
-                            referrerpolicy="strict-origin-when-cross-origin"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowfullscreen>
-                        </iframe>
-                    </div>
-
-                    <div class="relative z-10 mt-3 flex justify-end">
-                        <button type="button" onclick="openLiveFullscreen()" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition active:scale-95">
-                            <i data-lucide="maximize" class="w-4 h-4 pointer-events-none"></i>
-                            Pantalla completa
-                        </button>
-                    </div>
-
-                    <div id="live-chat-panel" class="relative z-10 mt-4 glass-card rounded-xl p-4 border border-white/10 opacity-60 transition-all">
-                        <div class="flex items-center justify-between gap-3 mb-3">
-                            <h3 class="font-bold flex items-center gap-2 text-sm uppercase tracking-widest text-gray-200">
-                                <i data-lucide="messages-square" class="w-4 h-4 text-red-500"></i>
-                                Chat en vivo
-                            </h3>
-                            <span id="live-chat-state" class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-gray-700 text-gray-300">Desactivado</span>
+                    <div id="live-chat-panel" class="absolute left-0 right-0 bottom-0 z-20 p-4 opacity-60 transition-all">
+                        <div class="mb-2 flex items-end justify-between gap-3">
+                            <div>
+                                <h3 class="font-black flex items-center gap-2 text-sm uppercase tracking-widest text-white drop-shadow-lg">
+                                    <i data-lucide="messages-square" class="w-4 h-4 text-red-400"></i>
+                                    Chat en vivo
+                                </h3>
+                                <p class="text-[10px] text-gray-300 font-bold mt-1">Comentando como <span id="live-chat-user-name" class="text-white">Usuario</span></p>
+                            </div>
                         </div>
 
-                        <div id="live-chat-messages" class="h-40 overflow-y-auto bg-black/35 border border-white/10 rounded-xl p-3 space-y-2 text-xs">
-                            <p id="live-chat-placeholder" class="text-gray-500 text-center py-10">El chat se activará cuando el live esté encendido.</p>
+                        <div id="live-chat-messages" class="h-56 max-h-[35vh] overflow-y-auto pr-12 space-y-2 text-xs">
+                            <p id="live-chat-placeholder" class="text-gray-300 bg-black/45 border border-white/10 rounded-2xl px-4 py-3 backdrop-blur-md">El chat se activará cuando el live esté encendido.</p>
                         </div>
 
-                        <div class="mt-3 flex gap-2">
+                        <div class="mt-3 flex items-center gap-2 rounded-full bg-black/55 border border-white/15 p-2 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
                             <input
                                 id="live-chat-input"
                                 type="text"
                                 disabled
                                 maxlength="180"
                                 onkeydown="if(event.key === 'Enter'){ sendLiveChatMessage(); }"
-                                class="input-dark flex-1 px-4 py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="bg-transparent flex-1 px-3 py-2 text-sm text-white placeholder:text-gray-400 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                                 placeholder="Chat disponible cuando el live esté encendido">
                             <button
                                 id="live-chat-send"
                                 type="button"
                                 disabled
                                 onclick="sendLiveChatMessage()"
-                                class="bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition active:scale-95">
-                                Enviar
+                                class="w-10 h-10 rounded-full bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed text-white flex items-center justify-center transition active:scale-95 shadow-[0_0_14px_rgba(220,38,38,0.5)]">
+                                <i data-lucide="send" class="w-4 h-4 pointer-events-none"></i>
                             </button>
                         </div>
+                    </div>
+
                     </div>
 
                     <div id="live-admin-panel" class="hidden glass-card rounded-xl p-4 mt-4 relative z-10">
@@ -2627,15 +2637,20 @@
         }
 
         function getLiveChatName() {
-            return (currentUser && (currentUser.nombre || currentUser.name || currentUser.email))
-                ? (currentUser.nombre || currentUser.name || currentUser.email).toString().split('@')[0]
+            return (currentUser && (currentUser.nombre_completo || currentUser.nombre || currentUser.name || currentUser.email))
+                ? (currentUser.nombre_completo || currentUser.nombre || currentUser.name || currentUser.email).toString().split('@')[0]
                 : 'Usuario';
+        }
+
+        function updateLiveChatUserName() {
+            const userNameEl = document.getElementById('live-chat-user-name');
+            if (userNameEl) userNameEl.innerText = getLiveChatName();
         }
 
         function renderLiveChatPlaceholder(message) {
             const messages = document.getElementById('live-chat-messages');
             if (!messages) return;
-            messages.innerHTML = `<p id="live-chat-placeholder" class="text-gray-500 text-center py-10">${message}</p>`;
+            messages.innerHTML = `<p id="live-chat-placeholder" class="text-gray-300 bg-black/45 border border-white/10 rounded-2xl px-4 py-3 backdrop-blur-md">${message}</p>`;
         }
 
         function addLiveChatMessage(payload, isMine = false) {
@@ -2655,21 +2670,21 @@
             const timeText = isNaN(time.getTime()) ? '' : time.toLocaleTimeString('es-PA', { hour: '2-digit', minute: '2-digit' });
 
             const wrapper = document.createElement('div');
-            wrapper.className = `live-chat-message rounded-xl px-3 py-2 border ${isMine ? 'bg-red-600/15 border-red-500/25' : 'bg-black/35 border-white/5'}`;
+            wrapper.className = `live-chat-message max-w-[82%] rounded-2xl px-3 py-2 border backdrop-blur-md shadow-lg ${isMine ? 'ml-auto bg-red-600/35 border-red-400/35' : 'bg-black/45 border-white/10'}`;
 
             const meta = document.createElement('div');
             meta.className = 'flex items-center justify-between gap-2 mb-1';
 
             const nameEl = document.createElement('span');
-            nameEl.className = 'font-black text-red-300 uppercase tracking-wider text-[10px]';
+            nameEl.className = 'font-black text-red-200 tracking-wider text-[10px]';
             nameEl.textContent = nombre;
 
             const timeEl = document.createElement('span');
-            timeEl.className = 'text-[10px] text-gray-500';
+            timeEl.className = 'text-[10px] text-gray-300';
             timeEl.textContent = timeText;
 
             const msgEl = document.createElement('p');
-            msgEl.className = 'text-gray-100 break-words leading-relaxed';
+            msgEl.className = 'text-white break-words leading-relaxed drop-shadow';
             msgEl.textContent = mensaje;
 
             meta.appendChild(nameEl);
@@ -2712,6 +2727,7 @@
 
         function updateLiveChatState(isActive) {
             liveChatActive = !!isActive;
+            updateLiveChatUserName();
 
             const panel = document.getElementById('live-chat-panel');
             const state = document.getElementById('live-chat-state');
@@ -2726,13 +2742,13 @@
             if (state) {
                 state.innerText = liveChatActive ? 'Activo' : 'Desactivado';
                 state.className = liveChatActive
-                    ? 'text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-red-600/20 text-red-300 border border-red-500/30'
-                    : 'text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-gray-700 text-gray-300';
+                    ? 'text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-red-600 text-white border border-red-400/40 animate-pulse'
+                    : 'text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-gray-700 text-gray-300';
             }
 
             if (input) {
                 input.disabled = !liveChatActive;
-                input.placeholder = liveChatActive ? 'Escribe en el chat en vivo...' : 'Chat disponible cuando el live esté encendido';
+                input.placeholder = liveChatActive ? `Escribe como ${getLiveChatName()}...` : 'Chat disponible cuando el live esté encendido';
                 if (!liveChatActive) input.value = '';
             }
 
