@@ -24,6 +24,7 @@
     <!-- Librerías Externas -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -322,6 +323,23 @@
         }
         #store-banner-subtitle {
             max-width: 75%;
+        }
+
+        /* ===== QR / CREDENCIAL DE MIEMBRO OFICIAL ===== */
+        .official-member-box { margin-top: .8rem; padding: .85rem; border: 1px solid rgba(34,197,94,.35); border-radius: 1rem; background: linear-gradient(145deg, rgba(6,78,59,.20), rgba(0,0,0,.55)); box-shadow: 0 0 18px rgba(34,197,94,.10); }
+        .official-member-badge { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .65rem; border-radius: 999px; border: 1px solid rgba(134,239,172,.40); background: rgba(22,101,52,.28); color: #bbf7d0; font-size: .65rem; font-weight: 1000; letter-spacing: .08em; text-transform: uppercase; }
+        .member-qr-canvas { width: 192px; min-width: 192px; height: 192px; padding: 16px; background: #fff; border: 2px solid #fff; border-radius: .55rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 22px rgba(0,0,0,.35); image-rendering: pixelated; }
+        .member-qr-canvas img, .member-qr-canvas canvas { width: 156px !important; height: 156px !important; image-rendering: pixelated; }
+        #view-public-member { min-height: calc(100dvh - 6rem); }
+        .public-member-hero { background: radial-gradient(circle at 50% 0%, rgba(34,197,94,.14), transparent 38%), linear-gradient(145deg, rgba(26,26,26,.98), rgba(5,5,5,1)); border: 1px solid rgba(34,197,94,.28); box-shadow: 0 0 35px rgba(34,197,94,.08), 0 18px 40px rgba(0,0,0,.45); }
+        .public-profile-photo { width: 8rem; height: 8rem; object-fit: cover; border-radius: 999px; border: 4px solid #111827; box-shadow: 0 0 0 3px rgba(34,197,94,.7), 0 12px 25px rgba(0,0,0,.45); }
+        .public-car-photo { width: 100%; height: 12rem; object-fit: cover; border-radius: 1rem; border: 1px solid rgba(255,255,255,.08); display: block; }
+        .public-car-photo-button { width: 100%; display: block; border-radius: 1rem; overflow: hidden; background: rgba(0,0,0,.25); cursor: zoom-in; transition: transform .18s ease, border-color .18s ease; }
+        .public-car-photo-button:active { transform: scale(.985); }
+        @media (max-width: 640px) {
+            .member-qr-canvas { width: 170px; min-width: 170px; height: 170px; padding: 13px; border-radius: .5rem; }
+            .member-qr-canvas img, .member-qr-canvas canvas { width: 140px !important; height: 140px !important; }
+            .public-car-photo { height: 9rem; }
         }
 
         #toast { transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(100px); opacity: 0; z-index: 100; }
@@ -991,6 +1009,11 @@
 
                 <div id="members-list" class="space-y-4 pb-4"></div>
                 <div id="empty-state" class="hidden flex flex-col items-center justify-center py-12 text-center fade-in"><div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4"><i data-lucide="car" class="w-8 h-8 text-gray-600"></i></div><h4 class="text-lg font-bold text-gray-300">Aún no hay miembros</h4><p class="text-sm text-gray-500 mt-2">Sé el primero en registrar tu nave en el club.</p></div>
+            </section>
+
+            <!-- VISTA PÚBLICA: CREDENCIAL DE MIEMBRO OFICIAL (QR) -->
+            <section id="view-public-member" class="view-section hidden fade-in">
+                <div id="public-member-content" class="max-w-2xl mx-auto"></div>
             </section>
 
             <!-- VISTA: EVENTOS (LISTA) -->
@@ -1684,6 +1707,297 @@
 
         function normalizeStr(str) { return (str || "").trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
 
+        function getPublicMemberCodeFromUrl() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                return (params.get('m') || params.get('miembro_oficial') || params.get('miembro') || '').trim();
+            } catch (err) { return ''; }
+        }
+
+        function getPublicUserCodeFromUrl() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                return (params.get('u') || params.get('usuario') || '').trim();
+            } catch (err) { return ''; }
+        }
+
+        function getAppUserIdForMember(member) {
+            if (!member) return '';
+            try {
+                const myMemberId = getMyMemberId();
+                if (currentUser?.id && myMemberId && String(myMemberId) === String(member.id)) {
+                    return String(currentUser.id);
+                }
+            } catch (err) {}
+
+            const matchedUser = (users || []).find(user =>
+                user?.id && normalizeStr(user.nombre_completo) === normalizeStr(member.nombre)
+            );
+            return matchedUser?.id ? String(matchedUser.id) : '';
+        }
+
+        function buildPublicMemberUrl(memberId, userId = '') {
+            try {
+                const url = new URL(window.location.href);
+                url.search = '';
+                url.hash = '';
+                url.searchParams.set('m', String(memberId));
+                if (userId) url.searchParams.set('u', String(userId));
+                return url.toString();
+            } catch (err) {
+                const base = window.location.href.split('?')[0].split('#')[0];
+                const userPart = userId ? '&u=' + encodeURIComponent(userId) : '';
+                return base + '?m=' + encodeURIComponent(memberId) + userPart;
+            }
+        }
+
+        function getVerifiedMeetCount(member, attendanceRows = asistenciasTotales) {
+            if (!member) return 0;
+            const memberId = String(member.id || '');
+            const memberName = normalizeStr(member.nombre);
+            return (attendanceRows || []).filter(a => {
+                if (a && a.usuario_id && memberId && String(a.usuario_id) === memberId) return true;
+                return normalizeStr(a?.usuario_nombre) === memberName;
+            }).length;
+        }
+
+        function escapePublicHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        }
+
+        function safePublicUrl(value) {
+            try {
+                const url = new URL(String(value || ''));
+                return ['http:', 'https:'].includes(url.protocol) ? url.toString() : '';
+            } catch (err) { return ''; }
+        }
+
+
+        function isStickerArticleName(value) {
+            const normalized = normalizeStr(value).replace(/\s+/g, '');
+            return normalized.includes('sticker') || normalized.includes('stiker') || normalized.includes('calcomania');
+        }
+
+        async function getPublicStickerPurchaseStatus(member, publicUserId = '') {
+            const fallback = { bought: false, delivered: false, unavailable: false };
+            if (!member) return fallback;
+
+            // Verificación directa: el UUID del usuario incluido en el QR debe existir
+            // exactamente en pedidos_tienda.usuario_id. No se revisa estado, artículo ni cantidad.
+            try {
+                const { data, error } = await supabaseClient.rpc('get_public_sticker_status_by_user', {
+                    p_usuario_id: publicUserId ? String(publicUserId) : null,
+                    p_member_id: String(member.id)
+                });
+                if (error) throw error;
+
+                const hasPurchase = data?.sticker_comprado === true;
+                return {
+                    bought: hasPurchase,
+                    delivered: hasPurchase,
+                    unavailable: false
+                };
+            } catch (err) {
+                console.warn('No se pudo verificar pedidos_tienda.usuario_id mediante el RPC público.', err);
+            }
+
+            // Respaldo para sesión iniciada: compara directamente usuarios_web.id con pedidos_tienda.usuario_id.
+            try {
+                let resolvedUserId = publicUserId ? String(publicUserId) : '';
+                if (!resolvedUserId) {
+                    const { data: userRows, error: userError } = await supabaseClient
+                        .from('usuarios_web')
+                        .select('id,nombre_completo')
+                        .ilike('nombre_completo', member.nombre || '');
+                    if (userError) throw userError;
+
+                    const matchedUser = (userRows || []).find(user =>
+                        normalizeStr(user.nombre_completo) === normalizeStr(member.nombre)
+                    );
+                    resolvedUserId = matchedUser?.id ? String(matchedUser.id) : '';
+                }
+
+                if (!resolvedUserId) return fallback;
+
+                const { data: orders, error: ordersError } = await supabaseClient
+                    .from('pedidos_tienda')
+                    .select('id,usuario_id')
+                    .eq('usuario_id', resolvedUserId)
+                    .limit(1);
+                if (ordersError) throw ordersError;
+
+                const hasOrder = Array.isArray(orders) && orders.length > 0;
+                return {
+                    bought: hasOrder,
+                    delivered: hasOrder,
+                    unavailable: false
+                };
+            } catch (err) {
+                console.warn('No se pudo verificar directamente pedidos_tienda.usuario_id.', err);
+                return { bought: false, delivered: false, unavailable: true };
+            }
+        }
+
+        function renderQrInto(element, text, size = 156) {
+            if (!element || !text || typeof QRCode === 'undefined') return;
+            element.innerHTML = '';
+            new QRCode(element, {
+                text,
+                width: size,
+                height: size,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+
+        function hydrateOfficialMemberQrs(root = document) {
+            root.querySelectorAll('[data-member-qr][data-member-url]').forEach(el => {
+                if (el.dataset.qrReady === '1') return;
+                renderQrInto(el, el.dataset.memberUrl, isMembersMobileMode() ? 140 : 156);
+                el.dataset.qrReady = '1';
+            });
+        }
+
+        async function loadPublicMemberProfile(memberId) {
+            const content = document.getElementById('public-member-content');
+            if (!content) return;
+
+            document.getElementById('bottom-nav')?.classList.add('hidden');
+            document.getElementById('btn-logout')?.classList.add('hidden');
+            document.getElementById('btn-refresh')?.classList.add('hidden');
+            const headerTitle = document.getElementById('header-title');
+            if (headerTitle) {
+                headerTitle.innerText = 'Miembro Oficial';
+                headerTitle.classList.add('header-racing-title');
+            }
+
+            document.querySelectorAll('.view-section').forEach(sec => {
+                sec.classList.add('hidden');
+                sec.classList.remove('flex');
+            });
+            document.getElementById('view-public-member')?.classList.remove('hidden');
+
+            content.innerHTML = `<div class="glass-card p-6 rounded-3xl text-center"><i data-lucide="loader" class="w-8 h-8 mx-auto text-green-400 animate-spin mb-3"></i><p class="text-xs text-gray-400 font-bold uppercase tracking-widest">Verificando credencial...</p></div>`;
+            lucide.createIcons();
+
+            try {
+                const { data: member, error: memberError } = await supabaseClient
+                    .from('miembros')
+                    .select('*')
+                    .eq('id', memberId)
+                    .single();
+                if (memberError || !member) throw memberError || new Error('Miembro no encontrado');
+
+                const publicUserId = getPublicUserCodeFromUrl();
+                const [{ data: attendance, error: attendanceError }, stickerStatus] = await Promise.all([
+                    supabaseClient.from('asistencias_eventos').select('usuario_id,usuario_nombre,evento_id').eq('asistencia_verificada', true),
+                    getPublicStickerPurchaseStatus(member, publicUserId)
+                ]);
+                if (attendanceError) throw attendanceError;
+
+                const meetCount = getVerifiedMeetCount(member, attendance || []);
+                const isOfficial = meetCount >= 1;
+                const profilePhoto = safePublicUrl(member.foto_perfil);
+                const foto1 = safePublicUrl(member.foto1);
+                const foto2 = safePublicUrl(member.foto2);
+
+                if (!isOfficial) {
+                    content.innerHTML = `
+                        <div class="glass-card p-7 rounded-3xl text-center border border-red-500/30">
+                            <div class="w-20 h-20 mx-auto rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center mb-5"><i data-lucide="shield-x" class="w-10 h-10 text-red-400"></i></div>
+                            <h1 class="text-xl font-black uppercase tracking-wider text-white">Credencial no válida</h1>
+                            <p class="text-sm text-gray-400 mt-3">Este perfil registra <strong class="text-white">${meetCount}</strong> MEET verificado(s). La credencial oficial se activa automáticamente desde 1 MEET verificado.</p>
+                        </div>`;
+                    lucide.createIcons();
+                    return;
+                }
+
+                const carPhotoList = [foto1, foto2].filter(Boolean);
+                const carPhotos = carPhotoList.map((src, i) => `
+                    <button type="button" class="public-car-photo-button" data-public-car-index="${i}" aria-label="Ampliar foto ${i + 1} del vehículo">
+                        <img src="${escapePublicHtml(src)}" class="public-car-photo" alt="Foto ${i + 1} del vehículo de ${escapePublicHtml(member.nombre)}" loading="eager" decoding="async">
+                    </button>`).join('');
+
+                let stickerLabel = 'No';
+                let stickerDetail = 'No registra compra de sticker en la aplicación';
+                let stickerClasses = 'text-gray-300 bg-white/5 border-white/10';
+                let stickerIcon = 'circle-x';
+                if (stickerStatus.unavailable) {
+                    stickerLabel = 'Sin verificar';
+                    stickerDetail = 'El estado de compra no pudo consultarse en este momento';
+                    stickerClasses = 'text-yellow-300 bg-yellow-500/10 border-yellow-500/20';
+                    stickerIcon = 'circle-alert';
+                } else if (stickerStatus.bought) {
+                    stickerLabel = 'Sí';
+                    stickerDetail = 'Compra registrada en la tienda de la app';
+                    stickerClasses = 'text-green-300 bg-green-500/10 border-green-500/25';
+                    stickerIcon = 'badge-check';
+                }
+
+                content.innerHTML = `
+                    <article class="public-member-hero rounded-[2rem] overflow-hidden p-5 sm:p-7">
+                        <div class="text-center">
+                            <div class="official-member-badge mb-5"><i data-lucide="badge-check" class="w-4 h-4"></i> Miembro Oficial Verificado</div>
+                            ${profilePhoto ? `<img src="${escapePublicHtml(profilePhoto)}" class="public-profile-photo mx-auto mb-4" alt="Perfil de ${escapePublicHtml(member.nombre)}">` : `<div class="public-profile-photo mx-auto mb-4 bg-gray-800 flex items-center justify-center"><i data-lucide="user" class="w-12 h-12 text-gray-500"></i></div>`}
+                            <h1 class="text-2xl sm:text-3xl font-black uppercase tracking-wide text-white">${escapePublicHtml(member.nombre || 'Miembro')}</h1>
+                            <p class="text-red-400 font-bold mt-1">“${escapePublicHtml(member.apodo || 'Sin apodo')}”</p>
+                            <div class="mt-4 inline-flex items-center gap-2 bg-green-500/10 border border-green-500/25 px-4 py-2 rounded-full text-green-300 text-xs font-black uppercase tracking-widest"><i data-lucide="flag" class="w-4 h-4"></i>${meetCount} MEET verificados</div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-7">
+                            <div class="bg-black/35 border border-white/5 rounded-xl p-4"><p class="text-[9px] text-gray-500 uppercase font-black tracking-widest">Modelo</p><p class="text-sm text-white font-bold mt-1">${escapePublicHtml(member.modelo || 'No registrado')}</p></div>
+                            <div class="bg-black/35 border border-white/5 rounded-xl p-4"><p class="text-[9px] text-gray-500 uppercase font-black tracking-widest">Color</p><p class="text-sm text-white font-bold mt-1">${escapePublicHtml(member.color || 'No registrado')}</p></div>
+                            <div class="bg-black/35 border border-white/5 rounded-xl p-4 sm:col-span-2"><p class="text-[9px] text-gray-500 uppercase font-black tracking-widest">Provincia</p><p class="text-sm text-white font-bold mt-1 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-red-400"></i>${escapePublicHtml(member.provincia || 'No registrada')}</p></div>
+                        </div>
+
+                        <div class="mt-4 rounded-xl border p-4 ${stickerClasses}">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-10 h-10 rounded-full bg-black/25 border border-white/10 flex items-center justify-center flex-shrink-0"><i data-lucide="${stickerIcon}" class="w-5 h-5"></i></div>
+                                    <div class="min-w-0">
+                                        <p class="text-[9px] uppercase font-black tracking-widest opacity-80">Sticker oficial comprado en la app</p>
+                                        <p class="text-sm font-black mt-0.5">${escapePublicHtml(stickerLabel)}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-[10px] mt-2 opacity-80">${escapePublicHtml(stickerDetail)}</p>
+                        </div>
+
+                        ${carPhotos ? `
+                            <div class="mt-6">
+                                <div class="flex items-center justify-between gap-3 mb-3">
+                                    <h2 class="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2"><i data-lucide="images" class="w-4 h-4 text-red-400"></i> Fotos del vehículo</h2>
+                                    <span class="text-[9px] text-gray-500 uppercase font-bold">Toca para ampliar</span>
+                                </div>
+                                <div class="grid ${carPhotoList.length > 1 ? 'grid-cols-2' : 'grid-cols-1'} gap-3">${carPhotos}</div>
+                            </div>` : `
+                            <div class="mt-6 bg-black/25 border border-white/5 rounded-xl p-4 text-center">
+                                <i data-lucide="image-off" class="w-5 h-5 text-gray-500 mx-auto mb-2"></i>
+                                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Sin fotos del vehículo registradas</p>
+                            </div>`}
+
+                        <div class="mt-6 pt-5 border-t border-white/10 text-center">
+                            <div class="w-10 h-10 mx-auto rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center mb-3"><i data-lucide="shield-check" class="w-5 h-5 text-green-400"></i></div>
+                            <p class="text-xs font-black text-white uppercase tracking-widest">EMZOOM RSTYLE 507 TEAM</p>
+                            <p class="text-[10px] text-gray-500 mt-1">Credencial consultada directamente desde el registro oficial del team.</p>
+                        </div>
+                    </article>`;
+
+                content.querySelectorAll('[data-public-car-index]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const index = Number(button.dataset.publicCarIndex || 0);
+                        openGallery(carPhotoList[0] || null, carPhotoList[1] || null, `Vehículo de ${member.nombre || 'Miembro'}`, index);
+                    });
+                });
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Error cargando perfil público:', error);
+                content.innerHTML = `<div class="glass-card p-7 rounded-3xl text-center border border-red-500/30"><i data-lucide="circle-alert" class="w-10 h-10 text-red-400 mx-auto mb-4"></i><h1 class="text-lg font-black uppercase">No se pudo verificar</h1><p class="text-sm text-gray-400 mt-2">La credencial no existe o el perfil no está disponible.</p></div>`;
+                lucide.createIcons();
+            }
+        }
+
         // ==========================================
         // STORAGE & CACHE
         // ==========================================
@@ -1783,7 +2097,7 @@
                     supabaseClient.from('miembros').select('*').order('fecha_registro', { ascending: false }),
                     supabaseClient.from('eventos').select('*').order('fecha', { ascending: true }),
                     supabaseClient.from('usuarios_web').select('*'),
-                    supabaseClient.from('asistencias_eventos').select('usuario_nombre').eq('asistencia_verificada', true),
+                    supabaseClient.from('asistencias_eventos').select('usuario_id,usuario_nombre,evento_id').eq('asistencia_verificada', true),
                     supabaseClient.from('likes_miembros').select('*'),
                     supabaseClient.from('tienda').select('*').order('created_at', { ascending: false }),
                     supabaseClient.from('pedidos_tienda').select('*').order('created_at', { ascending: false })
@@ -2590,9 +2904,10 @@
             flatpickr("#fecha_nac", { locale: "es", dateFormat: "Y-m-d", altInput: true, altFormat: "d \\de F \\de Y", maxDate: "today", disableMobile: "true" });
             flatpickr("#ev-fecha", { locale: "es", enableTime: true, dateFormat: "Y-m-d H:i", altInput: true, altFormat: "d \\de F \\de Y - h:i K", time_24hr: false, disableMobile: "true" });
 
-            await loadAppViewSettings();
+            const publicMemberId = getPublicMemberCodeFromUrl();
+            if (!publicMemberId) await loadAppViewSettings();
 
-            if (currentUser) { 
+            if (currentUser && !publicMemberId) { 
                 await loadData(); 
             }
             
@@ -2604,7 +2919,9 @@
                     splash.classList.add('hidden');
                     app.classList.remove('hidden');
                     app.classList.add('flex');
-                    if (currentUser) {
+                    if (publicMemberId) {
+                        loadPublicMemberProfile(publicMemberId);
+                    } else if (currentUser) {
                         document.getElementById('bottom-nav').classList.remove('hidden');
                         navigateAfterAuth();
                     } else {
@@ -3733,9 +4050,26 @@
                 }
             }
             
-            const normalizedMemberName = normalizeStr(member.nombre);
-            const eventsAttended = asistenciasTotales.filter(a => normalizeStr(a.usuario_nombre) === normalizedMemberName).length;
+            const eventsAttended = getVerifiedMeetCount(member);
             const attendanceHtml = `<div class="member-info-line flex items-center gap-2"><i data-lucide="flag" class="w-4 h-4 text-gray-500"></i> <span class="meet-racing-line"><span class="meet-race-count"><span>${eventsAttended}</span></span><span class="meet-race-text">MEET EMZOOM RSTYLE 507 TEAM</span></span></div>`;
+            const memberAppUserId = getAppUserIdForMember(member);
+            const publicMemberUrl = buildPublicMemberUrl(member.id, memberAppUserId);
+            // PRIVACIDAD QR: desde 1 MEET. Un usuario solo ve el QR de su propio perfil; Admin ve todos.
+            const canViewOfficialQr = !!currentUser && (isAdmin || (myId && String(myId) === String(member.id)));
+            const officialQrHtml = (eventsAttended >= 1 && canViewOfficialQr) ? `
+                <div class="official-member-box">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <span class="official-member-badge"><i data-lucide="badge-check" class="w-4 h-4"></i> Miembro Oficial</span>
+                        <span class="text-[9px] text-green-300 font-black uppercase tracking-widest">QR Personal</span>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                        <div class="member-qr-canvas" data-member-qr="${member.id}" data-member-url="${escapePublicHtml(publicMemberUrl)}" aria-label="Código QR personal de ${safeName}"></div>
+                        <div class="min-w-0 flex-1 text-center sm:text-left">
+                            <p class="text-[10px] text-gray-300 leading-relaxed">QR oficial activo desde tu primer MEET verificado. Escanéalo con cualquier cámara para abrir la credencial pública.</p>
+                            <a href="${escapePublicHtml(publicMemberUrl)}" target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex items-center gap-1.5 text-[10px] text-green-300 font-black uppercase tracking-widest hover:text-green-200"><i data-lucide="external-link" class="w-3.5 h-3.5"></i> Ver mi credencial</a>
+                        </div>
+                    </div>
+                </div>` : '';
             
             const profileImgStr = member.foto_perfil 
                 ? `<img src="${member.foto_perfil}" ${lazyAttr} class="member-profile-img rounded-full object-cover border-4 border-[#151515] ring-2 shadow-xl cursor-pointer active:scale-95" style="--tw-ring-color: ${ringColor};" onclick="openGallery('${member.foto_perfil}', null, 'Perfil de ${safeName}', 0)">` 
@@ -3773,6 +4107,7 @@
                     <div class="member-info-line flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-gray-500"></i> ${member.provincia || 'Sin provincia'}</div>
                     <div class="member-info-line flex items-center gap-2"><i data-lucide="palette" class="w-4 h-4 text-gray-500"></i> ${member.color || 'Sin color'}</div>
                     ${attendanceHtml}
+                    ${officialQrHtml}
                     ${actionsHtml}
                 </div>
             `;
@@ -3796,6 +4131,7 @@
             }
 
             listContainer.appendChild(fragment);
+            hydrateOfficialMemberQrs(listContainer);
             currentMembersRenderIndex = end;
 
             if (currentMembersRenderIndex < currentMembersToDisplay.length) {
@@ -4359,7 +4695,7 @@
             try {
                 const { data, error } = await supabaseClient
                     .from('asistencias_eventos')
-                    .select('usuario_nombre')
+                    .select('usuario_id,usuario_nombre,evento_id')
                     .eq('asistencia_verificada', true);
                 if (!error) {
                     asistenciasTotales = data || [];
@@ -5191,7 +5527,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    if (typeof navTo === 'function') {
+    if (typeof navTo === 'function' && !getPublicMemberCodeFromUrl()) {
         setTimeout(() => {
             try {
                 navTo('home');
@@ -5200,44 +5536,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
-
-
-
-<!--
-SUPABASE - TABLA NECESARIA PARA LIVE STREAM
-Ejecuta esto una sola vez en Supabase > SQL Editor:
-
-create table if not exists stream_config (
-    id bigint primary key,
-    titulo text,
-    url text,
-    is_active boolean default false,
-    updated_at timestamptz default now()
-);
-
-insert into stream_config(id, titulo, url, is_active)
-values(1, 'Live Stream', '', false)
-on conflict (id) do nothing;
-
--- Para que el botón "Finalizar Evento" desaparezca el evento para todos los usuarios:
-alter table eventos
-add column if not exists finalizado boolean default false;
-
--->
-
-
-    <!--
-    SQL recomendado para que el panel de vistas funcione para todos los usuarios:
-
-    create table if not exists app_config (
-        id bigint primary key,
-        view_settings jsonb default '{}'::jsonb,
-        updated_at timestamptz default now()
-    );
-
-    insert into app_config(id, view_settings)
-    values(1, '{"home":true,"liveStream":true,"members":true,"events":true,"birthdays":true,"store":true,"myOrders":true,"users":true}'::jsonb)
-    on conflict (id) do nothing;
-    -->
 </body>
 </html>
